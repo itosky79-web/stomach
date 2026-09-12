@@ -1,0 +1,1224 @@
+<title>胃バリウム透視シミュレータ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Old+Mincho:wght@600;700;900&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  color-scheme: dark;
+  --ink:#0A0F14; --ink2:#0D131A; --panel:#121A22; --panel2:#182430;
+  --line:#223140; --line2:#31485C;
+  --text:#D9E4ED; --muted:#8AA0B2; --dim:#5E7386;
+  --barium:#F4F7FB; --mucosa:#C2666D; --amber:#F0B24B; --teal:#52B8CE; --alert:#E0645C;
+  --mincho:"Zen Old Mincho",'Hiragino Mincho ProN','Yu Mincho',serif;
+  --gothic:"Zen Kaku Gothic New",'Hiragino Sans','Yu Gothic',system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,'SFMono-Regular',monospace;
+  --r:4px;
+}
+*{box-sizing:border-box}
+body{
+  margin:0; background:var(--ink); color:var(--text);
+  font-family:var(--gothic); font-size:14px; line-height:1.75;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1380px; margin:0 auto; padding-inline:20px; padding-block:0 56px}
+
+/* ---------- header ---------- */
+header{padding-block:26px 18px; border-bottom:1px solid var(--line); margin-bottom:18px}
+.eyebrow{
+  font-family:var(--mono); font-size:10.5px; letter-spacing:.22em; color:var(--teal);
+  text-transform:uppercase; margin:0 0 8px;
+}
+h1{
+  font-family:var(--mincho); font-weight:900; font-size:clamp(24px,3.6vw,38px);
+  letter-spacing:.02em; margin:0; line-height:1.25; text-wrap:balance;
+}
+.sub{margin:8px 0 0; color:var(--muted); max-width:64ch; font-size:13.5px}
+
+/* ---------- workspace ---------- */
+.work{display:grid; grid-template-columns:minmax(0,1fr) 322px; gap:16px; align-items:start}
+.stage{
+  position:relative; height:clamp(430px,64vh,700px); border:1px solid var(--line);
+  border-radius:var(--r); overflow:hidden;
+  background:radial-gradient(120% 100% at 50% 0%,#16222D 0%,#0A0F14 62%);
+}
+.stage canvas{display:block; width:100%; height:100%; touch-action:none; cursor:grab}
+.stage canvas:active{cursor:grabbing}
+#labels{position:absolute; inset:0; pointer-events:none}
+.lab{
+  position:absolute; top:0; left:0; white-space:nowrap;
+  font-size:11px; font-weight:500; letter-spacing:.04em;
+  color:#E8F1F8; background:rgba(10,15,20,.72); border:1px solid var(--line2);
+  padding:1px 7px; border-radius:2px; transition:opacity .18s;
+  text-shadow:0 1px 3px #000;
+}
+.lab.axis{color:var(--dim); background:none; border:none; font-family:var(--mono); font-size:10px; letter-spacing:.16em}
+.lab.curv{color:var(--teal); border-color:#26505E; background:rgba(9,22,27,.78)}
+
+/* film inset */
+#film{
+  position:absolute; pointer-events:none; border:1px solid var(--line2);
+  border-radius:2px; box-shadow:0 8px 28px rgba(0,0,0,.6);
+}
+#film .fh{
+  position:absolute; top:0; left:0; right:0; display:flex; justify-content:space-between;
+  padding:4px 6px; font-family:var(--mono); font-size:9px; letter-spacing:.1em; color:#7FA9BD;
+}
+#film .fR,#film .fL{
+  position:absolute; top:50%; transform:translateY(-50%); font-family:var(--mono);
+  font-size:13px; font-weight:600; color:#8FB6C8; opacity:.75;
+}
+#film .fR{left:5px} #film .fL{right:5px}
+#film .ff{
+  position:absolute; bottom:0; left:0; right:0; padding:4px 6px;
+  font-family:var(--mono); font-size:9px; letter-spacing:.08em; color:#7FA9BD; text-align:center;
+}
+.viewhint{
+  position:absolute; left:12px; bottom:10px; font-family:var(--mono); font-size:9.5px;
+  letter-spacing:.12em; color:var(--dim); pointer-events:none;
+}
+
+/* ---------- rail ---------- */
+.rail{display:flex; flex-direction:column; gap:12px}
+.grp{background:var(--panel); border:1px solid var(--line); border-radius:var(--r); padding:12px 13px 13px}
+.grp-h{
+  font-family:var(--mono); font-size:10px; letter-spacing:.2em; color:var(--dim);
+  text-transform:uppercase; margin:0 0 9px; display:flex; justify-content:space-between; align-items:baseline;
+}
+.grp-h b{font-family:var(--gothic); font-weight:500; font-size:11px; letter-spacing:.02em; color:var(--muted)}
+
+.pos-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:6px}
+.type-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:6px}
+button.opt{
+  display:flex; flex-direction:column; align-items:center; gap:3px; padding:7px 3px 6px;
+  background:var(--panel2); border:1px solid var(--line); border-radius:3px; color:var(--muted);
+  font-family:var(--gothic); font-size:11px; font-weight:500; cursor:pointer;
+  transition:border-color .15s,color .15s,background .15s;
+}
+button.opt svg{display:block}
+button.opt .ruby{font-family:var(--mono); font-size:8.5px; letter-spacing:.08em; color:var(--dim)}
+button.opt:hover{border-color:var(--line2); color:var(--text)}
+button.opt[aria-pressed="true"]{background:#1D3040; border-color:var(--teal); color:#EAF6FA}
+button.opt[aria-pressed="true"] .ruby{color:var(--teal)}
+button.opt:focus-visible,button.act:focus-visible,summary:focus-visible{outline:2px solid var(--teal); outline-offset:2px}
+
+.slider{margin-top:2px}
+.slider .sl-h{display:flex; justify-content:space-between; align-items:baseline; font-size:12px; color:var(--muted)}
+.slider .sl-v{font-family:var(--mono); font-size:12.5px; color:var(--text); font-variant-numeric:tabular-nums}
+input[type=range]{
+  -webkit-appearance:none; appearance:none; width:100%; height:20px; background:none; cursor:pointer; margin:2px 0 0;
+}
+input[type=range]::-webkit-slider-runnable-track{height:3px; background:var(--line2); border-radius:2px}
+input[type=range]::-moz-range-track{height:3px; background:var(--line2); border-radius:2px}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; width:13px; height:13px; margin-top:-5px; border-radius:50%;
+  background:var(--barium); border:2px solid var(--ink);
+}
+input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--barium);border:2px solid var(--ink)}
+
+.toggles{display:flex; flex-direction:column; gap:1px}
+label.tg{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--muted); cursor:pointer; padding:2px 0}
+label.tg:hover{color:var(--text)}
+input[type=checkbox]{
+  appearance:none; -webkit-appearance:none; width:14px; height:14px; flex:none;
+  border:1px solid var(--line2); border-radius:2px; background:var(--ink2); cursor:pointer; position:relative;
+}
+input[type=checkbox]:checked{background:var(--teal); border-color:var(--teal)}
+input[type=checkbox]:checked::after{
+  content:""; position:absolute; left:4px; top:1px; width:4px; height:8px;
+  border:solid var(--ink); border-width:0 2px 2px 0; transform:rotate(42deg);
+}
+input[type=checkbox]:focus-visible{outline:2px solid var(--teal); outline-offset:2px}
+
+.acts{display:grid; grid-template-columns:1fr 1fr; gap:6px}
+button.act{
+  padding:7px 4px; background:transparent; border:1px solid var(--line2); border-radius:3px;
+  color:var(--muted); font-family:var(--gothic); font-size:11.5px; cursor:pointer; transition:.15s;
+}
+button.act:hover{background:var(--panel2); color:var(--text); border-color:var(--teal)}
+button.act.wide{grid-column:1/-1; color:var(--barium); border-color:#456A80}
+
+.gauge{display:flex; gap:10px; font-family:var(--mono); font-size:11px; color:var(--dim); margin-top:9px; flex-wrap:wrap}
+.gauge span{color:var(--text); font-variant-numeric:tabular-nums}
+
+/* ---------- readouts ---------- */
+.band{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) minmax(0,.95fr); gap:16px; margin-top:18px}
+.card{background:var(--panel); border:1px solid var(--line); border-radius:var(--r); padding:15px 16px 17px}
+.card h2{
+  font-family:var(--mincho); font-weight:700; font-size:15px; letter-spacing:.05em;
+  margin:0 0 3px; color:#E9F2F8;
+}
+.card .cap{font-family:var(--mono); font-size:9.5px; letter-spacing:.18em; color:var(--dim); text-transform:uppercase; margin:0 0 12px}
+
+table.regs{width:100%; border-collapse:collapse; font-size:12px}
+table.regs th{
+  text-align:left; font-weight:500; font-size:9.5px; letter-spacing:.14em; color:var(--dim);
+  font-family:var(--mono); padding:0 0 5px; border-bottom:1px solid var(--line);
+}
+table.regs td{padding:6px 0; border-bottom:1px solid #16212B; vertical-align:middle}
+table.regs td.nm{color:var(--text); white-space:nowrap; padding-right:8px}
+table.regs td.bar{width:46%; padding-right:10px}
+.stack{display:flex; height:7px; border-radius:1px; overflow:hidden; background:#0B1219; border:1px solid #1C2A36}
+.stack i{display:block; height:100%; transition:width .18s linear}
+.s-fill{background:linear-gradient(180deg,#FFF,#C9D8E4)}
+.s-dbl{background:linear-gradient(180deg,#F7C468,#D08F22)}
+.s-gas{background:#16222D}
+td.st{text-align:right; white-space:nowrap; font-family:var(--mono); font-size:10px; letter-spacing:.04em}
+.chip{padding:1px 6px; border-radius:2px; border:1px solid}
+.c-fill{color:#EAF1F7; border-color:#5B778C; background:#1B2833}
+.c-dbl{color:#F5C878; border-color:#7A5A22; background:#251C0C}
+.c-coat{color:#9FB6C6; border-color:#2C4050; background:#141E27}
+.c-gas{color:#5E7386; border-color:#233240; background:#0E151C}
+
+.legend{display:flex; gap:14px; flex-wrap:wrap; margin-top:12px; font-size:11px; color:var(--muted)}
+.legend b{display:inline-block; width:9px; height:9px; border-radius:1px; margin-right:5px; vertical-align:-1px}
+
+.note-lead{
+  font-family:var(--mincho); font-size:14.5px; line-height:1.85; color:#EDF4F9;
+  margin:0 0 12px; padding-bottom:12px; border-bottom:1px solid var(--line);
+}
+.note-lead em{font-style:normal; color:var(--amber)}
+.note-body{margin:0; color:var(--muted); font-size:12.5px; line-height:1.95}
+.note-body strong{color:var(--text); font-weight:500}
+.kv{margin:12px 0 0; padding:10px 12px; background:var(--ink2); border-left:2px solid var(--teal); border-radius:0 2px 2px 0}
+.kv dt{font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; color:var(--teal); margin:0 0 2px}
+.kv dd{margin:0; font-size:12.5px; color:var(--muted); line-height:1.8}
+
+details.q{border-bottom:1px solid #16212B}
+details.q:last-of-type{border-bottom:none}
+details.q summary{
+  list-style:none; cursor:pointer; padding:9px 0; display:flex; gap:9px; align-items:flex-start;
+  font-size:12.5px; color:var(--text);
+}
+details.q summary::-webkit-details-marker{display:none}
+details.q summary .qn{
+  font-family:var(--mono); font-size:10px; color:var(--teal); flex:none; padding-top:3px; letter-spacing:.06em;
+}
+details.q summary .qt{flex:1}
+details.q summary .qa{color:var(--dim); font-family:var(--mono); font-size:15px; line-height:1; flex:none; transition:transform .2s}
+details.q[open] summary .qa{transform:rotate(45deg)}
+details.q p{
+  margin:0 0 11px; padding:9px 11px; background:var(--ink2); border-radius:2px;
+  font-size:12.5px; color:var(--muted); line-height:1.85;
+}
+details.q p b{color:var(--amber); font-weight:700}
+
+footer{
+  margin-top:26px; padding-top:14px; border-top:1px solid var(--line);
+  font-size:11.5px; color:var(--dim); display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
+}
+footer span{font-family:var(--mono); font-size:10px; letter-spacing:.1em}
+
+@media (max-width:1080px){
+  .band{grid-template-columns:1fr 1fr}
+  .band .card:last-child{grid-column:1/-1}
+}
+@media (max-width:900px){
+  .work{grid-template-columns:1fr}
+  .stage{height:min(58vh,460px)}
+  .rail{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); align-items:start}
+}
+@media (max-width:560px){
+  .band{grid-template-columns:1fr}
+  .wrap{padding-inline:16px}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition-duration:.01ms !important}
+}
+</style>
+
+<div class="wrap">
+<header>
+  <p class="eyebrow">Upper GI Series &middot; Double Contrast Simulator</p>
+  <h1>胃バリウム透視シミュレータ</h1>
+  <p class="sub">体位を変えると重力方向が変わり、硫酸バリウム（陽性造影剤）と発泡剤のガス（陰性造影剤）が胃内で入れ替わります。どの壁面に二重造影像が成立するかを 3D で確かめられます。ドラッグで回転、ホイールでズーム、右ドラッグで平行移動。</p>
+</header>
+
+<div class="work">
+  <div class="stage" id="stage">
+    <canvas id="gl"></canvas>
+    <div id="labels"></div>
+    <div id="film">
+      <div class="fh"><span id="filmPos">立位</span><span id="filmProj">正面</span></div>
+      <div class="fR">R</div><div class="fL">L</div>
+      <div class="ff">シミュレーション透視像</div>
+    </div>
+    <div class="viewhint">DRAG: ROTATE / WHEEL: ZOOM / RIGHT-DRAG: PAN</div>
+  </div>
+
+  <div class="rail">
+    <div class="grp">
+      <p class="grp-h">体位 <b id="gravNote">重力 ↓</b></p>
+      <div class="pos-grid" id="posGrid"></div>
+    </div>
+
+    <div class="grp">
+      <p class="grp-h">胃型 <b id="typeNote">日本人に最多</b></p>
+      <div class="type-grid" id="typeGrid"></div>
+    </div>
+
+    <div class="grp">
+      <p class="grp-h">造影剤・発泡剤</p>
+      <div class="slider">
+        <div class="sl-h"><label for="sBa">バリウム投与量</label><span class="sl-v"><span id="vBa">120</span> mL</span></div>
+        <input type="range" id="sBa" min="0" max="250" step="5" value="120">
+      </div>
+      <div class="slider">
+        <div class="sl-h"><label for="sAir">発泡剤によるガス拡張</label><span class="sl-v"><span id="vAir">60</span> %</span></div>
+        <input type="range" id="sAir" min="0" max="100" step="1" value="60">
+      </div>
+      <div class="gauge">
+        <span class="lbl">胃内 <span id="gStom">0</span> mL</span>
+        <span class="lbl">十二指腸 <span id="gDuo">0</span> mL</span>
+        <span class="lbl">容量 <span id="gCap">0</span> mL</span>
+      </div>
+    </div>
+
+    <div class="grp">
+      <p class="grp-h">表示</p>
+      <div class="toggles">
+        <label class="tg"><input type="checkbox" id="tHi" checked>二重造影域をハイライト</label>
+        <label class="tg"><input type="checkbox" id="tLab" checked>部位ラベル</label>
+        <label class="tg"><input type="checkbox" id="tAx" checked>体軸ガイド</label>
+        <label class="tg"><input type="checkbox" id="tFilm" checked>透視像を表示</label>
+        <label class="tg"><input type="checkbox" id="tPyl">幽門を開く（十二指腸へ排出）</label>
+        <label class="tg"><input type="checkbox" id="tSpin">自動回転</label>
+      </div>
+    </div>
+
+    <div class="grp">
+      <p class="grp-h">操作 <b id="projName">正面</b></p>
+      <div class="acts">
+        <button class="act wide" id="bDrink" type="button">もう一度バリウムを飲ませる</button>
+        <button class="act" id="bProj" type="button">撮影方向を切替</button>
+        <button class="act" id="bCoat" type="button">粘膜付着をリセット</button>
+        <button class="act" id="bView" type="button">視点リセット</button>
+        <button class="act" id="bRoll" type="button">体位変換で全周に付着</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="band">
+  <section class="card">
+    <h2>部位別の造影状態</h2>
+    <p class="cap">Regional contrast state</p>
+    <table class="regs">
+      <thead><tr><th>部位</th><th>充盈 / 二重造影 / ガス</th><th style="text-align:right">判定</th></tr></thead>
+      <tbody id="regBody"></tbody>
+    </table>
+    <div class="legend">
+      <span><b style="background:linear-gradient(180deg,#FFF,#C9D8E4)"></b>充盈（バリウム貯留）</span>
+      <span><b style="background:linear-gradient(180deg,#F7C468,#D08F22)"></b>二重造影（付着＋ガス）</span>
+      <span><b style="background:#16222D;border:1px solid #2A3A48"></b>ガス（バリウム未付着）</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>この体位の読影ポイント</h2>
+    <p class="cap">Positioning rationale</p>
+    <p class="note-lead" id="noteLead"></p>
+    <p class="note-body" id="noteBody"></p>
+    <dl class="kv">
+      <dt>STOMACH TYPE</dt>
+      <dd id="noteType"></dd>
+    </dl>
+  </section>
+
+  <section class="card">
+    <h2>確認問題</h2>
+    <p class="cap">Board review &middot; 6 items</p>
+    <div id="quiz"></div>
+  </section>
+</div>
+
+<footer>
+  <span>SIMULATION MODEL &mdash; NOT A DIAGNOSTIC TOOL</span>
+  <span>BaSO<sub>4</sub> Z=56 / K-EDGE 37.4 keV</span>
+</footer>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+"use strict";
+/* =====================================================================
+   胃バリウム透視シミュレータ
+   胃を「軸に沿った可変断面の管」としてモデル化し、重力方向に対する
+   1次元の流体平衡を解く。断面ごとの底の高さが障壁になるため、
+   瀑状胃のように胃底部が窪んだ形では自然に「先に溜まって溢れる」。
+   ===================================================================== */
+
+/* ---------- 胃型データ：座標は cm、x=左(+) y=頭側(+) z=腹側(+) ---------- */
+const TYPES = {
+  hook: {
+    name:'鉤状胃', ruby:'FISH-HOOK', short:'日本人に最多',
+    pts:[[4.2,10.4,-3.2],[5.3,9.0,-3.3],[5.4,6.8,-3.0],[4.8,4.2,-2.2],[3.8,1.6,-1.2],
+         [2.4,-1.0,-0.2],[0.6,-2.8,0.5],[-1.4,-2.6,0.9],[-2.9,-1.4,1.0],[-3.9,-0.1,0.9],
+         [-4.4,0.8,0.8],[-5.0,1.6,0.6],[-5.5,0.4,0.1],[-5.8,-1.4,-0.2]],
+    rad:[2.4,3.0,3.3,3.2,3.0,2.7,2.3,1.9,1.7,1.3,0.5,1.2,0.9,0.9],
+    cardia:2.0,
+    regions:[['fundus','胃底部',0,2.1],['body','胃体部',2.1,5.6],['angle','胃角部',5.6,6.9],
+             ['antrum','前庭部',6.9,9.5],['pylorus','幽門部',9.5,10.7],['duode','十二指腸球部',10.7,13]],
+    note:'胃角が明瞭で、幽門部が胃体下部よりも高い位置にある釣り針（J字）状。日本人に最も多い胃型で、立位では最下点である胃体下部〜胃角部にバリウムが溜まる。'
+  },
+  horn: {
+    name:'牛角胃', ruby:'STEER-HORN', short:'肥満型に多い',
+    pts:[[4.6,9.4,-3.4],[5.8,8.0,-3.4],[5.6,6.0,-2.8],[4.2,4.4,-1.8],[2.2,3.2,-0.8],
+         [0.0,2.2,0.0],[-2.0,1.2,0.6],[-3.4,0.4,0.8],[-4.3,-0.3,0.8],[-5.1,-1.0,0.6],
+         [-5.7,-2.2,0.1],[-5.9,-3.8,-0.2]],
+    rad:[2.6,3.6,3.9,3.6,3.1,2.6,2.1,1.5,0.5,1.15,0.9,0.9],
+    cardia:1.9,
+    regions:[['fundus','胃底部',0,2.0],['body','胃体部',2.0,5.0],['angle','胃角部',5.0,6.2],
+             ['antrum','前庭部',6.2,8.0],['pylorus','幽門部',8.0,9.0],['duode','十二指腸球部',9.0,11]],
+    note:'胃の長軸が水平に近い高位横位型。噴門側が広く幽門へ向かって細くなり、胃角は鈍で不明瞭。肥満体型や高齢者にみられる。胃全体が高い位置にあるため立位でも上腹部に留まる。'
+  },
+  casc: {
+    name:'瀑状胃', ruby:'CASCADE', short:'胃底部が後方へ',
+    pts:[[5.2,6.6,-5.6],[5.9,8.4,-5.4],[5.0,9.6,-4.0],[4.0,9.9,-2.2],[3.2,8.0,-1.2],
+         [2.8,5.0,-0.8],[2.0,2.0,-0.2],[0.8,-0.6,0.4],[-1.0,-1.6,0.9],[-2.8,-0.8,1.0],
+         [-3.9,0.4,0.9],[-4.4,1.1,0.8],[-5.0,1.8,0.6],[-5.5,0.6,0.1],[-5.8,-1.2,-0.2]],
+    rad:[2.2,2.9,2.6,2.4,2.9,3.0,2.8,2.4,1.9,1.7,1.2,0.5,1.1,0.9,0.9],
+    cardia:2.0,
+    regions:[['fundus','胃底部',0,3.2],['body','胃体部',3.2,7.0],['angle','胃角部',7.0,8.2],
+             ['antrum','前庭部',8.2,10.6],['pylorus','幽門部',10.6,11.8],['duode','十二指腸球部',11.8,14]],
+    note:'胃底部が後方へ大きく張り出して窪みをつくる。立位でもバリウムはまず後方の胃底部に貯留し、量が増えると縁を越えて胃体部へ滝のように流れ落ちる。胃底部の二重造影が得にくく、腹臥位や頭低位での工夫を要する。'
+  },
+  ptos: {
+    name:'下垂胃', ruby:'GASTROPTOSIS', short:'無力性・縦長',
+    pts:[[3.4,9.8,-3.0],[4.3,8.4,-3.0],[4.3,6.0,-2.4],[3.9,3.0,-1.6],[3.3,0.0,-0.8],
+         [2.7,-3.0,-0.2],[1.7,-5.6,0.4],[0.0,-7.0,0.8],[-1.8,-6.4,1.0],[-3.0,-4.6,1.0],
+         [-3.9,-2.8,0.9],[-4.3,-1.8,0.8],[-4.9,-1.0,0.6],[-5.3,-2.2,0.1],[-5.5,-4.0,-0.2]],
+    rad:[2.0,2.4,2.5,2.4,2.35,2.25,2.0,1.8,1.6,1.4,1.1,0.5,1.1,0.9,0.9],
+    cardia:1.9,
+    regions:[['fundus','胃底部',0,2.1],['body','胃体部',2.1,6.2],['angle','胃角部',6.2,7.6],
+             ['antrum','前庭部',7.6,10.6],['pylorus','幽門部',10.6,11.8],['duode','十二指腸球部',11.8,14]],
+    note:'細長い縦位型で、胃下極が腸骨稜より下方まで下垂する無力性の胃。立位では造影剤が深く下部に落ち込み、幽門が高い位置に残るため胃排出が遅れやすい。'
+  }
+};
+
+/* ---------- 体位：体軸の像ベクトル（左・頭・腹 → ワールド） ---------- */
+const POSES = {
+  stand:{ name:'立位', ruby:'ERECT',
+    basis:[[1,0,0],[0,1,0],[0,0,1]],
+    lead:'バリウムは最下点の<em>胃体下部〜胃角部</em>へ落ち、胃泡（ガス）は<em>胃底部</em>に集まる。',
+    body:'重力に対して胃が縦に立つため、上下方向の分離がもっとも明瞭になる体位。胃底部には必ずガスが入るので<strong>胃底部（穹窿部）の二重造影</strong>に適する。下部は造影剤で満たされた<strong>充盈像</strong>となり、大弯の輪郭や充盈欠損の評価に用いる。立位では胃全体がやや下降し、バリウム上面には水平な鏡面（ニボー）が形成される。'},
+  supine:{ name:'背臥位', ruby:'SUPINE',
+    basis:[[0,0,-1],[-1,0,0],[0,1,0]],
+    lead:'背側が低くなり、バリウムは<em>胃底部〜胃体部後壁</em>へ、ガスは<em>前庭部〜体部前方</em>へ。',
+    body:'二重造影法の<strong>基本体位</strong>。胃底部は背側かつ頭側にあるため造影剤の受け皿となり、余分なバリウムがそこへ逃げる一方、胃体部から前庭部の<strong>後壁</strong>は薄いバリウム被膜とガスで広げられ、良好な二重造影像になる。胃癌のスクリーニングで最も情報量が多い面。'},
+  prone:{ name:'腹臥位', ruby:'PRONE',
+    basis:[[0,0,1],[-1,0,0],[0,-1,0]],
+    lead:'腹側が低くなり、バリウムは<em>前庭部・胃体部前壁側</em>へ、ガスは<em>胃底部</em>へ。',
+    body:'背臥位と裏返しの関係になり、<strong>前壁</strong>の二重造影が得られる体位。前庭部は腹側にあるため造影剤が集まりやすく、ガスが背側の胃底部へ抜ける。前壁は背臥位では描出できないので、前後壁をそろえるために必ず撮影する。圧迫法と組み合わせることも多い。'},
+  rlat:{ name:'右側臥位', ruby:'RIGHT LAT',
+    basis:[[0,1,0],[-1,0,0],[0,0,1]],
+    lead:'幽門側が低くなり、バリウムは<em>前庭部〜幽門</em>に集まって<em>十二指腸</em>へ流入する。',
+    body:'胃の幽門側（患者の右側）が下になるため、造影剤が幽門を越えて<strong>十二指腸球部</strong>へ流れやすい。球部や下行脚の描出に用いる体位。同時にガスは胃底部へ移動する。胃排出を促したいときの体位でもある。'},
+  llat:{ name:'左側臥位', ruby:'LEFT LAT',
+    basis:[[0,-1,0],[-1,0,0],[0,0,-1]],
+    lead:'噴門・胃底部側が低くなり、バリウムは<em>胃底部</em>へ、ガスは<em>前庭部〜幽門部</em>へ。',
+    body:'胃底部が受け皿となって造影剤を保持するため、<strong>前庭部・幽門部の二重造影</strong>が得やすい。十二指腸への流出も抑えられるので、前庭部の病変をじっくり観察したいときに有利。背臥位からの体位変換の途中でも粘膜面へ均一にバリウムを塗り広げられる。'},
+  trend:{ name:'頭低位', ruby:'TRENDELENBURG',
+    basis:[[0,0,-1],[-0.866,-0.5,0],[-0.5,0.866,0]],
+    lead:'頭側が低くなり、バリウムが<em>胃底部・噴門部</em>へ移動、食道へ逆流しうる。',
+    body:'背臥位のまま撮影台を頭低（約30°）に傾けた体位。造影剤が噴門部に達するため<strong>食道胃接合部</strong>の描出に適し、<strong>胃食道逆流症や食道裂孔ヘルニア</strong>の評価に用いられる。下部食道への逆流の有無を動態で観察する。'}
+};
+const POSE_ORDER = ['stand','supine','prone','rlat','llat','trend'];
+
+/* ---------- 体位アイコン ---------- */
+const ICONS = {
+  stand:'<circle cx="22" cy="5.4" r="3.2"/><path d="M18.6 9.4h6.8v9.2h-6.8z" rx="2"/><path d="M20 18.6v4M24 18.6v4" stroke-width="1.8"/><path d="M8 23.2h28" stroke-width="1" opacity=".5"/>',
+  supine:'<path d="M13 12.6h21v7.2H13z"/><circle cx="9" cy="16.2" r="3.2"/><path d="M20 12.6a3.4 3.4 0 0 1 6.4 0" fill="none" stroke-width="1.6"/><path d="M5 21.4h33" stroke-width="1" opacity=".5"/>',
+  prone:'<path d="M13 10.4h21v7.2H13z"/><circle cx="9" cy="14" r="3.2"/><path d="M20 17.6a3.4 3.4 0 0 0 6.4 0" fill="none" stroke-width="1.6"/><path d="M5 21.4h33" stroke-width="1" opacity=".5"/>',
+  rlat:'<ellipse cx="21" cy="13.6" rx="7.4" ry="6"/><path d="M28.4 13.6a2.8 2.8 0 0 1 2.6 0" fill="none" stroke-width="1.6"/><text x="21" y="9.6" font-size="6" text-anchor="middle" font-family="monospace">L</text><path d="M6 21.4h30" stroke-width="1" opacity=".5"/>',
+  llat:'<ellipse cx="21" cy="13.6" rx="7.4" ry="6"/><path d="M28.4 13.6a2.8 2.8 0 0 1 2.6 0" fill="none" stroke-width="1.6"/><text x="21" y="19.6" font-size="6" text-anchor="middle" font-family="monospace">L</text><path d="M6 21.4h30" stroke-width="1" opacity=".5"/>',
+  trend:'<g transform="rotate(-16 21 15)"><path d="M13 11.6h21v7.2H13z"/><circle cx="9" cy="15.2" r="3.2"/></g><path d="M5 22.6h33" stroke-width="1" opacity=".5"/>'
+};
+
+/* ---------- 確認問題 ---------- */
+const QUIZ = [
+  ['立位で胃泡（ガス）が集まる部位と、そこで得られる像は？',
+   'ガスは最も高い<b>胃底部（穹窿部）</b>に集まり、粘膜にバリウムが付着していれば<b>胃底部の二重造影像</b>が得られる。下方の胃体下部〜前庭部は充盈像となる。'],
+  ['背臥位正面で二重造影像が得られるのは前壁か後壁か。',
+   '<b>後壁</b>。背側が低いため余分なバリウムは胃底部側へ落ち、後壁は薄い付着とガスで広げられる。前壁を見るには腹臥位にする。'],
+  ['十二指腸球部へ造影剤を流入させたいときの体位は？',
+   '<b>右側臥位</b>。幽門側が低くなり造影剤が幽門を越えて十二指腸へ流れる。逆に流出を抑えたいときは左側臥位。'],
+  ['噴門部・食道胃接合部の観察や胃食道逆流の評価に用いる体位は？',
+   '<b>頭低位（背臥位・約30°）</b>。造影剤が胃底部から噴門部へ移動し、逆流や食道裂孔ヘルニアを動態で確認できる。'],
+  ['立位でもバリウムが胃底部に貯留して胃体部への流入が遅れる胃型は？',
+   '<b>瀑状胃（カスケード胃）</b>。後方へ張り出した胃底部の窪みが先に満たされ、縁を越えてから体部へ流れ落ちる。胃底部の二重造影が得にくい。'],
+  ['硫酸バリウムが陽性造影剤として働く理由と、禁忌となる病態は？',
+   '原子番号<b>Z=56</b>と大きくK吸収端が<b>37.4 keV</b>にあるため、診断領域のX線に対し光電効果による吸収が大きい。水に不溶で吸収されない。<b>消化管穿孔の疑い・完全な消化管閉塞</b>では禁忌で、水溶性ヨード造影剤に変更する（誤嚥の危険があるときは高浸透圧のものを避ける）。']
+];
+</script>
+<script>
+"use strict";
+(function(){
+if(typeof THREE === 'undefined'){ console.error('three.js failed to load'); return; }
+
+/* ================= 定数 ================= */
+const CM = 28;                 // 断面あたりの頂点数
+const NMAIN = 170, NESO = 26;  // 断面数（胃＋十二指腸 / 食道）
+const NN = NMAIN + NESO, NV = NN * CM;
+const FLAT = 0.78;             // 前後方向の扁平率
+const SUB = 8;                 // 流体ソルバのサブステップ
+
+/* ================= 円形断面の充填率⇔水位 逆変換表 ================= */
+const INVN = 512, INV = new Float32Array(INVN + 1);
+for (let q = 0; q <= INVN; q++) {
+  const target = q / INVN; let lo = 0, hi = 1;
+  for (let it = 0; it < 26; it++) {
+    const mid = (lo + hi) / 2, s = 2 * mid - 1;
+    const f = (Math.PI / 2 + Math.asin(Math.max(-1, Math.min(1, s))) + s * Math.sqrt(Math.max(0, 1 - s * s))) / Math.PI;
+    if (f < target) lo = mid; else hi = mid;
+  }
+  INV[q] = (lo + hi) / 2;
+}
+function invFrac(f) {
+  if (f <= 0) return 0; if (f >= 1) return 1;
+  const x = f * INVN, i = x | 0, t = x - i;
+  return INV[i] * (1 - t) + INV[Math.min(INVN, i + 1)] * t;
+}
+function cr1(a, x) {                       // 1次元 Catmull-Rom
+  const n = a.length, i = Math.floor(x), f = x - i;
+  const p0 = a[Math.max(0, i - 1)], p1 = a[Math.min(n - 1, i)],
+        p2 = a[Math.min(n - 1, i + 1)], p3 = a[Math.min(n - 1, i + 2)];
+  return 0.5 * (2 * p1 + (-p0 + p2) * f + (2 * p0 - 5 * p1 + 4 * p2 - p3) * f * f + (-p0 + 3 * p1 - 3 * p2 + p3) * f * f * f);
+}
+
+/* ================= モデル用バッファ ================= */
+const pos = new Float32Array(NV * 3), nor = new Float32Array(NV * 3);
+const aLevel = new Float32Array(NV), aWet = new Float32Array(NV), hArr = new Float32Array(NV);
+const centers = new Float32Array(NN * 3), radius = new Float32Array(NN);
+const area = new Float32Array(NN), dl = new Float32Array(NN), cap = new Float32Array(NN);
+const wVol = new Float32Array(NN), hmin = new Float32Array(NN), hmax = new Float32Array(NN), lvl = new Float32Array(NN);
+const regionOf = new Int8Array(NN);
+let edges = [], regionList = [], cardiaIdx = 0, pylIdx = 0, bsRadius = 12, boxHalf = [8, 10, 6];
+let totalCap = 0, drained = 0;
+
+/* ---- 管の生成 ---- */
+function buildRings(pts, rads, N, off, taper, radMul) {
+  const curve = new THREE.CatmullRomCurve3(pts.map(p => new THREE.Vector3(p[0], p[1], p[2])), false, 'catmullrom', 0.5);
+  const tmp = new THREE.Vector3(), T = new THREE.Vector3(), U = new THREE.Vector3(), V = new THREE.Vector3();
+  const AP = new THREE.Vector3(0, 0, 1);
+  for (let i = 0; i < N; i++) {
+    const t = i / (N - 1), ci = (off + i) * 3;
+    curve.getPoint(t, tmp);
+    centers[ci] = tmp.x; centers[ci + 1] = tmp.y; centers[ci + 2] = tmp.z;
+    let r = cr1(rads, t * (rads.length - 1));
+    if (radMul) r *= radMul(t * (rads.length - 1));
+    if (taper > 0) { const e = Math.min(t, 1 - t) / taper; if (e < 1) r *= Math.sqrt(Math.max(0, 1 - (1 - e) * (1 - e))); }
+    radius[off + i] = Math.max(r, 0.04);
+  }
+  for (let i = 0; i < N; i++) {
+    const a = Math.max(0, i - 1) * 3 + off * 3, b = Math.min(N - 1, i + 1) * 3 + off * 3, ci = (off + i) * 3;
+    T.set(centers[b] - centers[a], centers[b + 1] - centers[a + 1], centers[b + 2] - centers[a + 2]).normalize();
+    const d = AP.dot(T);
+    U.set(AP.x - T.x * d, AP.y - T.y * d, AP.z - T.z * d);
+    if (U.lengthSq() < 1e-5) { U.set(1, 0, 0); const d2 = U.dot(T); U.set(1 - T.x * d2, -T.y * d2, -T.z * d2); }
+    U.normalize(); V.crossVectors(T, U).normalize();
+    const r = radius[off + i], rb = r * FLAT;
+    for (let j = 0; j < CM; j++) {
+      const th = j / CM * Math.PI * 2, cs = Math.cos(th), sn = Math.sin(th), k = ((off + i) * CM + j) * 3;
+      pos[k]     = centers[ci]     + r * cs * V.x + rb * sn * U.x;
+      pos[k + 1] = centers[ci + 1] + r * cs * V.y + rb * sn * U.y;
+      pos[k + 2] = centers[ci + 2] + r * cs * V.z + rb * sn * U.z;
+    }
+    // 断面積・長さ
+    const la = Math.max(0, i - 1), lb = Math.min(N - 1, i + 1);
+    const ax = centers[(off + lb) * 3] - centers[(off + la) * 3],
+          ay = centers[(off + lb) * 3 + 1] - centers[(off + la) * 3 + 1],
+          az = centers[(off + lb) * 3 + 2] - centers[(off + la) * 3 + 2];
+    dl[off + i] = Math.sqrt(ax * ax + ay * ay + az * az) / (lb - la);
+    area[off + i] = Math.PI * r * r * FLAT;
+    cap[off + i] = area[off + i] * dl[off + i];
+  }
+}
+
+function tubeIndex(N, M, base, idx, p) {
+  for (let i = 0; i < N - 1; i++) for (let j = 0; j < M; j++) {
+    const j2 = (j + 1) % M;
+    const a = base + i * M + j, b = base + i * M + j2, c = base + (i + 1) * M + j2, d = base + (i + 1) * M + j;
+    idx[p++] = a; idx[p++] = c; idx[p++] = b;
+    idx[p++] = a; idx[p++] = d; idx[p++] = c;
+  }
+  return p;
+}
+
+const indices = new Uint32Array(((NMAIN - 1) + (NESO - 1)) * CM * 6);
+{ let p = tubeIndex(NMAIN, CM, 0, indices, 0); tubeIndex(NESO, CM, NMAIN * CM, indices, p); }
+
+/* ---- モデル再構築 ---- */
+function rebuild(typeKey, air) {
+  const S = TYPES[typeKey];
+  const nCtl = S.pts.length - 1;
+  regionList = S.regions;
+  const pylStart = S.regions.find(r => r[0] === 'pylorus')[2];
+  const scale = 1 + (air - 0.5) * 0.56;                    // 発泡剤による拡張
+  const mul = (ci) => 1 + (scale - 1) * Math.max(0, Math.min(1, (pylStart - ci) / 1.6));
+  buildRings(S.pts, S.rad, NMAIN, 0, 0.06, mul);
+
+  cardiaIdx = Math.round(S.cardia / nCtl * (NMAIN - 1));
+  pylIdx = Math.round((pylStart + 0.5) / nCtl * (NMAIN - 1));
+
+  // 噴門位置から食道を生やす
+  const ci = cardiaIdx * 3, rr = radius[cardiaIdx];
+  const dir = new THREE.Vector3(-0.85, 0.5, -0.12).normalize().multiplyScalar(rr * 0.9);
+  const J = [centers[ci] + dir.x, centers[ci + 1] + dir.y, centers[ci + 2] + dir.z];
+  const eso = [[J[0] - 1.0, J[1] + 7.2, J[2] - 1.0], [J[0] - 0.8, J[1] + 4.6, J[2] - 0.8],
+               [J[0] - 0.45, J[1] + 2.2, J[2] - 0.45], J];
+  buildRings(eso, [1.0, 0.95, 0.92, 1.05], NESO, NMAIN, 0, null);
+
+  // 部位の割り当て
+  for (let i = 0; i < NMAIN; i++) {
+    const c = i / (NMAIN - 1) * nCtl; let r = regionList.length - 1;
+    for (let k = 0; k < regionList.length; k++) if (c < regionList[k][3]) { r = k; break; }
+    regionOf[i] = r;
+  }
+  for (let i = NMAIN; i < NN; i++) regionOf[i] = -1;
+
+  // 中心合わせ
+  let mnx = 1e9, mny = 1e9, mnz = 1e9, mxx = -1e9, mxy = -1e9, mxz = -1e9;
+  for (let i = 0; i < NMAIN; i++) {
+    const k = i * 3, r = radius[i];
+    mnx = Math.min(mnx, centers[k] - r); mxx = Math.max(mxx, centers[k] + r);
+    mny = Math.min(mny, centers[k + 1] - r); mxy = Math.max(mxy, centers[k + 1] + r);
+    mnz = Math.min(mnz, centers[k + 2] - r); mxz = Math.max(mxz, centers[k + 2] + r);
+  }
+  const ox = (mnx + mxx) / 2, oy = (mny + mxy) / 2, oz = (mnz + mxz) / 2;
+  for (let i = 0; i < NV * 3; i += 3) { pos[i] -= ox; pos[i + 1] -= oy; pos[i + 2] -= oz; }
+  for (let i = 0; i < NN * 3; i += 3) { centers[i] -= ox; centers[i + 1] -= oy; centers[i + 2] -= oz; }
+  boxHalf = [(mxx - mnx) / 2, (mxy - mny) / 2, (mxz - mnz) / 2];
+
+  let rs = 0;
+  for (let i = 0; i < NV * 3; i += 3) rs = Math.max(rs, pos[i] * pos[i] + pos[i + 1] * pos[i + 1] + pos[i + 2] * pos[i + 2]);
+  bsRadius = Math.sqrt(rs);
+
+  // 流路グラフ
+  edges = [];
+  for (let i = 0; i < NMAIN - 1; i++) {
+    let k = 1, k2 = 1;
+    if (regionList[regionOf[i]][0] === 'pylorus' || regionList[regionOf[i + 1]][0] === 'pylorus') { k = k2 = pylorusOpen ? 0.85 : 0.10; }
+    edges.push({ i: i, j: i + 1, k: k, k2: k2 });
+  }
+  for (let i = NMAIN; i < NN - 1; i++) edges.push({ i: i, j: i + 1, k: 1, k2: 1 });
+  edges.push({ i: NN - 1, j: cardiaIdx, k: 0.9, k2: 0.17 });   // 下部食道括約筋：逆流しにくい
+
+  totalCap = 0;
+  for (let i = 0; i < NMAIN; i++) { if (regionList[regionOf[i]][0] !== 'duode') totalCap += cap[i]; wVol[i] = Math.min(wVol[i], cap[i]); }
+  for (let i = NMAIN; i < NN; i++) wVol[i] = Math.min(wVol[i], cap[i]);
+  geom.attributes.position.needsUpdate = true;
+  geom.computeVertexNormals();
+}
+
+/* ================= シーン ================= */
+const stage = document.getElementById('stage');
+const canvas = document.getElementById('gl');
+const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });
+renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+renderer.autoClear = false;
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(32, 1, 0.5, 400);
+const bodyGroup = new THREE.Group();
+scene.add(bodyGroup);
+
+const xcam = new THREE.OrthographicCamera(-12, 12, 16, -16, 1, 400);
+bodyGroup.add(xcam);
+
+const geom = new THREE.BufferGeometry();
+geom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+geom.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+geom.setAttribute('aLevel', new THREE.BufferAttribute(aLevel, 1));
+geom.setAttribute('aWet', new THREE.BufferAttribute(aWet, 1));
+geom.setIndex(new THREE.BufferAttribute(indices, 1));
+
+const VERT = `
+attribute float aLevel; attribute float aWet;
+uniform vec3 uUp;
+varying float vH; varying float vLevel; varying float vWet;
+varying vec3 vNL; varying vec3 vNW; varying vec3 vVd;
+void main(){
+  vH = dot(position, uUp); vLevel = aLevel; vWet = aWet; vNL = normal;
+  vec4 wp = modelMatrix * vec4(position,1.0);
+  vNW = normalize(mat3(modelMatrix) * normal);
+  vVd = normalize(cameraPosition - wp.xyz);
+  gl_Position = projectionMatrix * viewMatrix * wp;
+}`;
+
+const FRAG_SOLID = `
+precision highp float;
+uniform vec3 uUp; uniform float uFlip; uniform float uHi;
+varying float vH; varying float vLevel; varying float vWet;
+varying vec3 vNL; varying vec3 vNW; varying vec3 vVd;
+void main(){
+  vec3 n = normalize(vNW) * uFlip;
+  vec3 nl = normalize(vNL) * uFlip;
+  float below = step(vH, vLevel);
+  float down = clamp(-dot(nl, uUp), 0.0, 1.0);
+  float coat = smoothstep(0.12, 0.55, vWet);
+  float dbl = (1.0 - below) * coat * smoothstep(0.02, 0.22, down);
+  vec3 cBar = vec3(0.957,0.969,0.984);
+  vec3 cMuc = vec3(0.760,0.400,0.428);
+  vec3 cDbl = mix(vec3(0.92,0.92,0.90), vec3(0.980,0.745,0.330), uHi);
+  vec3 base = mix(cMuc, cBar, below);
+  base = mix(base, cDbl, dbl);
+  float l1 = max(dot(n, normalize(vec3(0.42,0.80,0.62))), 0.0);
+  float l2 = max(dot(n, normalize(vec3(-0.70,0.10,-0.45))), 0.0);
+  float fr = pow(1.0 - max(dot(n, normalize(vVd)), 0.0), 2.1);
+  vec3 col = base * (0.30 + 0.70*l1 + 0.24*l2) + vec3(0.34,0.46,0.56) * fr * 0.55;
+  float a = mix(mix(0.17, 0.80, dbl), 0.985, below);
+  a = max(a, fr * 0.48);
+  gl_FragColor = vec4(col, a);
+}`;
+
+const FRAG_XRAY = `
+precision highp float;
+uniform vec3 uUp;
+varying float vH; varying float vLevel; varying float vWet;
+varying vec3 vNL; varying vec3 vNW; varying vec3 vVd;
+void main(){
+  vec3 n = normalize(vNW);
+  float below = step(vH, vLevel);
+  float coat = smoothstep(0.10, 0.50, vWet);
+  float edge = clamp(1.0 / max(abs(dot(n, normalize(vVd))), 0.20), 1.0, 4.6);
+  float d = below * 0.235 + (1.0 - below) * coat * 0.050;
+  d *= edge;
+  gl_FragColor = vec4(vec3(0.93,0.955,1.0) * d, 1.0);
+}`;
+
+const uUp = { value: new THREE.Vector3(0, 1, 0) };
+const uHi = { value: 1 };
+function solidMat(side, flip) {
+  return new THREE.ShaderMaterial({
+    vertexShader: VERT, fragmentShader: FRAG_SOLID,
+    uniforms: { uUp: uUp, uFlip: { value: flip }, uHi: uHi },
+    transparent: true, depthWrite: false, side: side
+  });
+}
+const matBack = solidMat(THREE.BackSide, -1), matFront = solidMat(THREE.FrontSide, 1);
+const matXray = new THREE.ShaderMaterial({
+  vertexShader: VERT, fragmentShader: FRAG_XRAY, uniforms: { uUp: uUp },
+  transparent: true, depthWrite: false, depthTest: false,
+  blending: THREE.AdditiveBlending, side: THREE.DoubleSide
+});
+const meshBack = new THREE.Mesh(geom, matBack); meshBack.renderOrder = 1;
+const meshFront = new THREE.Mesh(geom, matFront); meshFront.renderOrder = 3;
+bodyGroup.add(meshBack, meshFront);
+
+/* ---- バリウム液面（ニボー）---- */
+const surfPos = new Float32Array(NN * 18);
+const surfGeom = new THREE.BufferGeometry();
+surfGeom.setAttribute('position', new THREE.BufferAttribute(surfPos, 3));
+surfGeom.setDrawRange(0, 0);
+const matSurf = new THREE.ShaderMaterial({
+  uniforms: { uUp: uUp },
+  vertexShader: `varying vec3 vP; void main(){ vP=(modelMatrix*vec4(position,1.0)).xyz; gl_Position=projectionMatrix*viewMatrix*modelMatrix*vec4(position,1.0);}`,
+  fragmentShader: `precision highp float; varying vec3 vP;
+    void main(){ float g = 0.80 + 0.20*sin(vP.x*1.6)*sin(vP.z*1.6);
+      gl_FragColor = vec4(vec3(0.90,0.93,0.97)*g, 0.93); }`,
+  transparent: true, depthWrite: false, side: THREE.DoubleSide
+});
+const matSurfX = new THREE.ShaderMaterial({
+  uniforms: {}, vertexShader: `void main(){ gl_Position=projectionMatrix*viewMatrix*modelMatrix*vec4(position,1.0);}`,
+  fragmentShader: `void main(){ gl_FragColor = vec4(vec3(0.93,0.955,1.0)*0.10, 1.0); }`,
+  transparent: true, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide
+});
+const meshSurf = new THREE.Mesh(surfGeom, matSurf); meshSurf.renderOrder = 2;
+bodyGroup.add(meshSurf);
+
+/* ---- ガイド ---- */
+const guides = new THREE.Group(); scene.add(guides);
+const grid = new THREE.GridHelper(70, 14, 0x223140, 0x18232E);
+grid.material.transparent = true; grid.material.opacity = 0.55; guides.add(grid);
+const arrow = new THREE.ArrowHelper(new THREE.Vector3(0, -1, 0), new THREE.Vector3(-15, 8, 0), 9, 0x52B8CE, 2.4, 1.5);
+guides.add(arrow);
+
+/* ================= 状態 ================= */
+let curType = 'hook', curPose = 'stand';
+let pylorusOpen = false, showLabels = true, showAxis = true, showFilm = true, autoSpin = false;
+let airLevel = 0.6, targetMl = 120, administered = 0, projMode = 0;
+let qFrom = new THREE.Quaternion(), qTo = new THREE.Quaternion(), tAnim = 1;
+let rollQueue = [], rollTimer = 0;
+
+const PROJ = [['正面', 0], ['第1斜位', 40], ['第2斜位', -40], ['右側面', 90]];
+
+function poseQuat(key) {
+  const b = POSES[key].basis;
+  const m = new THREE.Matrix4().makeBasis(
+    new THREE.Vector3(b[0][0], b[0][1], b[0][2]),
+    new THREE.Vector3(b[1][0], b[1][1], b[1][2]),
+    new THREE.Vector3(b[2][0], b[2][1], b[2][2]));
+  return new THREE.Quaternion().setFromRotationMatrix(m);
+}
+
+/* ================= 流体ソルバ ================= */
+function computeHeights() {
+  const ux = uUp.value.x, uy = uUp.value.y, uz = uUp.value.z;
+  for (let n = 0; n < NN; n++) {
+    let lo = 1e9, hi = -1e9; const b = n * CM;
+    for (let j = 0; j < CM; j++) {
+      const k = (b + j) * 3;
+      const h = pos[k] * ux + pos[k + 1] * uy + pos[k + 2] * uz;
+      hArr[b + j] = h;
+      if (h < lo) lo = h; if (h > hi) hi = h;
+    }
+    hmin[n] = lo; hmax[n] = hi;
+  }
+}
+function levelOf(n) {
+  const c = cap[n]; if (c <= 1e-9) return hmin[n] - 1e-3;
+  const f = wVol[n] / c;
+  if (f <= 0) return hmin[n] - 1e-3;
+  if (f >= 1) return hmax[n];
+  return hmin[n] + invFrac(f) * (hmax[n] - hmin[n]);
+}
+function flowStep(dt) {
+  const K = 6.5, ds = dt / SUB;
+  for (let s = 0; s < SUB; s++) {
+    const rev = (s & 1) === 1;
+    for (let e = 0; e < edges.length; e++) {
+      const E = edges[rev ? edges.length - 1 - e : e];
+      const i = E.i, j = E.j;
+      const B = Math.max(hmin[i], hmin[j]);
+      const si = levelOf(i), sj = levelOf(j);
+      let a, b, kk, head;
+      const hi2 = si - Math.max(sj, B), hj2 = sj - Math.max(si, B);
+      if (hi2 > 1e-5) { a = i; b = j; kk = E.k; head = hi2; }
+      else if (hj2 > 1e-5) { a = j; b = i; kk = E.k2; head = hj2; }
+      else continue;
+      const Ae = Math.min(area[i], area[j]);
+      let amt = K * kk * head * Ae * ds;
+      const lim = Math.min(wVol[a] * 0.5, cap[b] - wVol[b], 0.30 * Math.min(cap[i], cap[j]));
+      if (amt > lim) amt = lim;
+      if (amt <= 0) continue;
+      wVol[a] -= amt; wVol[b] += amt;
+    }
+  }
+}
+function dose(dt) {
+  const diff = targetMl - administered;
+  if (diff > 0.2) {
+    let free = 0;
+    for (let n = NMAIN; n < NMAIN + 6; n++) free += Math.max(0, cap[n] - wVol[n]);
+    if (free > 1e-4) {
+      const amt = Math.min(diff, 280 * dt, free);
+      for (let n = NMAIN; n < NMAIN + 6; n++) wVol[n] += amt * Math.max(0, cap[n] - wVol[n]) / free;
+      administered += amt;
+    }
+  } else if (diff < -0.2) {
+    let tot = 0; for (let n = 0; n < NN; n++) tot += wVol[n];
+    const rem = Math.min(-diff, 460 * dt, tot);
+    if (tot > 1e-6) { const s = (tot - rem) / tot; for (let n = 0; n < NN; n++) wVol[n] *= s; }
+    administered -= rem;
+  }
+  if (pylorusOpen) {
+    const n = NMAIN - 1, d = Math.min(wVol[n], wVol[n] * 1.3 * dt);
+    wVol[n] -= d; drained += d;
+  }
+}
+function updateWet(dt) {
+  const dry = 0.05 * dt;
+  for (let n = 0; n < NN; n++) {
+    const L = lvl[n], b = n * CM;
+    for (let j = 0; j < CM; j++) {
+      const idx = b + j;
+      aLevel[idx] = L;
+      if (hArr[idx] <= L) aWet[idx] = 1;
+      else { const v = aWet[idx] - dry; aWet[idx] = v > 0 ? v : 0; }
+    }
+  }
+  geom.attributes.aLevel.needsUpdate = true;
+  geom.attributes.aWet.needsUpdate = true;
+}
+function buildSurface() {
+  let p = 0, prev = null;
+  for (let n = 0; n < NN; n++) {
+    const c = cap[n], f = c > 1e-9 ? wVol[n] / c : 0;
+    let cur = null;
+    if (f > 0.004 && f < 0.996) {
+      const L = lvl[n], b = n * CM; const hits = [];
+      for (let j = 0; j < CM && hits.length < 2; j++) {
+        const j2 = (j + 1) % CM, h1 = hArr[b + j], h2 = hArr[b + j2];
+        if ((h1 - L) * (h2 - L) < 0) {
+          const t = (L - h1) / (h2 - h1), k1 = (b + j) * 3, k2 = (b + j2) * 3;
+          hits.push([pos[k1] + (pos[k2] - pos[k1]) * t, pos[k1 + 1] + (pos[k2 + 1] - pos[k1 + 1]) * t, pos[k1 + 2] + (pos[k2 + 2] - pos[k1 + 2]) * t]);
+        }
+      }
+      if (hits.length === 2) cur = { a: hits[0], b: hits[1], n: n };
+    }
+    if (cur && prev && prev.n === n - 1 && !(n === NMAIN)) {
+      const d1 = (cur.a[0] - prev.a[0]) ** 2 + (cur.a[1] - prev.a[1]) ** 2 + (cur.a[2] - prev.a[2]) ** 2;
+      const d2 = (cur.a[0] - prev.b[0]) ** 2 + (cur.a[1] - prev.b[1]) ** 2 + (cur.a[2] - prev.b[2]) ** 2;
+      if (d2 < d1) { const t = cur.a; cur.a = cur.b; cur.b = t; }
+      const q = [prev.a, prev.b, cur.b, prev.a, cur.b, cur.a];
+      for (let v = 0; v < 6; v++) { surfPos[p++] = q[v][0]; surfPos[p++] = q[v][1]; surfPos[p++] = q[v][2]; }
+    }
+    prev = cur;
+  }
+  surfGeom.attributes.position.needsUpdate = true;
+  surfGeom.setDrawRange(0, p / 3);
+}
+
+/* ================= カメラ操作 ================= */
+const ctrl = { theta: 0.36, phi: 1.46, dist: 46, target: new THREE.Vector3(0, 0, 0) };
+function applyCam() {
+  const sp = Math.sin(ctrl.phi);
+  camera.position.set(
+    ctrl.target.x + ctrl.dist * sp * Math.sin(ctrl.theta),
+    ctrl.target.y + ctrl.dist * Math.cos(ctrl.phi),
+    ctrl.target.z + ctrl.dist * sp * Math.cos(ctrl.theta));
+  camera.lookAt(ctrl.target);
+}
+function fitCam() {
+  ctrl.dist = bsRadius / Math.sin(camera.fov * Math.PI / 360) * 1.04;
+  ctrl.target.set(0, 0, 0); ctrl.theta = 0.36; ctrl.phi = 1.46;
+  grid.position.y = -(bsRadius + 3);
+  arrow.position.set(-(bsRadius + 3.5), bsRadius * 0.55, 0);
+  applyCam();
+}
+let drag = null, pinch = 0;
+canvas.addEventListener('pointerdown', e => {
+  canvas.setPointerCapture(e.pointerId);
+  drag = { x: e.clientX, y: e.clientY, pan: e.button === 2 || e.shiftKey };
+});
+canvas.addEventListener('pointermove', e => {
+  if (!drag) return;
+  const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+  drag.x = e.clientX; drag.y = e.clientY;
+  if (drag.pan) {
+    const s = ctrl.dist * 0.0016;
+    const right = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 0);
+    const up = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 1);
+    ctrl.target.addScaledVector(right, -dx * s).addScaledVector(up, dy * s);
+  } else {
+    ctrl.theta -= dx * 0.008;
+    ctrl.phi = Math.max(0.12, Math.min(Math.PI - 0.12, ctrl.phi - dy * 0.008));
+  }
+  applyCam();
+});
+const endDrag = () => { drag = null; };
+canvas.addEventListener('pointerup', endDrag);
+canvas.addEventListener('pointercancel', endDrag);
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  ctrl.dist = Math.max(bsRadius * 0.6, Math.min(bsRadius * 4.5, ctrl.dist * (1 + Math.sign(e.deltaY) * 0.10)));
+  applyCam();
+}, { passive: false });
+canvas.addEventListener('touchmove', e => {
+  if (e.touches.length === 2) {
+    const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+    if (pinch) { ctrl.dist = Math.max(bsRadius * 0.6, Math.min(bsRadius * 4.5, ctrl.dist * pinch / d)); applyCam(); }
+    pinch = d; drag = null;
+  }
+}, { passive: true });
+canvas.addEventListener('touchend', () => { pinch = 0; });
+
+/* ================= 透視像（インセット）================= */
+function filmRect() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  const fw = Math.round(Math.min(238, Math.max(136, w * 0.29)));
+  const fh = Math.round(Math.min(fw * 1.26, h * 0.64));
+  return { left: w - fw - 14, top: h - fh - 14, w: fw, h: fh, yb: 14 };
+}
+const filmEl = document.getElementById('film');
+function layoutFilm() {
+  const r = filmRect();
+  filmEl.style.left = r.left + 'px'; filmEl.style.top = r.top + 'px';
+  filmEl.style.width = r.w + 'px'; filmEl.style.height = r.h + 'px';
+  filmEl.style.display = showFilm ? 'block' : 'none';
+  const hh = bsRadius * 1.06, hw = hh * (r.w / r.h);
+  xcam.left = -hw; xcam.right = hw; xcam.top = hh; xcam.bottom = -hh;
+  xcam.near = 1; xcam.far = bsRadius * 8; xcam.updateProjectionMatrix();
+  const ang = PROJ[projMode][1] * Math.PI / 180, D = bsRadius * 3;
+  const z = new THREE.Vector3(-Math.sin(ang) * D, 0, Math.cos(ang) * D);
+  xcam.position.copy(z);
+  z.normalize();
+  const y = new THREE.Vector3(0, 1, 0); y.addScaledVector(z, -y.dot(z)).normalize();
+  const x = new THREE.Vector3().crossVectors(y, z);
+  xcam.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
+}
+
+/* ================= 描画 ================= */
+function render() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setScissorTest(false);
+  renderer.setViewport(0, 0, w, h); renderer.setScissor(0, 0, w, h);
+  renderer.setClearColor(0x0A0F14, 1); renderer.clear();
+  guides.visible = showAxis;
+  renderer.render(scene, camera);
+
+  if (showFilm) {
+    const r = filmRect();
+    meshBack.visible = false; guides.visible = false;
+    meshFront.material = matXray; meshSurf.material = matSurfX;
+    renderer.setScissorTest(true);
+    renderer.setViewport(r.left, r.yb, r.w, r.h);
+    renderer.setScissor(r.left, r.yb, r.w, r.h);
+    renderer.setClearColor(0x05080B, 1); renderer.clear();
+    renderer.render(scene, xcam);
+    renderer.setScissorTest(false);
+    meshBack.visible = true;
+    meshFront.material = matFront; meshSurf.material = matSurf;
+  }
+}
+
+/* ================= ラベル ================= */
+const labelBox = document.getElementById('labels');
+let labels = [];
+const tmpV = new THREE.Vector3(), camL = new THREE.Vector3();
+function mkLabel(text, cls) {
+  const el = document.createElement('div');
+  el.className = 'lab' + (cls ? ' ' + cls : ''); el.textContent = text;
+  labelBox.appendChild(el); return el;
+}
+function surfAnchor(n, push) {
+  const cx = centers[n * 3], cy = centers[n * 3 + 1], cz = centers[n * 3 + 2];
+  let bi = 0, bd = -1e9;
+  for (let j = 0; j < CM; j++) {
+    const k = (n * CM + j) * 3;
+    const d = (pos[k] - cx) * (camL.x - cx) + (pos[k + 1] - cy) * (camL.y - cy) + (pos[k + 2] - cz) * (camL.z - cz);
+    if (d > bd) { bd = d; bi = j; }
+  }
+  const k = (n * CM + bi) * 3, e = push || 0.22;
+  return tmpV.set(pos[k] + (pos[k] - cx) * e, pos[k + 1] + (pos[k + 1] - cy) * e, pos[k + 2] + (pos[k + 2] - cz) * e);
+}
+function curvAnchor(n, sign) {
+  const a = Math.max(0, n - 12) * 3, b = Math.min(NMAIN - 1, n + 12) * 3, c = n * 3;
+  const v = new THREE.Vector3(centers[a] + centers[b] - 2 * centers[c],
+    centers[a + 1] + centers[b + 1] - 2 * centers[c + 1],
+    centers[a + 2] + centers[b + 2] - 2 * centers[c + 2]);
+  if (v.lengthSq() < 1e-8) v.set(1, 0, 0);
+  v.normalize().multiplyScalar(sign * (radius[n] + 1.5));
+  return tmpV.set(centers[c] + v.x, centers[c + 1] + v.y, centers[c + 2] + v.z);
+}
+let regionRange = [];
+function buildLabels() {
+  labelBox.innerHTML = ''; labels = []; regionRange = [];
+  for (let k = 0; k < regionList.length; k++) {
+    let f = -1, l = -1;
+    for (let i = 0; i < NMAIN; i++) if (regionOf[i] === k) { if (f < 0) f = i; l = i; }
+    if (f < 0) { f = l = Math.min(NMAIN - 1, Math.round((k + 0.5) / regionList.length * NMAIN)); }
+    regionRange.push([f, l]);
+    const mid = Math.round((f + l) / 2);
+    const shortName = { '十二指腸球部': '球部', '幽門部': '幽門' }[regionList[k][1]] || regionList[k][1];
+    labels.push({ el: mkLabel(shortName), get: () => surfAnchor(mid, 0.24), kind: 'r' });
+  }
+  labels.push({ el: mkLabel('噴門'), get: () => surfAnchor(cardiaIdx, 0.42), kind: 'r' });
+  labels.push({ el: mkLabel('食道'), get: () => surfAnchor(NMAIN + 7, 0.6), kind: 'r' });
+  const ang = Math.round((regionRange[2][0] + regionRange[2][1]) / 2);
+  labels.push({ el: mkLabel('小弯', 'curv'), get: () => curvAnchor(ang, 1), kind: 'r' });
+  labels.push({ el: mkLabel('大弯', 'curv'), get: () => curvAnchor(ang, -1), kind: 'r' });
+  const ax = [['頭側', 0, 1, 0], ['足側', 0, -1, 0], ['腹側', 0, 0, 1], ['背側', 0, 0, -1]];
+  for (const a of ax) labels.push({
+    el: mkLabel(a[0], 'axis'), kind: 'a',
+    get: () => tmpV.set(a[1] * (boxHalf[0] + 4), a[2] * (boxHalf[1] + 4.2), a[3] * (boxHalf[2] + 5))
+  });
+  labels.push({ el: mkLabel('重力', 'axis'), kind: 'w', get: () => tmpV.copy(arrow.position).addScaledVector(new THREE.Vector3(0, -1, 0), 10.6) });
+}
+function updateLabels() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  camL.copy(camera.position); bodyGroup.worldToLocal(camL);
+  for (const L of labels) {
+    const on = L.kind === 'r' ? showLabels : showAxis;
+    if (!on) { L.el.style.opacity = '0'; continue; }
+    const v = L.get().clone();
+    if (L.kind !== 'w') v.applyMatrix4(bodyGroup.matrixWorld);
+    const p = v.project(camera);
+    if (p.z > 1) { L.el.style.opacity = '0'; continue; }
+    L.el.style.transform = 'translate(-50%,-50%) translate(' + ((p.x * .5 + .5) * w) + 'px,' + ((-p.y * .5 + .5) * h) + 'px)';
+    L.el.style.opacity = '1';
+  }
+}
+
+/* ================= 読み出し ================= */
+const regBody = document.getElementById('regBody');
+let regRows = [];
+function buildTable() {
+  regBody.innerHTML = ''; regRows = [];
+  for (let k = 0; k < regionList.length; k++) {
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td class="nm">' + regionList[k][1] + '</td>' +
+      '<td class="bar"><div class="stack"><i class="s-fill"></i><i class="s-dbl"></i><i class="s-gas"></i></div></td>' +
+      '<td class="st"><span class="chip c-gas">—</span></td>';
+    regBody.appendChild(tr);
+    const b = tr.querySelectorAll('.stack i');
+    regRows.push({ f: b[0], d: b[1], g: b[2], chip: tr.querySelector('.chip') });
+  }
+}
+function updateReadouts() {
+  const ux = uUp.value.x, uy = uUp.value.y, uz = uUp.value.z;
+  let stom = 0, duo = drained, eso = 0;
+  for (let k = 0; k < regionList.length; k++) {
+    const R = regionRange[k]; let fw = 0, fc = 0, nd = 0, nDep = 0, nt = 0, ct = 0;
+    for (let i = R[0]; i <= R[1]; i++) {
+      fw += wVol[i]; fc += cap[i];
+      if (regionList[k][0] === 'duode') duo += wVol[i]; else stom += wVol[i];
+      const L = lvl[i], b = i * CM;
+      for (let j = 0; j < CM; j++) {
+        const idx = b + j, kk = idx * 3;
+        const down = -(nor[kk] * ux + nor[kk + 1] * uy + nor[kk + 2] * uz);
+        nt++; ct += aWet[idx];
+        // ガスに接した「下側の壁」のうち、バリウムが付着している割合＝二重造影の成立度
+        if (hArr[idx] > L && down > 0.12) { nDep++; if (aWet[idx] > 0.35) nd++; }
+      }
+    }
+    const fill = fc > 0 ? Math.min(1, fw / fc) : 0;
+    const dbl = nDep > 8 ? nd / nDep : 0, coat = nt > 0 ? ct / nt : 0;
+    const dShare = (1 - fill) * dbl, gShare = Math.max(0, 1 - fill - dShare);
+    const row = regRows[k];
+    row.f.style.width = (fill * 100).toFixed(1) + '%';
+    row.d.style.width = (dShare * 100).toFixed(1) + '%';
+    row.g.style.width = (gShare * 100).toFixed(1) + '%';
+    let txt = 'ガスのみ', cls = 'c-gas';
+    if (fill >= 0.62) { txt = '充盈像'; cls = 'c-fill'; }
+    else if (dbl >= 0.55 && fill < 0.72) { txt = '二重造影'; cls = 'c-dbl'; }
+    else if (fill >= 0.18) { txt = '部分充盈'; cls = 'c-fill'; }
+    else if (coat >= 0.35) { txt = '粘膜付着'; cls = 'c-coat'; }
+    if (row.chip.textContent !== txt) { row.chip.textContent = txt; row.chip.className = 'chip ' + cls; }
+  }
+  for (let i = NMAIN; i < NN; i++) eso += wVol[i];
+  document.getElementById('gStom').textContent = Math.round(stom + eso);
+  document.getElementById('gDuo').textContent = Math.round(duo);
+  document.getElementById('gCap').textContent = Math.round(totalCap);
+}
+function updateNotes() {
+  const P = POSES[curPose], T = TYPES[curType];
+  document.getElementById('noteLead').innerHTML = P.lead;
+  document.getElementById('noteBody').innerHTML = P.body;
+  document.getElementById('noteType').innerHTML = '<strong style="color:#D9E4ED">' + T.name + '</strong> — ' + T.note;
+  document.getElementById('gravNote').textContent = P.ruby;
+  document.getElementById('typeNote').textContent = T.short;
+  document.getElementById('filmPos').textContent = P.name;
+  document.getElementById('filmProj').textContent = PROJ[projMode][0];
+  document.getElementById('projName').textContent = PROJ[projMode][0];
+}
+
+/* ================= UI ================= */
+const posGrid = document.getElementById('posGrid'), typeGrid = document.getElementById('typeGrid');
+POSE_ORDER.forEach(key => {
+  const b = document.createElement('button');
+  b.className = 'opt'; b.type = 'button'; b.setAttribute('aria-pressed', key === curPose);
+  b.innerHTML = '<svg width="44" height="26" viewBox="0 0 44 26" fill="currentColor" stroke="currentColor" stroke-linecap="round">' + ICONS[key] + '</svg>' + POSES[key].name;
+  b.addEventListener('click', () => setPose(key));
+  posGrid.appendChild(b); b.dataset.k = key;
+});
+Object.keys(TYPES).forEach(key => {
+  const b = document.createElement('button');
+  b.className = 'opt'; b.type = 'button'; b.setAttribute('aria-pressed', key === curType);
+  b.innerHTML = TYPES[key].name + '<span class="ruby">' + TYPES[key].ruby + '</span>';
+  b.addEventListener('click', () => setType(key));
+  typeGrid.appendChild(b); b.dataset.k = key;
+});
+function setPose(key) {
+  curPose = key; rollQueue = [];
+  [...posGrid.children].forEach(b => b.setAttribute('aria-pressed', b.dataset.k === key));
+  qFrom.copy(bodyGroup.quaternion); qTo.copy(poseQuat(key)); tAnim = 0;
+  updateNotes();
+}
+function setType(key) {
+  curType = key;
+  [...typeGrid.children].forEach(b => b.setAttribute('aria-pressed', b.dataset.k === key));
+  rebuild(curType, airLevel); buildLabels(); buildTable(); settle(); fitCam(); layoutFilm(); updateNotes();
+}
+const sBa = document.getElementById('sBa'), sAir = document.getElementById('sAir');
+sBa.addEventListener('input', () => { targetMl = +sBa.value; document.getElementById('vBa').textContent = sBa.value; });
+sAir.addEventListener('input', () => {
+  airLevel = +sAir.value / 100; document.getElementById('vAir').textContent = sAir.value;
+  rebuild(curType, airLevel); layoutFilm();
+});
+const bind = (id, fn) => document.getElementById(id).addEventListener('change', e => fn(e.target.checked));
+bind('tHi', v => { uHi.value = v ? 1 : 0; });
+bind('tLab', v => { showLabels = v; });
+bind('tAx', v => { showAxis = v; });
+bind('tFilm', v => { showFilm = v; layoutFilm(); });
+bind('tPyl', v => { pylorusOpen = v; rebuild(curType, airLevel); });
+bind('tSpin', v => { autoSpin = v; });
+document.getElementById('bDrink').addEventListener('click', () => {
+  for (let n = 0; n < NN; n++) wVol[n] = 0;
+  for (let i = 0; i < NV; i++) { aWet[i] = 0; aLevel[i] = -1e3; }
+  administered = 0; drained = 0;
+});
+document.getElementById('bCoat').addEventListener('click', () => { for (let i = 0; i < NV; i++) aWet[i] = 0; });
+document.getElementById('bView').addEventListener('click', fitCam);
+document.getElementById('bProj').addEventListener('click', () => { projMode = (projMode + 1) % PROJ.length; layoutFilm(); updateNotes(); });
+document.getElementById('bRoll').addEventListener('click', () => {
+  rollQueue = ['supine', 'rlat', 'prone', 'llat', curPose]; rollTimer = 0;
+});
+
+const quiz = document.getElementById('quiz');
+QUIZ.forEach((q, i) => {
+  const d = document.createElement('details'); d.className = 'q';
+  d.innerHTML = '<summary><span class="qn">Q' + (i + 1) + '</span><span class="qt">' + q[0] + '</span><span class="qa">+</span></summary><p>' + q[1] + '</p>';
+  quiz.appendChild(d);
+});
+
+/* ================= 初期化とループ ================= */
+function settle() {
+  for (let n = 0; n < NN; n++) wVol[n] = 0;
+  let sc = 0;
+  for (let i = 0; i < NMAIN; i++) if (regionList[regionOf[i]][0] !== 'duode') sc += cap[i];
+  const v = Math.min(targetMl, sc * 0.92);
+  for (let i = 0; i < NMAIN; i++) if (regionList[regionOf[i]][0] !== 'duode') wVol[i] = cap[i] / sc * v;
+  administered = targetMl; drained = 0;
+  const iq = new THREE.Quaternion().copy(qTo).invert();
+  uUp.value.set(0, 1, 0).applyQuaternion(iq);
+  computeHeights();
+  for (let s = 0; s < 150; s++) flowStep(1 / 60);
+  for (let n = 0; n < NN; n++) lvl[n] = levelOf(n);
+  // 体位変換で胃粘膜には全周にバリウムが付着済み、十二指腸と食道は未付着
+  for (let i = 0; i < NMAIN; i++) {
+    const v = regionList[regionOf[i]][0] === 'duode' ? 0 : 1;
+    for (let j = 0; j < CM; j++) aWet[i * CM + j] = v;
+  }
+  for (let i = NMAIN * CM; i < NV; i++) aWet[i] = 0;
+}
+function resize() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+  layoutFilm();
+}
+new ResizeObserver(resize).observe(stage);
+
+const invQ = new THREE.Quaternion();
+let last = performance.now(), acc = 0;
+function loop(now) {
+  requestAnimationFrame(loop);
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+
+  if (rollQueue.length) {
+    rollTimer -= dt;
+    if (rollTimer <= 0) { const k = rollQueue.shift(); rollTimer = 1.15; if (k) { curPose = k; [...posGrid.children].forEach(b => b.setAttribute('aria-pressed', b.dataset.k === k)); qFrom.copy(bodyGroup.quaternion); qTo.copy(poseQuat(k)); tAnim = 0; updateNotes(); } }
+  }
+  if (tAnim < 1) {
+    tAnim = Math.min(1, tAnim + dt / 1.15);
+    const e = tAnim < 0.5 ? 2 * tAnim * tAnim : 1 - Math.pow(-2 * tAnim + 2, 2) / 2;
+    bodyGroup.quaternion.copy(qFrom).slerp(qTo, e);
+  }
+  if (autoSpin) { ctrl.theta += dt * 0.28; applyCam(); }
+
+  bodyGroup.updateMatrixWorld();
+  invQ.copy(bodyGroup.quaternion).invert();
+  uUp.value.set(0, 1, 0).applyQuaternion(invQ);
+
+  computeHeights();
+  dose(dt);
+  flowStep(dt);
+  for (let n = 0; n < NN; n++) lvl[n] = levelOf(n);
+  updateWet(dt);
+  buildSurface();
+  updateLabels();
+
+  acc += dt;
+  if (acc > 0.16) { acc = 0; updateReadouts(); }
+  render();
+}
+
+qTo.copy(poseQuat(curPose)); bodyGroup.quaternion.copy(qTo);
+rebuild(curType, airLevel);
+buildLabels(); buildTable(); settle(); updateNotes();
+resize(); fitCam(); layoutFilm();
+updateReadouts();
+requestAnimationFrame(loop);
+})();
+</script>

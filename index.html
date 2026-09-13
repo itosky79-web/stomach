@@ -523,8 +523,8 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
         <input type="range" id="sAir" min="0" max="100" step="1" value="60">
       </div>
       <div class="slider">
-        <div class="sl-h"><label for="sSkin">体表</label><span class="sl-v"><span id="vSkin">22</span> %</span></div>
-        <input type="range" id="sSkin" min="0" max="100" step="1" value="22">
+        <div class="sl-h"><label for="sSkin">体表</label><span class="sl-v"><span id="vSkin">30</span> %</span></div>
+        <input type="range" id="sSkin" min="0" max="100" step="1" value="30">
       </div>
       <div class="gauge">
         <span class="lbl">胃内 <span id="gStom">0</span></span>
@@ -536,9 +536,9 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
     <div class="grp">
       <p class="grp-h">視点</p>
       <div class="seg wide" id="viewpt">
-        <button type="button" data-p="tube" aria-pressed="true">管球</button>
-        <button type="button" data-p="oblique">斜め</button>
-        <button type="button" data-p="lateral">側面</button>
+        <button type="button" data-p="room" aria-pressed="true">室内</button>
+        <button type="button" data-p="tube">管球</button>
+        <button type="button" data-p="oblique">寄る</button>
       </div>
       <p class="grp-h" style="margin-top:12px">ラベル</p>
       <div class="seg wide" id="labSeg">
@@ -1051,9 +1051,10 @@ renderer.autoClear = false;
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(32, 1, 0.5, 500);
 const xcam = new THREE.OrthographicCamera(-12, 12, 16, -16, 1, 500);
-scene.add(xcam);
-const bodyGroup = new THREE.Group(); scene.add(bodyGroup);
+const tiltGroup = new THREE.Group(); scene.add(tiltGroup);       // 撮影台（起倒する）
+const bodyGroup = new THREE.Group(); tiltGroup.add(bodyGroup);   // 台の上の患者（体軸回転する）
 const anatGroup = new THREE.Group(); bodyGroup.add(anatGroup);   // 体表・骨格（解剖座標）
+tiltGroup.add(xcam);                                             // 管球・受像器も台に固定
 
 const geom = new THREE.BufferGeometry();
 geom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
@@ -1208,17 +1209,84 @@ const matBone = litMat(0xD6DEE6, 0.26, 0.07, 0.95), matBoneX = xrayMat(0.075, tr
 const coneMesh = new THREE.Mesh(new THREE.CylinderGeometry(2.0, 2.5, 2.2, 24, 1, false), litMat(0x8FA6B6, 0.6, 0.5, 0.8));
 coneMesh.renderOrder = 7; coneMesh.visible = false; bodyGroup.add(coneMesh);
 
+/* ---- 患者の全身（体表といっしょに透ける）---- */
+const figureGroup = new THREE.Group(); anatGroup.add(figureGroup);
+function addFig(g, x, y, z) {
+  const m = new THREE.Mesh(g, matSkin); m.position.set(x, y, z); m.renderOrder = 6;
+  figureGroup.add(m); return m;
+}
+{
+  addFig(new THREE.CylinderGeometry(3.9, 4.6, 7, 16), 0, 27, 1);
+  addFig(new THREE.SphereGeometry(7.8, 20, 16), 0, 34.5, 1.5);
+  for (const sx of [1, -1]) {
+    const arm = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(12.0 * sx, 21.5, 1), new THREE.Vector3(15.8 * sx, 10, 2.4),
+      new THREE.Vector3(15.4 * sx, -1, 3.4), new THREE.Vector3(13.6 * sx, -9, 4.2)]);
+    addFig(new THREE.TubeGeometry(arm, 24, 3.1, 10, false), 0, 0, 0);
+    const leg = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(6.2 * sx, -22, 1), new THREE.Vector3(7.2 * sx, -38, 2),
+      new THREE.Vector3(6.6 * sx, -52, 2.6), new THREE.Vector3(6.4 * sx, -60, 3)]);
+    addFig(new THREE.TubeGeometry(leg, 26, 5.1, 12, false), 0, 0, 0);
+    addFig(new THREE.BoxGeometry(7, 4.5, 12), 6.4 * sx, -62, 7.5);
+  }
+}
+
+/* ---- 透視台と台座（模型）---- */
+function solidProp(color) {
+  return new THREE.ShaderMaterial({
+    uniforms: { uC: { value: new THREE.Color(color) } },
+    vertexShader: SIMPLE_VERT,
+    fragmentShader: `precision highp float; uniform vec3 uC;
+      varying vec3 vN; varying vec3 vVd; varying vec3 vL;
+      void main(){
+        vec3 n = normalize(vN);
+        float l1 = max(dot(n, normalize(vec3(0.42,0.80,0.62))),0.0);
+        float l2 = max(dot(n, normalize(vec3(-0.70,0.10,-0.45))),0.0);
+        float fr = pow(1.0 - abs(dot(n, normalize(vVd))), 3.0);
+        gl_FragColor = vec4(uC * (0.30 + 0.66*l1 + 0.26*l2) + vec3(0.30,0.42,0.52)*fr*0.35, 1.0);
+      }`,
+    transparent: false, depthWrite: true, side: THREE.FrontSide
+  });
+}
+const matFrame = solidProp(0x4A5C6B);
+const matPad = solidProp(0x263440);
+const matGear = solidProp(0x6E7F8C);
+function prop(parent, geo, mat, x, y, z, rx) {
+  const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z);
+  if (rx) m.rotation.x = rx;
+  m.renderOrder = 0; parent.add(m); return m;
+}
+const roomProps = new THREE.Group(); scene.add(roomProps);          // 床・台座（傾かない）
+const tableProps = new THREE.Group(); tiltGroup.add(tableProps);    // 天板・管球・受像器（傾く）
+{
+  const grid2 = new THREE.GridHelper(140, 14, 0x243442, 0x172230);
+  grid2.material.transparent = true; grid2.material.opacity = 0.30;
+  grid2.position.y = -38; roomProps.add(grid2);
+  prop(roomProps, new THREE.BoxGeometry(40, 4, 46), matFrame, 0, -36, 0);
+  prop(roomProps, new THREE.BoxGeometry(15, 12, 15), matFrame, 0, -28, 0);
+  prop(roomProps, new THREE.BoxGeometry(6, 5, 64), matFrame, 0, -23, 0);
+  for (const sz of [1, -1]) {
+    prop(roomProps, new THREE.BoxGeometry(5, 21, 5), matFrame, 0, -10.5, 30 * sz);
+    prop(roomProps, new THREE.CylinderGeometry(3.4, 3.4, 6, 16), matGear, 0, 0, 30 * sz, Math.PI / 2);
+  }
+  prop(tableProps, new THREE.BoxGeometry(132, 5, 50), matPad, 8, -12, 0);       // 天板
+  prop(tableProps, new THREE.BoxGeometry(5, 26, 50), matPad, 74, 1, 0);         // 足台
+  prop(tableProps, new THREE.BoxGeometry(42, 5, 42), matFrame, 0, -18.5, 0);    // 受像器
+  prop(tableProps, new THREE.CylinderGeometry(6.5, 6.5, 13, 20), matGear, 0, 30, 0);   // 管球
+  prop(tableProps, new THREE.CylinderGeometry(3.2, 5.2, 5, 16), matGear, 0, 21.5, 0);  // 照射野絞り
+  prop(tableProps, new THREE.BoxGeometry(5, 36, 5), matFrame, 0, 12, -30);
+  prop(tableProps, new THREE.BoxGeometry(5, 5, 32), matFrame, 0, 30, -15);
+}
+
 /* ---- ガイド ---- */
 const guides = new THREE.Group(); scene.add(guides);
-const grid = new THREE.GridHelper(52, 13, 0x203040, 0x172230);
-grid.material.transparent = true; grid.material.opacity = 0.3; guides.add(grid);
-const arrow = new THREE.ArrowHelper(new THREE.Vector3(0, -1, 0), new THREE.Vector3(-15, 8, 0), 9, 0x52B8CE, 2.4, 1.5);
+const arrow = new THREE.ArrowHelper(new THREE.Vector3(0, -1, 0), new THREE.Vector3(-15, 8, 0), 11, 0x52B8CE, 3.0, 1.9);
 guides.add(arrow);
 
 /* ================= 状態 ================= */
 let curType = 'hook', curMode = 0, curPose = 'stand';
 let pylorusOpen = false, labelMode = 1, showRug = true, showBone = false;
-let autoSpin = false, viewMode = 1, skinOpacity = 0.22;
+let autoSpin = false, viewMode = 1, skinOpacity = 0.30;
 let airLevel = 0.6, targetMl = 120, administered = 0;
 let compRegion = '', compAmt = 0;
 let tiltCur = 90, rollCur = 0, tiltT = 90, rollT = 0;
@@ -1235,17 +1303,18 @@ const qBase = (function () {
     new THREE.Vector3(b[2][0], b[2][1], b[2][2])));
 })();
 const qA = new THREE.Quaternion(), qB = new THREE.Quaternion();
-const gWorld = new THREE.Vector3(0, -1, 0);
+const gWorld = new THREE.Vector3(0, -1, 0);      // 室内では重力はつねに真下
+const qWorldBody = new THREE.Quaternion();
 function applyPose() {
-  // 撮影台に固定した座標系。患者は体軸回転ぶんだけ回り、台の起倒は重力の向きに現れる
-  qB.setFromAxisAngle(Yax, rollCur * Math.PI / 180);
+  qA.setFromAxisAngle(Zax, -tiltCur * Math.PI / 180);   // 撮影台の起倒
+  qB.setFromAxisAngle(Yax, rollCur * Math.PI / 180);    // 患者の体軸回転
+  tiltGroup.quaternion.copy(qA);
   bodyGroup.quaternion.copy(qBase).multiply(qB);
-  const t = tiltCur * Math.PI / 180;
-  gWorld.set(Math.sin(t), -Math.cos(t), 0);
+  qWorldBody.copy(qA).multiply(bodyGroup.quaternion);
 }
 function upLocal(out) {
-  qA.copy(bodyGroup.quaternion).invert();
-  return out.copy(gWorld).multiplyScalar(-1).applyQuaternion(qA);
+  qA.copy(qWorldBody).invert();
+  return out.set(0, 1, 0).applyQuaternion(qA);
 }
 function goPose(t, r) {
   tiltT = t;
@@ -1396,39 +1465,42 @@ function rebuildAll() {
 }
 
 /* ================= カメラ ================= */
-// 管球（AZ）から患者を見るのが基準。AY=頭側＝画面の上、AX=画面の右。
+// 台の座標系の軸：AZ=管球の方向、AY=頭側（フィルムの上）、AX=フィルムの右
 const AX = new THREE.Vector3(0, 0, -1), AY = new THREE.Vector3(-1, 0, 0), AZ = new THREE.Vector3(0, 1, 0);
-const ctrl = { az: 0, el: 0, dist: 46, target: new THREE.Vector3(0, 0, 0) };
-const VIEWS = { tube: [0, 0], oblique: [0.80, 0.50], lateral: [Math.PI / 2, 0.10] };
-let viewPreset = 'tube';
-const _qa = new THREE.Quaternion(), _qb = new THREE.Quaternion(), _dir = new THREE.Vector3();
+const ctrl = { theta: 0.62, phi: 1.16, dist: 46, base: 46, target: new THREE.Vector3(0, 0, 0) };
+const VIEWS = { room: [0.62, 1.02, 2.85, -4], oblique: [1.05, 1.26, 1.45, -1] };
+let viewPreset = 'room';
+const _dir = new THREE.Vector3(), _qt = new THREE.Quaternion();
 function applyCam() {
-  _qa.setFromAxisAngle(AX, ctrl.el);
-  _qb.setFromAxisAngle(AY, ctrl.az);
-  _dir.copy(AZ).applyQuaternion(_qa).applyQuaternion(_qb);
-  camera.up.copy(AY);
+  if (viewPreset === 'tube') {                     // 管球は台といっしょに傾く
+    _qt.setFromAxisAngle(Zax, -tiltCur * Math.PI / 180);
+    _dir.copy(AZ).applyQuaternion(_qt);
+    camera.up.copy(AY).applyQuaternion(_qt);
+  } else {                                         // 室内の定位置。体位を変えても動かない
+    const sp = Math.sin(ctrl.phi);
+    _dir.set(sp * Math.sin(ctrl.theta), Math.cos(ctrl.phi), sp * Math.cos(ctrl.theta));
+    camera.up.set(0, 1, 0);
+  }
   camera.position.copy(ctrl.target).addScaledVector(_dir, ctrl.dist);
   camera.lookAt(ctrl.target);
   camera.updateMatrixWorld();
   const rt = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0);
   const uv = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 1);
-  arrow.position.copy(ctrl.target).addScaledVector(rt, -ctrl.dist * 0.38).addScaledVector(uv, ctrl.dist * 0.14);
-  if (gWorld.lengthSq() > 0) arrow.setDirection(gWorld);
-  // 重力が視線とほぼ平行なときは矢印がつぶれるので隠す（傾きは左下の指標で読む）
+  arrow.position.copy(ctrl.target).addScaledVector(rt, -ctrl.dist * 0.40).addScaledVector(uv, ctrl.dist * 0.10);
+  arrow.setDirection(gWorld);
   arrow.visible = Math.abs(gWorld.dot(_dir)) < 0.93;
 }
 function setView(p) {
   viewPreset = p;
-  if (VIEWS[p]) { ctrl.az = VIEWS[p][0]; ctrl.el = VIEWS[p][1]; }
+  if (VIEWS[p]) { ctrl.theta = VIEWS[p][0]; ctrl.phi = VIEWS[p][1]; ctrl.dist = ctrl.base * VIEWS[p][2]; ctrl.target.set(0, VIEWS[p][3], 0); }
+  if (p === 'tube') { ctrl.dist = ctrl.base; ctrl.target.set(0, 0, 0); }
   const seg = document.getElementById('viewpt');
   if (seg) [...seg.children].forEach(b => b.setAttribute('aria-pressed', b.dataset.p === p));
   applyCam();
 }
 function fitCam() {
-  ctrl.dist = bsRadius / Math.sin(camera.fov * Math.PI / 360) * 1.10;
-  ctrl.target.set(0, 0, 0);
-  grid.position.y = -(bsRadius + 5);
-  setView('tube');
+  ctrl.base = bsRadius / Math.sin(camera.fov * Math.PI / 360) * 1.10;
+  setView(VIEWS[viewPreset] ? viewPreset : 'room');
 }
 let drag = null, pinch = 0;
 canvas.addEventListener('pointerdown', e => {
@@ -1445,8 +1517,9 @@ canvas.addEventListener('pointermove', e => {
     const up = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 1);
     ctrl.target.addScaledVector(right, -dx * s).addScaledVector(up, dy * s);
   } else {
-    ctrl.az -= dx * 0.008;
-    ctrl.el = Math.max(-1.22, Math.min(1.22, ctrl.el - dy * 0.008));
+    if (viewPreset === 'tube') viewPreset = 'free';
+    ctrl.theta -= dx * 0.008;
+    ctrl.phi = Math.max(0.14, Math.min(Math.PI - 0.14, ctrl.phi - dy * 0.008));
     const seg = document.getElementById('viewpt');
     if (seg) [...seg.children].forEach(b => b.setAttribute('aria-pressed', false));
   }
@@ -1458,13 +1531,13 @@ canvas.addEventListener('pointercancel', endDrag);
 canvas.addEventListener('contextmenu', e => e.preventDefault());
 canvas.addEventListener('wheel', e => {
   e.preventDefault();
-  ctrl.dist = Math.max(bsRadius * 0.5, Math.min(bsRadius * 5, ctrl.dist * (1 + Math.sign(e.deltaY) * 0.10)));
+  ctrl.dist = Math.max(bsRadius * 0.5, Math.min(bsRadius * 10, ctrl.dist * (1 + Math.sign(e.deltaY) * 0.10)));
   applyCam();
 }, { passive: false });
 canvas.addEventListener('touchmove', e => {
   if (e.touches.length === 2) {
     const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-    if (pinch) { ctrl.dist = Math.max(bsRadius * 0.5, Math.min(bsRadius * 5, ctrl.dist * pinch / d)); applyCam(); }
+    if (pinch) { ctrl.dist = Math.max(bsRadius * 0.5, Math.min(bsRadius * 10, ctrl.dist * pinch / d)); applyCam(); }
     pinch = d; drag = null;
   }
 }, { passive: true });
@@ -1516,6 +1589,9 @@ function setXray(on) {
   meshSurf.material = on ? matSurfX : matSurf;
   meshSkin.material = on ? matSkinX : matSkin;
   meshSkin.visible = on || skinOpacity > 0.005;
+  figureGroup.visible = !on && skinOpacity > 0.005;
+  const showRoom = !on && viewPreset !== 'tube' && viewMode !== 2;
+  roomProps.visible = showRoom; tableProps.visible = showRoom;
   boneGroup.visible = on || showBone;
   boneGroup.traverse(o => { if (o.isMesh) o.material = on ? matBoneX : matBone; });
   coneMesh.visible = !on && compAmt > 0.01;
@@ -1666,10 +1742,12 @@ function buildLabels() {
 }
 function updateLabels() {
   const w = stage.clientWidth, h = stage.clientHeight;
-  const hideAll = viewMode === 2;
+  const hideAll = viewMode === 2, far = ctrl.dist > ctrl.base * 1.75;
   camL.copy(camera.position); bodyGroup.worldToLocal(camL);
   for (const L of labels) {
-    if (hideAll || labelMode < (L.kind === 'r1' ? 1 : 2)) { L.el.style.opacity = '0'; continue; }
+    // 引きの視点ではラベルが重なるので、寄ったときだけ出す（「詳細」はつねに表示）
+    const need = L.kind === 'r1' ? 1 : 2;
+    if (hideAll || labelMode < need || (far && labelMode < 2)) { L.el.style.opacity = '0'; continue; }
     const v = L.get().clone();
     if (L.kind !== 'w') v.applyMatrix4(bodyGroup.matrixWorld);
     if (L.kind === 'a') {
@@ -2037,7 +2115,7 @@ function loop(now) {
   if (autoSpin) ctrl.az += dt * 0.28;
   applyPose(); applyCam();
 
-  bodyGroup.updateMatrixWorld();
+  tiltGroup.updateMatrixWorld(true);
   upLocal(uUp.value);
 
   computeHeights();

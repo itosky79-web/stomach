@@ -142,74 +142,6 @@ button.act.wide{grid-column:1/-1; color:var(--barium); border-color:#456A80}
 .gauge span{color:var(--text); font-variant-numeric:tabular-nums}
 
 /* ---------- readouts ---------- */
-.band{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; margin-top:16px}
-.card{background:var(--panel); border:1px solid var(--line); border-radius:var(--r); padding:15px 16px 17px}
-.card h2{
-  font-family:var(--mincho); font-weight:700; font-size:15px; letter-spacing:.05em;
-  margin:0 0 3px; color:#E9F2F8;
-}
-.card .cap{font-family:var(--mono); font-size:9.5px; letter-spacing:.18em; color:var(--dim); text-transform:uppercase; margin:0 0 12px}
-
-table.regs{width:100%; border-collapse:collapse; font-size:12px}
-table.regs th{
-  text-align:left; font-weight:500; font-size:9.5px; letter-spacing:.14em; color:var(--dim);
-  font-family:var(--mono); padding:0 0 5px; border-bottom:1px solid var(--line);
-}
-table.regs td{padding:6px 0; border-bottom:1px solid #16212B; vertical-align:middle}
-table.regs td.nm{color:var(--text); white-space:nowrap; padding-right:8px}
-table.regs td.bar{width:46%; padding-right:10px}
-.stack{display:flex; height:7px; border-radius:1px; overflow:hidden; background:#0B1219; border:1px solid #1C2A36}
-.stack i{display:block; height:100%; transition:width .18s linear}
-.s-fill{background:linear-gradient(180deg,#FFF,#C9D8E4)}
-.s-dbl{background:linear-gradient(180deg,#F7C468,#D08F22)}
-.s-gas{background:#16222D}
-td.st{text-align:right; white-space:nowrap; font-family:var(--mono); font-size:10px; letter-spacing:.04em}
-.chip{padding:1px 6px; border-radius:2px; border:1px solid}
-.c-fill{color:#EAF1F7; border-color:#5B778C; background:#1B2833}
-.c-dbl{color:#F5C878; border-color:#7A5A22; background:#251C0C}
-.c-coat{color:#9FB6C6; border-color:#2C4050; background:#141E27}
-.c-gas{color:#5E7386; border-color:#233240; background:#0E151C}
-
-.legend{display:flex; gap:14px; flex-wrap:wrap; margin-top:12px; font-size:11px; color:var(--muted)}
-.legend b{display:inline-block; width:9px; height:9px; border-radius:1px; margin-right:5px; vertical-align:-1px}
-
-.note-lead{
-  font-family:var(--mincho); font-size:14.5px; line-height:1.85; color:#EDF4F9;
-  margin:0 0 12px; padding-bottom:12px; border-bottom:1px solid var(--line);
-}
-.note-lead em{font-style:normal; color:var(--amber)}
-.note-body{margin:0; color:var(--muted); font-size:12.5px; line-height:1.95}
-.note-body strong{color:var(--text); font-weight:500}
-.kv{margin:12px 0 0; padding:10px 12px; background:var(--ink2); border-left:2px solid var(--teal); border-radius:0 2px 2px 0}
-.kv dt{font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; color:var(--teal); margin:0 0 2px}
-.kv dd{margin:0; font-size:12.5px; color:var(--muted); line-height:1.8}
-
-details.q{border-bottom:1px solid #16212B}
-details.q:last-of-type{border-bottom:none}
-details.q summary{
-  list-style:none; cursor:pointer; padding:9px 0; display:flex; gap:9px; align-items:flex-start;
-  font-size:12.5px; color:var(--text);
-}
-details.q summary::-webkit-details-marker{display:none}
-details.q summary .qn{
-  font-family:var(--mono); font-size:10px; color:var(--teal); flex:none; padding-top:3px; letter-spacing:.06em;
-}
-details.q summary .qt{flex:1}
-details.q summary .qa{color:var(--dim); font-family:var(--mono); font-size:15px; line-height:1; flex:none; transition:transform .2s}
-details.q[open] summary .qa{transform:rotate(45deg)}
-details.q p{
-  margin:0 0 11px; padding:9px 11px; background:var(--ink2); border-radius:2px;
-  font-size:12.5px; color:var(--muted); line-height:1.85;
-}
-details.q p b{color:var(--amber); font-weight:700}
-
-footer{
-  margin-top:26px; padding-top:14px; border-top:1px solid var(--line);
-  font-size:11.5px; color:var(--dim); display:flex; justify-content:space-between; gap:16px; flex-wrap:wrap;
-}
-footer span{font-family:var(--mono); font-size:10px; letter-spacing:.1em}
-
-
 /* ---------- stage toolbar ---------- */
 .bar{position:absolute; top:10px; left:10px; right:10px; display:flex; justify-content:space-between; gap:10px; pointer-events:none; flex-wrap:wrap}
 .seg{display:flex; border:1px solid var(--line2); border-radius:3px; overflow:hidden; pointer-events:auto; background:rgba(10,15,20,.82); backdrop-filter:blur(4px)}
@@ -254,6 +186,9 @@ ol.seq .no{font-family:var(--mono); font-size:10px; color:var(--teal)}
 ol.seq .tg2{display:block; font-size:10px; color:var(--dim); letter-spacing:.02em}
 ol.seq button[aria-current="step"] .tg2{color:#8FC8D8}
 .seqnav{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:10px}
+.poselead{margin:11px 0 0; padding-top:9px; border-top:1px solid var(--line);
+  font-size:12px; line-height:1.8; color:var(--muted)}
+.poselead em{font-style:normal; color:var(--amber)}
 .seqaim{margin:9px 0 0; padding:10px 11px; background:var(--ink2); border-left:2px solid var(--amber); border-radius:0 2px 2px 0; font-size:12px; color:var(--muted); line-height:1.85}
 .seqaim b{color:var(--amber); font-weight:500; display:block; margin-bottom:3px; font-size:11px; letter-spacing:.04em}
 .prepost{margin:11px 0 0; font-size:11px; color:var(--dim); line-height:1.8; border-top:1px solid var(--line); padding-top:9px}
@@ -376,17 +311,12 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
 .lab{font-size:10px; padding:0 5px; background:rgba(10,15,20,.6); border-color:rgba(49,72,92,.7)}
 .lab.axis{font-size:9px}
 
-@media (max-width:1080px){
-  .band{grid-template-columns:1fr 1fr}
-  .band .card:last-child{grid-column:1/-1}
-}
 @media (max-width:900px){
   .work{grid-template-columns:1fr}
   .stage{height:min(58vh,460px)}
   .rail{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); align-items:start}
 }
 @media (max-width:560px){
-  .band{grid-template-columns:1fr}
   .wrap{padding-inline:16px}
 }
 @media (prefers-reduced-motion:reduce){
@@ -422,7 +352,7 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
       </div>
     </div>
     <svg id="tiltGiz" viewBox="0 0 124 86" aria-label="撮影台の傾き">
-      <g id="tiltRot" transform="rotate(0 54 44)">
+      <g id="tiltRot" transform="rotate(90 54 44)">
         <rect x="22" y="43" width="64" height="3" rx="1.5" fill="#33485A"/>
         <rect x="32" y="34" width="44" height="9" rx="4.5" fill="#465E71"/>
         <circle cx="28" cy="38.5" r="5" fill="#465E71"/>
@@ -444,6 +374,7 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
 
       <div class="pane" id="pane0">
         <div class="pos-grid" id="posGrid"></div>
+        <p class="poselead" id="poseLead"></p>
       </div>
 
       <div class="pane" id="pane1" hidden>
@@ -569,40 +500,8 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
   <div class="strip" id="strip"><p class="empty">「撮影」ボタンを押すと、その体位のシミュレーション写真がここに並びます。<br>撮影手順モードで①から順に撮ると、検診1件分のフィルムセットができます。</p></div>
 </div>
 
-<div class="band">
-  <section class="card">
-    <h2>部位別の造影状態</h2>
-    <p class="cap">Regional contrast state</p>
-    <table class="regs">
-      <thead><tr><th>部位</th><th>充盈 / 二重造影 / ガス</th><th style="text-align:right">判定</th></tr></thead>
-      <tbody id="regBody"></tbody>
-    </table>
-    <div class="legend">
-      <span><b style="background:linear-gradient(180deg,#FFF,#C9D8E4)"></b>充盈（バリウム貯留）</span>
-      <span><b style="background:linear-gradient(180deg,#F7C468,#D08F22)"></b>二重造影（付着＋ガス）</span>
-      <span><b style="background:#16222D;border:1px solid #2A3A48"></b>ガス（バリウム未付着）</span>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>この体位の読影ポイント</h2>
-    <p class="cap">Positioning rationale</p>
-    <p class="note-lead" id="noteLead"></p>
-    <p class="note-body" id="noteBody"></p>
-    <dl class="kv">
-      <dt>STOMACH TYPE</dt>
-      <dd id="noteType"></dd>
-    </dl>
-  </section>
-
-</div>
-
 <div id="lightbox"><img id="lbImg" alt="拡大表示したシミュレーション写真"><p id="lbCap"></p><button type="button" id="lbClose">閉じる</button></div>
 
-<footer>
-  <span>SIMULATION MODEL &mdash; NOT A DIAGNOSTIC TOOL</span>
-  <span>BaSO<sub>4</sub> Z=56 / K-EDGE 37.4 keV</span>
-</footer>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -693,16 +592,29 @@ const POSES = {
 const POSE_ORDER = ['stand','semi','schatzki','supine','prone','trend','rlat','llat'];
 
 /* ---------- 体位アイコン ---------- */
-const ICONS = {
-  stand:'<circle cx="22" cy="5.4" r="3.2"/><path d="M18.6 9.4h6.8v9.2h-6.8z" rx="2"/><path d="M20 18.6v4M24 18.6v4" stroke-width="1.8"/><path d="M8 23.2h28" stroke-width="1" opacity=".5"/>',
-  supine:'<path d="M13 12.6h21v7.2H13z"/><circle cx="9" cy="16.2" r="3.2"/><path d="M20 12.6a3.4 3.4 0 0 1 6.4 0" fill="none" stroke-width="1.6"/><path d="M5 21.4h33" stroke-width="1" opacity=".5"/>',
-  prone:'<path d="M13 10.4h21v7.2H13z"/><circle cx="9" cy="14" r="3.2"/><path d="M20 17.6a3.4 3.4 0 0 0 6.4 0" fill="none" stroke-width="1.6"/><path d="M5 21.4h33" stroke-width="1" opacity=".5"/>',
-  rlat:'<ellipse cx="21" cy="13.6" rx="7.4" ry="6"/><path d="M28.4 13.6a2.8 2.8 0 0 1 2.6 0" fill="none" stroke-width="1.6"/><text x="21" y="9.6" font-size="6" text-anchor="middle" font-family="monospace">L</text><path d="M6 21.4h30" stroke-width="1" opacity=".5"/>',
-  llat:'<ellipse cx="21" cy="13.6" rx="7.4" ry="6"/><path d="M28.4 13.6a2.8 2.8 0 0 1 2.6 0" fill="none" stroke-width="1.6"/><text x="21" y="19.6" font-size="6" text-anchor="middle" font-family="monospace">L</text><path d="M6 21.4h30" stroke-width="1" opacity=".5"/>',
-  schatzki:'<g transform="rotate(-44 22 16)"><path d="M13 12.2h21v7.2H13z"/><circle cx="9" cy="15.8" r="3.2"/><path d="M26 12.2a3.2 3.2 0 0 1 6 0" fill="none" stroke-width="1.5"/></g><path d="M5 23h34" stroke-width="1" opacity=".5"/>',
-  semi:'<g transform="rotate(-44 22 16)"><path d="M13 12.2h21v7.2H13z"/><circle cx="9" cy="15.8" r="3.2"/></g><path d="M5 23h34" stroke-width="1" opacity=".5"/>',
-  trend:'<g transform="rotate(-16 21 15)"><path d="M13 11.6h21v7.2H13z"/><circle cx="9" cy="15.2" r="3.2"/></g><path d="M5 22.6h33" stroke-width="1" opacity=".5"/>'
-};
+const ICONS = (function () {
+  const floor = '<path d="M7 22.8h30" stroke-width="1" opacity=".45"/>';
+  const lying = '<circle cx="11" cy="16" r="3.4"/><rect x="15" y="12.6" width="19" height="6.8" rx="3.4"/>';
+  //  SVG は y が下向きなので、頭（左端）を上げるには正の角度で時計回りに回す
+  const tilted = (deg, extra) => '<g transform="rotate(' + deg + ' 22.5 16)">' + lying + '</g>' + (extra || '');
+  const cross = (letter) =>
+    '<ellipse cx="22" cy="13.4" rx="7" ry="7" fill="none" stroke-width="1.6"/>' +
+    '<path d="M29 13.4a2.6 2.6 0 0 1 2.4 0" fill="none" stroke-width="1.4"/>' +
+    '<text x="22" y="16.4" font-size="7.5" text-anchor="middle" font-family="monospace" stroke="none">' + letter + '</text>';
+  return {
+    stand: '<circle cx="22" cy="5.6" r="3.3"/><rect x="18.6" y="9.2" width="7" height="10.2" rx="3"/>' +
+           '<path d="M20 19.4v3.2M24 19.4v3.2" stroke-width="1.7"/>' + floor,
+    semi: tilted(44) + floor,
+    schatzki: tilted(44,
+      '<path d="M31 5.2a6 6 0 0 1 6.4 2.6" fill="none" stroke-width="1.3"/>' +
+      '<path d="M37.6 8.4l-.2-3.1 2.9 1.1" fill="none" stroke-width="1.3"/>') + floor,
+    supine: lying + '<path d="M21 12.6a3.2 3.2 0 0 1 6 0" fill="none" stroke-width="1.5"/>' + floor,
+    prone: lying + '<path d="M21 19.4a3.2 3.2 0 0 0 6 0" fill="none" stroke-width="1.5"/>' + floor,
+    trend: tilted(-20) + floor,
+    rlat: cross('R') + floor,
+    llat: cross('L') + floor
+  };
+})();
 
 /* ---------- 体位＝（透視台の起倒角, 体軸の回転角）---------- */
 const POSE_ANG = { stand:[90,0], semi:[45,0], schatzki:[45,315], supine:[0,0], prone:[0,180], rlat:[0,270], llat:[0,90], trend:[-30,0] };
@@ -1497,6 +1409,10 @@ function setView(p) {
   viewPreset = p;
   if (VIEWS[p]) { ctrl.theta = VIEWS[p][0]; ctrl.phi = VIEWS[p][1]; ctrl.dist = ctrl.base * VIEWS[p][2]; ctrl.target.set(0, VIEWS[p][3], 0); }
   if (p === 'tube') { ctrl.dist = ctrl.base; ctrl.target.set(0, 0, 0); }
+  if (p === 'room') {   // 横長・縦長どちらの画面でも寝台の全体が入るように
+    const need = 60 / (Math.tan(camera.fov * Math.PI / 360) * Math.max(0.5, camera.aspect));
+    ctrl.dist = Math.max(ctrl.dist, need);
+  }
   const seg = document.getElementById('viewpt');
   if (seg) [...seg.children].forEach(b => b.setAttribute('aria-pressed', b.dataset.p === p));
   applyCam();
@@ -1766,71 +1682,19 @@ function updateLabels() {
 }
 
 /* ================= 読み出し ================= */
-const regBody = document.getElementById('regBody');
-let regRows = [];
-function buildTable() {
-  regBody.innerHTML = ''; regRows = [];
-  for (let k = 0; k < regionList.length; k++) {
-    const tr = document.createElement('tr');
-    tr.innerHTML = '<td class="nm">' + regionList[k][1] + '</td>' +
-      '<td class="bar"><div class="stack"><i class="s-fill"></i><i class="s-dbl"></i><i class="s-gas"></i></div></td>' +
-      '<td class="st"><span class="chip c-gas">—</span></td>';
-    regBody.appendChild(tr);
-    const b = tr.querySelectorAll('.stack i');
-    regRows.push({ f: b[0], d: b[1], g: b[2], chip: tr.querySelector('.chip') });
-  }
-}
 function updateReadouts() {
-  const ux = uUp.value.x, uy = uUp.value.y, uz = uUp.value.z;
-  let stom = 0, duo = drained, eso = 0;
-  for (let k = 0; k < regionList.length; k++) {
-    const R = regionRange[k]; let fw = 0, fc = 0, nd = 0, nDep = 0, nt = 0, ct = 0;
-    for (let i = R[0]; i <= R[1]; i++) {
-      fw += wVol[i]; fc += cap[i];
-      if (regionList[k][0] === 'duode') duo += wVol[i]; else stom += wVol[i];
-      const L = lvl[i], b = i * CM;
-      for (let j = 0; j < CM; j++) {
-        const idx = b + j, kk = idx * 3;
-        const down = -(nor[kk] * ux + nor[kk + 1] * uy + nor[kk + 2] * uz);
-        nt++; ct += aWet[idx];
-        if (hArr[idx] > L && down > 0.12) { nDep++; if (aWet[idx] > 0.35) nd++; }
-      }
-    }
-    const fill = fc > 0 ? Math.min(1, fw / fc) : 0;
-    const dbl = nDep > 8 ? nd / nDep : 0, coat = nt > 0 ? ct / nt : 0;
-    const dShare = (1 - fill) * dbl, gShare = Math.max(0, 1 - fill - dShare);
-    const row = regRows[k];
-    row.f.style.width = (fill * 100).toFixed(1) + '%';
-    row.d.style.width = (dShare * 100).toFixed(1) + '%';
-    row.g.style.width = (gShare * 100).toFixed(1) + '%';
-    let txt = 'ガスのみ', cls = 'c-gas';
-    if (fill >= 0.62) { txt = '充盈像'; cls = 'c-fill'; }
-    else if (dbl >= 0.55 && fill < 0.72) { txt = '二重造影'; cls = 'c-dbl'; }
-    else if (fill >= 0.18) { txt = '部分充盈'; cls = 'c-fill'; }
-    else if (coat >= 0.35) { txt = '粘膜付着'; cls = 'c-coat'; }
-    if (row.chip.textContent !== txt) { row.chip.textContent = txt; row.chip.className = 'chip ' + cls; }
+  let stom = 0, duo = drained;
+  for (let i = 0; i < NN; i++) {
+    if (i < NMAIN && regionList[regionOf[i]][0] === 'duode') duo += wVol[i]; else stom += wVol[i];
   }
-  for (let i = NMAIN; i < NN; i++) eso += wVol[i];
-  document.getElementById('gStom').textContent = Math.round(stom + eso);
+  document.getElementById('gStom').textContent = Math.round(stom);
   document.getElementById('gDuo').textContent = Math.round(duo);
   document.getElementById('gCap').textContent = Math.round(totalCap);
   document.getElementById('fluoroT').textContent = fluoroTime.toFixed(1);
 }
 function updateNotes() {
-  const T = TYPES[curType];
-  let lead, body;
-  if (curMode === 1 && seqIdx >= 0) {
-    const S = SEQ[seqIdx];
-    lead = '<em>' + S.no + ' ' + S.name + '</em>　目標は<em>' + S.tgt + '</em>。';
-    body = S.aim + '<br><span style="color:var(--dim)">' + S.tip + '</span>';
-  } else {
-    const P = POSES[nearestPose(tiltT, rollT)];
-    lead = P.lead; body = P.body;
-  }
-  document.getElementById('noteLead').innerHTML = lead;
-  document.getElementById('noteBody').innerHTML = body;
-  document.getElementById('noteType').innerHTML = '<strong style="color:#D9E4ED">' + T.name + '</strong> — ' + T.note;
-  document.getElementById('typeNote').textContent = T.short;
+  document.getElementById('typeNote').textContent = TYPES[curType].short;
+  document.getElementById('poseLead').innerHTML = POSES[nearestPose(tiltT, rollT)].lead;
   document.getElementById('freePos').textContent = poseName(tiltT, rollT);
   document.getElementById('freeAng').textContent = Math.round(tiltT) + '° / ' + Math.round(((rollT % 360) + 360) % 360) + '°';
   if (curMode === 1 && seqIdx >= 0) {
@@ -1865,7 +1729,7 @@ function setPreset(key) {
 function setType(key) {
   curType = key;
   [...typeGrid.children].forEach(b => b.setAttribute('aria-pressed', b.dataset.k === key));
-  rebuildAll(); buildLabels(); buildTable(); settle(); fitCam(); layoutFilm(); updateNotes();
+  rebuildAll(); buildLabels(); settle(); fitCam(); layoutFilm(); updateNotes();
 }
 
 /* --- モードタブ --- */
@@ -2136,14 +2000,14 @@ function loop(now) {
   acc += dt;
   if (acc > 0.16) {
     acc = 0; updateReadouts(); updateFilmLabels();
-    tiltRot.setAttribute('transform', 'rotate(' + (-tiltCur).toFixed(1) + ' 54 44)');
+    tiltRot.setAttribute('transform', 'rotate(' + tiltCur.toFixed(1) + ' 54 44)');
     tiltTxt.textContent = Math.round(tiltCur) + '°';
   }
   render();
 }
 
 matSkin.uniforms.uO.value = skinOpacity;
-rebuildAll(); buildLabels(); buildTable(); settle();
+rebuildAll(); buildLabels(); settle();
 setPreset('stand'); tiltCur = tiltT; rollCur = rollT;
 updateNotes(); resize(); fitCam(); layoutFilm(); updateReadouts(); renderStrip();
 requestAnimationFrame(loop);

@@ -229,15 +229,13 @@ select.sel:focus-visible{outline:2px solid var(--teal); outline-offset:2px}
 #guide{position:fixed; inset:0; z-index:60; background:rgba(4,7,10,.82); display:none;
   align-items:center; justify-content:center; padding:20px}
 #guide.on{display:flex}
-.gcard{width:min(360px,100%); background:var(--panel); border:1px solid var(--line2);
+.gcard{width:min(330px,100%); background:var(--panel); border:1px solid var(--line2);
   border-radius:6px; padding:16px 17px 15px; box-shadow:0 22px 60px rgba(0,0,0,.75)}
 .ghead{display:flex; justify-content:space-between; align-items:baseline; gap:10px; margin:0 0 12px}
 .ghead b{font-family:var(--mincho); font-size:14.5px; color:#EAF6FA}
 .ghead span{font-family:var(--mono); font-size:9.5px; letter-spacing:.14em; color:var(--teal); white-space:nowrap}
-.glist{list-style:none; margin:0 0 14px; padding:0; display:flex; flex-direction:column; gap:9px}
-.glist li{display:grid; grid-template-columns:46px 1fr; gap:10px; align-items:baseline;
-  font-size:12.5px; line-height:1.7; color:var(--muted)}
-.glist b{font-family:var(--mono); font-size:11px; font-weight:400; color:var(--amber); letter-spacing:.06em}
+.gtip{margin:0 0 14px; font-size:12.5px; line-height:1.85; color:var(--muted)}
+.gtip b{font-weight:500; color:var(--text)}
 #gClose{width:100%; padding:10px; background:#1D3040; border:1px solid var(--teal); border-radius:3px;
   color:#EAF6FA; font-family:var(--gothic); font-size:12.5px; cursor:pointer}
 #gClose:hover{background:#24425A}
@@ -590,8 +588,8 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
 </div>
 
 <div id="guide"><div class="gcard">
-  <p class="ghead"><b>かんたんな使い方</b><span id="gDev"></span></p>
-  <ul class="glist" id="gList"></ul>
+  <p class="ghead"><b>3D の動かし方</b><span id="gDev"></span></p>
+  <p class="gtip" id="gTip"></p>
   <button type="button" id="gClose">はじめる</button>
 </div></div>
 
@@ -2176,21 +2174,11 @@ new ResizeObserver(() => {          // 浮かせたパネルの手動リサイ�
 /* ---- 初回だけ出す操作案内。端末に合わせて中身を変える ---- */
 {
   const touch = matchMedia('(pointer:coarse)').matches || innerWidth <= 900;
-  const TIPS = touch ? [
-    ['回転', '3D を 1 本指でドラッグ。2 本指で拡大縮小、ダブルタップで視点が戻ります。'],
-    ['画面', '3D は上に固定されます。下のパネルをスクロールして操作してください。'],
-    ['体位', '「学習」で起倒角と体軸の回転を組み合わせると体位ができます。'],
-    ['撮影', '押すとその瞬間の透視像が、いちばん下のフィルムに並びます。']
-  ] : [
-    ['回転', '3D をドラッグ。ホイールで拡大縮小、ダブルクリックで視点が戻ります。'],
-    ['体位', '「学習」で起倒角と体軸の回転を組み合わせると体位ができます。'],
-    ['問題', '国家試験の過去問。右のコンソールは境目をドラッグで幅を変え、「分離」で切り離せます（Esc で戻る）。'],
-    ['撮影', '押すとその瞬間の透視像が、いちばん下のフィルムに並びます。']
-  ];
   const gd = document.getElementById('guide');
   document.getElementById('gDev').textContent = touch ? 'SMARTPHONE' : 'PC';
-  document.getElementById('gList').innerHTML =
-    TIPS.map(t => '<li><b>' + t[0] + '</b><span>' + t[1] + '</span></li>').join('');
+  document.getElementById('gTip').innerHTML = touch
+    ? '<b>1 本指でドラッグ</b>すると回ります。<br>2 本指で拡大縮小、ダブルタップで視点が戻ります。'
+    : '<b>ドラッグ</b>すると回ります。<br>ホイールで拡大縮小、ダブルクリックで視点が戻ります。';
   const GKEY = 'stomach.guide.v1';
   const openGuide = () => gd.classList.add('on');
   const closeGuide = () => {

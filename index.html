@@ -577,7 +577,7 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
 
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="three.min.js"></script>
 <script>
 "use strict";
 /* =====================================================================
@@ -752,7 +752,7 @@ console.error = function () {
   _err.apply(console, arguments);
 };
 if (typeof THREE === 'undefined') {
-  showFail('three.js を読み込めませんでした。通信を確認してください。');
+  showFail('three.js を読み込めませんでした。index.html と同じ場所に three.min.js を置いてください。');
   return;
 }
 

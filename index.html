@@ -1284,11 +1284,8 @@ const tableProps = new THREE.Group(); tiltGroup.add(tableProps);    // 天板・
   }
   prop(tableProps, new THREE.BoxGeometry(132, 5, 50), matPad, 8, -12, 0);       // 天板
   prop(tableProps, new THREE.BoxGeometry(5, 26, 50), matPad, 74, 1, 0);         // 足台
-  prop(tableProps, new THREE.BoxGeometry(42, 5, 42), matFrame, 0, -18.5, 0);    // 受像器
-  prop(tableProps, new THREE.CylinderGeometry(6.5, 6.5, 13, 20), matGear, 0, 30, 0);   // 管球
-  prop(tableProps, new THREE.CylinderGeometry(3.2, 5.2, 5, 16), matGear, 0, 21.5, 0);  // 照射野絞り
-  prop(tableProps, new THREE.BoxGeometry(5, 36, 5), matFrame, 0, 12, -30);
-  prop(tableProps, new THREE.BoxGeometry(5, 5, 32), matFrame, 0, 30, -15);
+  prop(tableProps, new THREE.BoxGeometry(120, 2.5, 6), matFrame, 8, -9, 26);    // 側レール
+  prop(tableProps, new THREE.BoxGeometry(120, 2.5, 6), matFrame, 8, -9, -26);
 }
 
 /* ---- ガイド ---- */
@@ -1474,7 +1471,7 @@ function rebuildAll() {
 // 台の座標系の軸：AZ=管球の方向、AY=頭側（フィルムの上）、AX=フィルムの右
 const AX = new THREE.Vector3(0, 0, -1), AY = new THREE.Vector3(-1, 0, 0), AZ = new THREE.Vector3(0, 1, 0);
 const ctrl = { theta: 0.62, phi: 1.16, dist: 46, base: 46, target: new THREE.Vector3(0, 0, 0) };
-const VIEWS = { room: [0.62, 1.02, 2.85, -4], oblique: [1.05, 1.26, 1.45, -1] };
+const VIEWS = { room: [0.62, 1.02, 2.90, -2], oblique: [1.05, 1.26, 1.45, -1] };
 let viewPreset = 'room';
 const _dir = new THREE.Vector3(), _qt = new THREE.Quaternion();
 function applyCam() {

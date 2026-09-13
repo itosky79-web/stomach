@@ -59,6 +59,7 @@ body.detached .railbar{display:flex; cursor:move; touch-action:none}
 .glerr{position:absolute; inset:0; z-index:9; display:flex; flex-direction:column; justify-content:center;
   gap:9px; padding:24px; background:rgba(10,15,20,.95); color:var(--muted); font-size:12.5px; line-height:1.85}
 .glerr b{color:var(--alert); font-size:14px; font-weight:700}
+.glinfo{margin:9px 0 0; font-family:var(--mono); font-size:9px; line-height:1.7; color:var(--dim); word-break:break-all}
 .stage canvas:active{cursor:grabbing}
 #labels{position:absolute; inset:0; pointer-events:none}
 .lab{
@@ -561,6 +562,7 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
         <button class="act" id="bDrink" type="button">飲み直す</button>
         <button class="act" id="bClear" type="button">フィルム消去</button>
       </div>
+      <p class="glinfo" id="glInfo"></p>
       </details>
     </div>
   </div>
@@ -743,6 +745,12 @@ function showFail(msg) {
   st.appendChild(d);
 }
 addEventListener('error', e => showFail((e && e.message) || '不明なエラー'));
+const _err = console.error;
+console.error = function () {
+  const m = Array.prototype.map.call(arguments, x => String(x)).join(' ');
+  if (/shader|WebGLProgram|GL_/i.test(m)) showFail('シェーダを処理できませんでした。' + m.slice(0, 200));
+  _err.apply(console, arguments);
+};
 if (typeof THREE === 'undefined') {
   showFail('three.js を読み込めませんでした。通信を確認してください。');
   return;
@@ -989,7 +997,7 @@ function litMat(color, opacity, baseA, rimA) {
     uniforms: { uC: { value: new THREE.Color(color) }, uO: { value: opacity },
                 uA: { value: new THREE.Vector2(baseA === undefined ? 0.34 : baseA, rimA === undefined ? 1.25 : rimA) } },
     vertexShader: SIMPLE_VERT,
-    fragmentShader: `precision highp float; uniform vec3 uC; uniform float uO; uniform vec2 uA;
+    fragmentShader: `uniform vec3 uC; uniform float uO; uniform vec2 uA;
       varying vec3 vN; varying vec3 vVd; varying vec3 vL;
       void main(){
         vec3 n = normalize(vN);
@@ -1006,7 +1014,7 @@ function xrayMat(density, bone, edgeCap) {
   return new THREE.ShaderMaterial({
     uniforms: { uD: { value: density }, uBone: { value: bone ? 1 : 0 }, uE: { value: edgeCap || 5.0 } },
     vertexShader: SIMPLE_VERT,
-    fragmentShader: `precision highp float; uniform float uD; uniform float uBone; uniform float uE;
+    fragmentShader: `uniform float uD; uniform float uBone; uniform float uE;
       varying vec3 vN; varying vec3 vVd; varying vec3 vL;
       void main(){
         vec3 n = normalize(vN);
@@ -1039,6 +1047,16 @@ canvas.addEventListener('webglcontextlost', e => {
   e.preventDefault(); showFail('WebGL のコンテキストが失われました。ページを開き直してください。');
 });
 renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
+{ // 端末の素性を控えておく（うまく描けないときの切り分け用）
+  const gl = renderer.getContext();
+  const dbg = gl.getExtension('WEBGL_debug_renderer_info');
+  const hp = gl.getShaderPrecisionFormat(gl.FRAGMENT_SHADER, gl.HIGH_FLOAT);
+  document.getElementById('glInfo').textContent =
+    (dbg ? gl.getParameter(dbg.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER)) +
+    ' / ' + gl.getParameter(gl.VERSION) +
+    ' / frag highp ' + (hp && hp.precision > 0 ? 'あり' : 'なし') +
+    ' / ' + renderer.capabilities.precision + ' / AA ' + (small ? 'off' : 'on');
+}
 renderer.autoClear = false;
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(32, 1, 0.5, 500);
@@ -1076,7 +1094,6 @@ float rugae(vec3 r, float on){
 }`;
 
 const FRAG_SOLID = `
-precision highp float;
 uniform vec3 uUp; uniform float uFlip; uniform float uHi; uniform float uRug;
 varying float vH; varying float vLevel; varying float vWet; varying vec3 vR;
 varying vec3 vNL; varying vec3 vNW; varying vec3 vVd;
@@ -1104,7 +1121,6 @@ void main(){
 }`;
 
 const FRAG_XRAY = `
-precision highp float;
 uniform vec3 uUp; uniform float uRug;
 varying float vH; varying float vLevel; varying float vWet; varying vec3 vR;
 varying vec3 vNL; varying vec3 vNW; varying vec3 vVd;
@@ -1146,7 +1162,7 @@ surfGeom.setDrawRange(0, 0);
 const matSurf = new THREE.ShaderMaterial({
   uniforms: {},
   vertexShader: `varying vec3 vP; void main(){ vP=(modelMatrix*vec4(position,1.0)).xyz; gl_Position=projectionMatrix*viewMatrix*modelMatrix*vec4(position,1.0);}`,
-  fragmentShader: `precision highp float; varying vec3 vP;
+  fragmentShader: `varying vec3 vP;
     void main(){ float g = 0.80 + 0.20*sin(vP.x*1.6)*sin(vP.z*1.6);
       gl_FragColor = vec4(vec3(0.90,0.93,0.97)*g, 0.93); }`,
   transparent: true, depthWrite: false, side: THREE.DoubleSide
@@ -1234,7 +1250,7 @@ function solidProp(color) {
   return new THREE.ShaderMaterial({
     uniforms: { uC: { value: new THREE.Color(color) } },
     vertexShader: SIMPLE_VERT,
-    fragmentShader: `precision highp float; uniform vec3 uC;
+    fragmentShader: `uniform vec3 uC;
       varying vec3 vN; varying vec3 vVd; varying vec3 vL;
       void main(){
         vec3 n = normalize(vN);

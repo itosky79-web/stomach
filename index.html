@@ -357,6 +357,8 @@ ol.choices button.ok{background:#12291E; border-color:#2F6B49; color:#9FE3BC}
 ol.choices button.ok .n{color:#4FBF88}
 ol.choices button.ng{background:#2A1416; border-color:#6E3036; color:#E9A0A0}
 ol.choices button.ng .n{color:#D06A6A}
+.qsrc{margin:-5px 0 10px; font-family:var(--mono); font-size:9.5px; letter-spacing:.05em; color:var(--dim); line-height:1.6}
+.qsrc b{color:var(--teal); font-weight:400; letter-spacing:.12em}
 .qexp{margin:0 0 10px; padding:9px 11px; background:var(--ink2); border-left:2px solid var(--teal);
   border-radius:0 2px 2px 0; font-size:12px; color:var(--muted); line-height:1.8}
 .qexp[hidden]{display:none}
@@ -498,6 +500,7 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
       <div class="pane" id="pane3" hidden>
         <div class="qhead"><span id="qNo">問 1 / 12</span><button class="act" id="bReadQ" type="button">像から当てる</button></div>
         <p class="qtext" id="qText"></p>
+        <p class="qsrc" id="qSrc"></p>
         <ol class="choices" id="qChoices"></ol>
         <p class="qexp" id="qExp" hidden></p>
         <div class="seqnav" style="grid-template-columns:1fr 1fr">
@@ -677,11 +680,14 @@ const POSES = {
   llat:{ name:'左側臥位', ruby:'LEFT LAT', basis:[[0,-1,0],[-1,0,0],[0,0,-1]],
     lead:'胃底部側が低い。バリウムは<em>胃底部</em>、ガスは<em>前庭部〜幽門部</em>へ。',
     body:'前庭部・幽門部の二重造影が得やすい。十二指腸への流出も抑えられる。'},
+  semi:{ name:'半立位', ruby:'SEMI-ERECT', basis:[[1,0,0],[0,1,0],[0,0,1]],
+    lead:'台を約45°起こした中間の体位。バリウムは<em>胃体下部</em>、ガスは<em>胃底部〜胃体上部</em>へ。',
+    body:'立位と背臥位の中間で造影剤の貯留位置を細かく調整できる。立位では描出しにくい胃底部・噴門部の二重造影に用い、斜位と組み合わせることが多い。'},
   trend:{ name:'頭低位', ruby:'TRENDELENBURG', basis:[[0,0,-1],[-0.866,-0.5,0],[-0.5,0.866,0]],
     lead:'頭側が低い。バリウムが<em>胃底部・噴門部</em>へ移動する。',
     body:'食道胃接合部の描出。胃食道逆流・食道裂孔ヘルニアの評価に用いる。'}
 };
-const POSE_ORDER = ['stand','supine','prone','rlat','llat','trend'];
+const POSE_ORDER = ['stand','semi','supine','prone','rlat','llat','trend'];
 
 /* ---------- 体位アイコン ---------- */
 const ICONS = {
@@ -690,11 +696,12 @@ const ICONS = {
   prone:'<path d="M13 10.4h21v7.2H13z"/><circle cx="9" cy="14" r="3.2"/><path d="M20 17.6a3.4 3.4 0 0 0 6.4 0" fill="none" stroke-width="1.6"/><path d="M5 21.4h33" stroke-width="1" opacity=".5"/>',
   rlat:'<ellipse cx="21" cy="13.6" rx="7.4" ry="6"/><path d="M28.4 13.6a2.8 2.8 0 0 1 2.6 0" fill="none" stroke-width="1.6"/><text x="21" y="9.6" font-size="6" text-anchor="middle" font-family="monospace">L</text><path d="M6 21.4h30" stroke-width="1" opacity=".5"/>',
   llat:'<ellipse cx="21" cy="13.6" rx="7.4" ry="6"/><path d="M28.4 13.6a2.8 2.8 0 0 1 2.6 0" fill="none" stroke-width="1.6"/><text x="21" y="19.6" font-size="6" text-anchor="middle" font-family="monospace">L</text><path d="M6 21.4h30" stroke-width="1" opacity=".5"/>',
+  semi:'<g transform="rotate(-44 22 16)"><path d="M13 12.2h21v7.2H13z"/><circle cx="9" cy="15.8" r="3.2"/></g><path d="M5 23h34" stroke-width="1" opacity=".5"/>',
   trend:'<g transform="rotate(-16 21 15)"><path d="M13 11.6h21v7.2H13z"/><circle cx="9" cy="15.2" r="3.2"/></g><path d="M5 22.6h33" stroke-width="1" opacity=".5"/>'
 };
 
 /* ---------- 体位＝（透視台の起倒角, 体軸の回転角）---------- */
-const POSE_ANG = { stand:[90,0], supine:[0,0], prone:[0,180], rlat:[0,270], llat:[0,90], trend:[-30,0] };
+const POSE_ANG = { stand:[90,0], semi:[45,0], supine:[0,0], prone:[0,180], rlat:[0,270], llat:[0,90], trend:[-30,0] };
 POSE_ORDER.forEach(k => { POSES[k].tilt = POSE_ANG[k][0]; POSES[k].roll = POSE_ANG[k][1]; });
 
 /* ---------- 標準的な撮影手順 ---------- */
@@ -726,6 +733,9 @@ const SEQ = [
 
 /* ---------- 国試形式の問題（オリジナル）---------- */
 const EXAM = [
+  { q:'台を約45°起こし、胃底部・噴門部の二重造影を得やすくする体位はどれか。',
+    c:['立位','半立位','背臥位','腹臥位','右側臥位'], a:1, set:[45,0],
+    e:'半立位。立位と背臥位の中間で造影剤の貯留位置を調整でき、立位では描出しにくい穹窿部・噴門部に使う。' },
   { q:'胃X線二重造影法で胃体部後壁の像を得るのはどれか。',
     c:['立位正面','背臥位正面','腹臥位正面','右側臥位','左側臥位'], a:1, set:[0,0],
     e:'背側が低く余分なバリウムが胃底部へ落ちるため、後壁が薄い付着とガスで広がる。二重造影の基本体位。' },
@@ -1206,8 +1216,8 @@ const matBone = litMat(0xD6DEE6, 0.26, 0.07, 0.95), matBoneX = xrayMat(0.075, tr
 }
 
 /* ---- 圧迫筒 ---- */
-const coneMesh = new THREE.Mesh(new THREE.CylinderGeometry(2.0, 2.5, 2.2, 24, 1, false), litMat(0x8FA6B6, 0.6, 0.5, 0.8));
-coneMesh.renderOrder = 7; coneMesh.visible = false; bodyGroup.add(coneMesh);
+const coneMesh = new THREE.Mesh(new THREE.CylinderGeometry(1.9, 2.4, 2.0, 24, 1, true), litMat(0x93AEBE, 0.26, 0.10, 1.15));
+coneMesh.renderOrder = 0; coneMesh.visible = false; bodyGroup.add(coneMesh);
 
 /* ---- 患者の全身（体表といっしょに透ける）---- */
 const figureGroup = new THREE.Group(); anatGroup.add(figureGroup);
@@ -1590,11 +1600,12 @@ function setXray(on) {
   meshSkin.material = on ? matSkinX : matSkin;
   meshSkin.visible = on || skinOpacity > 0.005;
   figureGroup.visible = !on && skinOpacity > 0.005;
-  const showRoom = !on && viewPreset !== 'tube' && viewMode !== 2;
+  // 引いているときだけ装置を出す。寄ったときは解剖の邪魔をしない
+  const showRoom = !on && viewMode !== 2 && viewPreset !== 'tube' && ctrl.dist >= ctrl.base * 1.9;
   roomProps.visible = showRoom; tableProps.visible = showRoom;
   boneGroup.visible = on || showBone;
   boneGroup.traverse(o => { if (o.isMesh) o.material = on ? matBoneX : matBone; });
-  coneMesh.visible = !on && compAmt > 0.01;
+  coneMesh.visible = !on && compAmt > 0.01 && viewPreset !== 'tube';
   guides.visible = !on && viewMode !== 2;
 }
 function render() {
@@ -1981,9 +1992,11 @@ function showQ(i) {
   setComp('', 0); syncFree();
   renderQ();
 }
+const qSrc = document.getElementById('qSrc');
 function renderQ() {
   qLocked = false;
   qText.textContent = curQ.q;
+  qSrc.innerHTML = '<b>出典</b> ' + (curQ.src || 'オリジナル問題（国試形式）／実際の過去問ではありません');
   qExp.hidden = true; qExp.textContent = curQ.e;
   qChoices.innerHTML = '';
   curQ.c.forEach((t, i) => {
@@ -2014,6 +2027,7 @@ document.getElementById('bReadQ').addEventListener('click', () => {
   const others = keys.filter(k => k !== ans).sort(() => Math.random() - 0.5).slice(0, 4);
   const cs = [ans].concat(others).sort(() => Math.random() - 0.5);
   curQ = { q: '表示されている透視像の体位はどれか。', c: cs.map(k => POSES[k].name), a: cs.indexOf(ans),
+           src: 'シミュレータが生成した像（オリジナル）',
            e: POSES[ans].name + '。' + POSES[ans].lead.replace(/<\/?em>/g, '') };
   document.getElementById('qNo').textContent = '読影';
   goPose(POSES[ans].tilt, POSES[ans].roll);

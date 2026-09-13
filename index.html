@@ -103,6 +103,8 @@ body.detached .railbar{display:flex; cursor:move; touch-action:none}
 .grp-h b{font-family:var(--gothic); font-weight:500; font-size:11px; letter-spacing:.02em; color:var(--muted)}
 
 .pos-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:6px}
+.pos-grid.four{grid-template-columns:repeat(4,1fr)}
+.pos-grid.four button.opt{font-size:10px; padding:6px 1px 5px}
 .type-grid{display:grid; grid-template-columns:repeat(2,1fr); gap:6px}
 button.opt{
   display:flex; flex-direction:column; align-items:center; gap:3px; padding:7px 3px 6px;
@@ -196,8 +198,9 @@ ol.seq button[aria-current="step"] .tg2{color:#8FC8D8}
   display:flex; justify-content:space-between; align-items:baseline; padding:7px 10px; margin-bottom:10px;
   background:#0B141B; border:1px solid var(--line); border-radius:2px;
 }
-.readout .big{font-family:var(--mono); font-size:13px; color:#EAF6FA; letter-spacing:.04em}
-.readout .sm{font-family:var(--mono); font-size:9.5px; color:var(--dim); letter-spacing:.12em}
+.readout .big{font-family:var(--gothic); font-size:12.5px; color:#EAF6FA; letter-spacing:.02em}
+.readout .sm{font-family:var(--mono); font-size:9.5px; color:var(--dim); letter-spacing:.1em;
+  white-space:nowrap; padding-left:8px}
 .detent{display:flex; gap:4px; margin-top:5px; flex-wrap:wrap}
 .detent button{
   padding:3px 7px; background:var(--panel2); border:1px solid var(--line); border-radius:2px;
@@ -398,7 +401,11 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
       </div>
 
       <div class="pane" id="pane0">
-        <div class="pos-grid" id="posGrid"></div>
+        <div class="readout"><span class="big" id="poseNow">立位正面</span><span class="sm" id="poseAng">90° / 0°</span></div>
+        <p class="grp-h">起倒角</p>
+        <div class="pos-grid four" id="tiltGrid"></div>
+        <p class="grp-h" style="margin:11px 0 9px">体軸の回転</p>
+        <div class="pos-grid" id="rollGrid"></div>
       </div>
 
       <div class="pane" id="pane1" hidden>
@@ -627,31 +634,30 @@ const POSES = {
 const POSE_ORDER = ['stand','semi','schatzki','supine','prone','trend','rlat','llat'];
 
 /* ---------- 体位アイコン ---------- */
-const ICONS = (function () {
+/* ---------- アイコン ---------- */
+//  起倒角：横から見た患者と床。SVG は y が下向きなので頭（左端）を上げるには正の角度
+const TILT_ICON = (function () {
   const floor = '<path d="M7 22.8h30" stroke-width="1" opacity=".45"/>';
   const lying = '<circle cx="11" cy="16" r="3.4"/><rect x="15" y="12.6" width="19" height="6.8" rx="3.4"/>';
-  //  SVG は y が下向きなので、頭（左端）を上げるには正の角度で時計回りに回す
-  const tilted = (deg, extra) => '<g transform="rotate(' + deg + ' 22.5 16)">' + lying + '</g>' + (extra || '');
-  //  頭側から見た体幹の断面。腹側（三角）が向く方向で右下・左下を描き分ける
-  const cross = (letter, dir) =>
-    '<circle cx="22" cy="12.6" r="6.6" fill="none" stroke-width="1.6"/>' +
-    '<circle cx="' + (22 - 4.3 * dir) + '" cy="12.6" r="1.6"/>' +
-    '<path d="M' + (22 + 5.4 * dir) + ' 9.4L' + (22 + 10 * dir) + ' 12.6L' + (22 + 5.4 * dir) + ' 15.8Z"/>' +
-    '<text x="' + (22 - 1.4 * dir) + '" y="15.2" font-size="7.5" text-anchor="middle" font-family="monospace" stroke="none">' + letter + '</text>';
+  const tilted = deg => '<g transform="rotate(' + deg + ' 22.5 16)">' + lying + '</g>';
   return {
-    stand: '<circle cx="22" cy="5.6" r="3.3"/><rect x="18.6" y="9.2" width="7" height="10.2" rx="3"/>' +
-           '<path d="M20 19.4v3.2M24 19.4v3.2" stroke-width="1.7"/>' + floor,
-    semi: tilted(44) + floor,
-    schatzki: tilted(44,
-      '<path d="M31 5.2a6 6 0 0 1 6.4 2.6" fill="none" stroke-width="1.3"/>' +
-      '<path d="M37.6 8.4l-.2-3.1 2.9 1.1" fill="none" stroke-width="1.3"/>') + floor,
-    supine: lying + '<path d="M21 12.6a3.2 3.2 0 0 1 6 0" fill="none" stroke-width="1.5"/>' + floor,
-    prone: lying + '<path d="M21 19.4a3.2 3.2 0 0 0 6 0" fill="none" stroke-width="1.5"/>' + floor,
-    trend: tilted(-20) + floor,
-    rlat: cross('R', 1) + floor,
-    llat: cross('L', -1) + floor
+    90: '<circle cx="22" cy="5.6" r="3.3"/><rect x="18.6" y="9.2" width="7" height="10.2" rx="3"/>' +
+        '<path d="M20 19.4v3.2M24 19.4v3.2" stroke-width="1.7"/>' + floor,
+    45: tilted(44) + floor,
+    0: lying + floor,
+    '-30': tilted(-20) + floor
   };
 })();
+//  回転：足側から見た体幹の断面。三角が腹側、丸が棘突起。断面ごと回転角ぶん回す
+//  （足側から見ているので患者の右は画面の左。よって回す向きは −roll）
+function rollIcon(roll) {
+  return '<circle cx="22" cy="12.6" r="6.6" fill="none" stroke-width="1.6"/>' +
+    '<g transform="rotate(' + (-roll) + ' 22 12.6)">' +
+      '<path d="M18.9 5.8L22 1.8L25.1 5.8Z"/><circle cx="22" cy="16.9" r="1.5"/>' +
+    '</g>' +
+    '<g font-size="7.5" font-family="monospace" text-anchor="middle" stroke="none" opacity=".62">' +
+      '<text x="10.5" y="15.2">R</text><text x="33.5" y="15.2">L</text></g>';
+}
 
 /* ---------- 体位＝（透視台の起倒角, 体軸の回転角）---------- */
 const POSE_ANG = { stand:[90,0], semi:[45,0], schatzki:[45,315], supine:[0,0], prone:[0,180], rlat:[0,270], llat:[0,90], trend:[-30,0] };
@@ -1679,6 +1685,7 @@ function updateLabels() {
 }
 
 function updateNotes() {
+  syncPose();
   document.getElementById('freePos').textContent = poseName(tiltT, rollT);
   document.getElementById('freeAng').textContent = Math.round(tiltT) + '° / ' + Math.round(((rollT % 360) + 360) % 360) + '°';
   if (curMode === 1 && seqIdx >= 0) {
@@ -1687,19 +1694,35 @@ function updateNotes() {
 }
 
 /* ================= UI ================= */
-const posGrid = document.getElementById('posGrid');
-POSE_ORDER.forEach(key => {
+const TILTS = [[90, '立位'], [45, '半立位'], [0, '水平'], [-30, '頭低位']];
+const ROLLS = [[0, '正面'], [45, '第1斜位'], [315, '第2斜位'],
+               [270, '右側臥位'], [90, '左側臥位'], [180, '腹臥位']];
+const tiltGrid = document.getElementById('tiltGrid'), rollGrid = document.getElementById('rollGrid');
+function addOpt(grid, v, label, svg, fn) {
   const b = document.createElement('button');
-  b.className = 'opt'; b.type = 'button'; b.dataset.k = key;
-  b.setAttribute('aria-pressed', key === curPose);
-  b.innerHTML = '<svg width="44" height="26" viewBox="0 0 44 26" fill="currentColor" stroke="currentColor" stroke-linecap="round">' + ICONS[key] + '</svg>' + POSES[key].name;
-  b.addEventListener('click', () => setPreset(key));
-  posGrid.appendChild(b);
-});
+  b.className = 'opt'; b.type = 'button'; b.dataset.v = v;
+  b.innerHTML = '<svg width="44" height="26" viewBox="0 0 44 26" fill="currentColor" stroke="currentColor" stroke-linecap="round" aria-hidden="true">' + svg + '</svg>' + label;
+  b.addEventListener('click', fn);
+  grid.appendChild(b);
+}
+TILTS.forEach(([v, n]) => addOpt(tiltGrid, v, n, TILT_ICON[v], () => { playing = false; goPose(v, rollT); syncFree(); updateNotes(); }));
+ROLLS.forEach(([v, n]) => addOpt(rollGrid, v, n, rollIcon(v), () => { playing = false; goPose(tiltT, v); syncFree(); updateNotes(); }));
+
+const dAng = (a, b) => Math.abs(((a - b) % 360 + 540) % 360 - 180);
+function poseLabel(t, r) {                    // よく知られた別名があれば添える
+  const n = poseName(t, r);
+  return (Math.abs(t - 45) < 8 && dAng(r, 315) < 8) ? n + '（シャツキー位）' : n;
+}
+function syncPose() {
+  const r = ((rollT % 360) + 360) % 360;
+  [...tiltGrid.children].forEach(b => b.setAttribute('aria-pressed', Math.abs(+b.dataset.v - tiltT) < 8));
+  [...rollGrid.children].forEach(b => b.setAttribute('aria-pressed', dAng(+b.dataset.v, r) < 8));
+  document.getElementById('poseNow').textContent = poseLabel(tiltT, rollT);
+  document.getElementById('poseAng').textContent = Math.round(tiltT) + '° / ' + Math.round(r) + '°';
+}
 
 function setPreset(key) {
   curPose = key; playing = false;
-  [...posGrid.children].forEach(b => b.setAttribute('aria-pressed', b.dataset.k === key));
   goPose(POSES[key].tilt, POSES[key].roll);
   syncFree(); updateNotes();
 }

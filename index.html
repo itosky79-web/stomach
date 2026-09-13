@@ -1,4 +1,4 @@
-<title>胃バリウム透視シミュレータ</title>
+<title>胃バリウム透視シミュレーター</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
@@ -346,7 +346,7 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
 
 <div class="wrap">
 <header>
-  <h1>胃バリウム透視シミュレータ</h1>
+  <h1>胃バリウム透視シミュレーター</h1>
 </header>
 
 <div class="work">
@@ -501,7 +501,7 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
 体位: 0,0
 ---
 （2問目以降は --- で区切る）</pre>
-            <p>「体位」は 起倒角,回転角。書いておくとその問題を開いたときシミュレータがその体位になります（省略可）。</p>
+            <p>「体位」は 起倒角,回転角。書いておくとその問題を開いたときシミュレーターがその体位になります（省略可）。</p>
           </details>
         </div>
       </div>
@@ -542,7 +542,7 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
 <script>
 "use strict";
 /* =====================================================================
-   胃バリウム透視シミュレータ
+   胃バリウム透視シミュレーター
    胃を「軸に沿った可変断面の管」としてモデル化し、重力方向に対する
    1次元の流体平衡を解く。断面ごとの底の高さが障壁になるため、
    瀑状胃のように胃底部が窪んだ形では自然に「先に溜まって溢れる」。
@@ -1881,9 +1881,17 @@ function parseExam(txt) {
   return out;
 }
 function saveExam() { try { localStorage.setItem(QKEY, JSON.stringify(EXAM)); } catch (e) { } }
+function shuffle(a) {                       // 出題順は開くたびに入れ替える
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 function loadExam() {
   EXAM = EXAM_DEFAULT.slice();
   try { const v = localStorage.getItem(QKEY); const j = v && JSON.parse(v); if (j && j.length) EXAM = j; } catch (e) { }
+  shuffle(EXAM);
 }
 function qView(which) {
   qEmpty.hidden = which !== 'empty'; qBox.hidden = which !== 'quiz'; qImport.hidden = which !== 'import';
@@ -1943,12 +1951,12 @@ document.getElementById('bLoadOpen2').addEventListener('click', openImport);
 document.getElementById('bImportCancel').addEventListener('click', () => { qView(EXAM.length ? 'quiz' : 'empty'); });
 document.getElementById('bRestore').addEventListener('click', () => {
   try { localStorage.removeItem(QKEY); } catch (e) { }
-  EXAM = EXAM_DEFAULT.slice(); showQ(0);
+  EXAM = shuffle(EXAM_DEFAULT.slice()); showQ(0);
 });
 document.getElementById('bImport').addEventListener('click', () => {
   const got = parseExam(qPaste.value);
   if (!got.length) { qPaste.value = '読み取れませんでした。書式を確認してください。\n\n' + qPaste.value; return; }
-  EXAM = got; saveExam(); showQ(0);
+  EXAM = got; saveExam(); shuffle(EXAM); showQ(0);
 });
 document.getElementById('bReadQ').addEventListener('click', () => {
   const keys = POSE_ORDER.slice();
@@ -1956,7 +1964,7 @@ document.getElementById('bReadQ').addEventListener('click', () => {
   const others = keys.filter(k => k !== ans).sort(() => Math.random() - 0.5).slice(0, 4);
   const cs = [ans].concat(others).sort(() => Math.random() - 0.5);
   curQ = { q: '表示されている透視像の体位はどれか。', c: cs.map(k => POSES[k].name), a: [cs.indexOf(ans) + 1],
-           src: '読影練習（シミュレータの生成像／国家試験の問題ではありません）', img: null, set: null,
+           src: '読影練習（シミュレーターの生成像／国家試験の問題ではありません）', img: null, set: null,
            e: POSES[ans].name + '。' + POSES[ans].lead.replace(/<\/?em>/g, '') };
   document.getElementById('qNo').textContent = '読影練習';
   goPose(POSES[ans].tilt, POSES[ans].roll);

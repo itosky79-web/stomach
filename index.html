@@ -72,8 +72,9 @@ h1{
   position:absolute; bottom:0; left:0; right:0; padding:4px 6px;
   font-family:var(--mono); font-size:9px; letter-spacing:.08em; color:#7FA9BD; text-align:center;
 }
+#tiltGiz{position:absolute; left:10px; bottom:6px; width:118px; height:82px; pointer-events:none}
 .viewhint{
-  position:absolute; left:12px; bottom:10px; font-family:var(--mono); font-size:9.5px;
+  position:absolute; left:134px; bottom:14px; font-family:var(--mono); font-size:9.5px;
   letter-spacing:.12em; color:var(--dim); pointer-events:none;
 }
 
@@ -418,7 +419,16 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
         <button class="expose" id="bShot" type="button">撮影</button>
       </div>
     </div>
-    <div class="viewhint">DRAG: ROTATE / WHEEL: ZOOM / RIGHT-DRAG: PAN</div>
+    <svg id="tiltGiz" viewBox="0 0 124 86" aria-label="撮影台の傾き">
+      <g id="tiltRot" transform="rotate(0 54 44)">
+        <rect x="22" y="43" width="64" height="3" rx="1.5" fill="#33485A"/>
+        <rect x="32" y="34" width="44" height="9" rx="4.5" fill="#465E71"/>
+        <circle cx="28" cy="38.5" r="5" fill="#465E71"/>
+      </g>
+      <path d="M110 16 L110 44 M110 44 L106 37 M110 44 L114 37" stroke="#52B8CE" fill="none" stroke-width="1.6" stroke-linecap="round"/>
+      <text x="54" y="78" text-anchor="middle" fill="#5E7386" font-size="10" font-family="monospace" id="tiltTxt">90°</text>
+    </svg>
+    <div class="viewhint">DRAG: ROTATE / WHEEL: ZOOM</div>
   </div>
 
   <div class="rail">
@@ -526,9 +536,9 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
     <div class="grp">
       <p class="grp-h">視点</p>
       <div class="seg wide" id="viewpt">
-        <button type="button" data-p="op" aria-pressed="true">術者</button>
-        <button type="button" data-p="tube">管球</button>
-        <button type="button" data-p="front">正面</button>
+        <button type="button" data-p="tube" aria-pressed="true">管球</button>
+        <button type="button" data-p="oblique">斜め</button>
+        <button type="button" data-p="lateral">側面</button>
       </div>
       <p class="grp-h" style="margin-top:12px">ラベル</p>
       <div class="seg wide" id="labSeg">
@@ -1200,8 +1210,8 @@ coneMesh.renderOrder = 7; coneMesh.visible = false; bodyGroup.add(coneMesh);
 
 /* ---- ガイド ---- */
 const guides = new THREE.Group(); scene.add(guides);
-const grid = new THREE.GridHelper(90, 18, 0x223140, 0x18232E);
-grid.material.transparent = true; grid.material.opacity = 0.5; guides.add(grid);
+const grid = new THREE.GridHelper(52, 13, 0x203040, 0x172230);
+grid.material.transparent = true; grid.material.opacity = 0.3; guides.add(grid);
 const arrow = new THREE.ArrowHelper(new THREE.Vector3(0, -1, 0), new THREE.Vector3(-15, 8, 0), 9, 0x52B8CE, 2.4, 1.5);
 guides.add(arrow);
 
@@ -1225,10 +1235,17 @@ const qBase = (function () {
     new THREE.Vector3(b[2][0], b[2][1], b[2][2])));
 })();
 const qA = new THREE.Quaternion(), qB = new THREE.Quaternion();
+const gWorld = new THREE.Vector3(0, -1, 0);
 function applyPose() {
-  qA.setFromAxisAngle(Zax, -tiltCur * Math.PI / 180);
+  // 撮影台に固定した座標系。患者は体軸回転ぶんだけ回り、台の起倒は重力の向きに現れる
   qB.setFromAxisAngle(Yax, rollCur * Math.PI / 180);
-  bodyGroup.quaternion.copy(qA).multiply(qBase).multiply(qB);
+  bodyGroup.quaternion.copy(qBase).multiply(qB);
+  const t = tiltCur * Math.PI / 180;
+  gWorld.set(Math.sin(t), -Math.cos(t), 0);
+}
+function upLocal(out) {
+  qA.copy(bodyGroup.quaternion).invert();
+  return out.copy(gWorld).multiplyScalar(-1).applyQuaternion(qA);
 }
 function goPose(t, r) {
   tiltT = t;
@@ -1379,31 +1396,30 @@ function rebuildAll() {
 }
 
 /* ================= カメラ ================= */
-const ctrl = { theta: 0.60, phi: 0.95, dist: 46, target: new THREE.Vector3(0, 0, 0) };
-const VIEWS = { op: [0.60, 0.95], front: [0.32, 1.42] };
-let viewPreset = 'op';
+// 管球（AZ）から患者を見るのが基準。AY=頭側＝画面の上、AX=画面の右。
+const AX = new THREE.Vector3(0, 0, -1), AY = new THREE.Vector3(-1, 0, 0), AZ = new THREE.Vector3(0, 1, 0);
+const ctrl = { az: 0, el: 0, dist: 46, target: new THREE.Vector3(0, 0, 0) };
+const VIEWS = { tube: [0, 0], oblique: [0.80, 0.50], lateral: [Math.PI / 2, 0.10] };
+let viewPreset = 'tube';
+const _qa = new THREE.Quaternion(), _qb = new THREE.Quaternion(), _dir = new THREE.Vector3();
 function applyCam() {
-  if (viewPreset === 'tube') {                       // 管球の位置から見る
-    const t = tiltCur * Math.PI / 180;
-    const nrm = new THREE.Vector3(Math.sin(t), Math.cos(t), 0);
-    camera.up.set(-Math.cos(t), Math.sin(t), 0);
-    camera.position.copy(ctrl.target).addScaledVector(nrm, ctrl.dist);
-  } else {                                           // 術者の定位置（勝手に動かない）
-    camera.up.set(0, 1, 0);
-    const sp = Math.sin(ctrl.phi);
-    camera.position.set(
-      ctrl.target.x + ctrl.dist * sp * Math.sin(ctrl.theta),
-      ctrl.target.y + ctrl.dist * Math.cos(ctrl.phi),
-      ctrl.target.z + ctrl.dist * sp * Math.cos(ctrl.theta));
-  }
+  _qa.setFromAxisAngle(AX, ctrl.el);
+  _qb.setFromAxisAngle(AY, ctrl.az);
+  _dir.copy(AZ).applyQuaternion(_qa).applyQuaternion(_qb);
+  camera.up.copy(AY);
+  camera.position.copy(ctrl.target).addScaledVector(_dir, ctrl.dist);
   camera.lookAt(ctrl.target);
   camera.updateMatrixWorld();
   const rt = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0);
-  arrow.position.set(ctrl.target.x + rt.x * ctrl.dist * -0.40, bsRadius * 0.6, ctrl.target.z + rt.z * ctrl.dist * -0.40);
+  const uv = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 1);
+  arrow.position.copy(ctrl.target).addScaledVector(rt, -ctrl.dist * 0.38).addScaledVector(uv, ctrl.dist * 0.14);
+  if (gWorld.lengthSq() > 0) arrow.setDirection(gWorld);
+  // 重力が視線とほぼ平行なときは矢印がつぶれるので隠す（傾きは左下の指標で読む）
+  arrow.visible = Math.abs(gWorld.dot(_dir)) < 0.93;
 }
 function setView(p) {
   viewPreset = p;
-  if (VIEWS[p]) { ctrl.theta = VIEWS[p][0]; ctrl.phi = VIEWS[p][1]; }
+  if (VIEWS[p]) { ctrl.az = VIEWS[p][0]; ctrl.el = VIEWS[p][1]; }
   const seg = document.getElementById('viewpt');
   if (seg) [...seg.children].forEach(b => b.setAttribute('aria-pressed', b.dataset.p === p));
   applyCam();
@@ -1411,18 +1427,12 @@ function setView(p) {
 function fitCam() {
   ctrl.dist = bsRadius / Math.sin(camera.fov * Math.PI / 360) * 1.10;
   ctrl.target.set(0, 0, 0);
-  grid.position.y = -27;
-  setView(viewPreset === 'tube' ? 'tube' : 'op');
+  grid.position.y = -(bsRadius + 5);
+  setView('tube');
 }
 let drag = null, pinch = 0;
 canvas.addEventListener('pointerdown', e => {
   canvas.setPointerCapture(e.pointerId);
-  if (viewPreset === 'tube') {
-    const d = camera.position.clone().sub(ctrl.target);
-    ctrl.phi = Math.acos(Math.max(-1, Math.min(1, d.y / d.length())));
-    ctrl.theta = Math.atan2(d.x, d.z);
-    setView('op');
-  }
   drag = { x: e.clientX, y: e.clientY, pan: e.button === 2 || e.shiftKey };
 });
 canvas.addEventListener('pointermove', e => {
@@ -1435,8 +1445,10 @@ canvas.addEventListener('pointermove', e => {
     const up = new THREE.Vector3().setFromMatrixColumn(camera.matrix, 1);
     ctrl.target.addScaledVector(right, -dx * s).addScaledVector(up, dy * s);
   } else {
-    ctrl.theta -= dx * 0.008;
-    ctrl.phi = Math.max(0.12, Math.min(Math.PI - 0.12, ctrl.phi - dy * 0.008));
+    ctrl.az -= dx * 0.008;
+    ctrl.el = Math.max(-1.22, Math.min(1.22, ctrl.el - dy * 0.008));
+    const seg = document.getElementById('viewpt');
+    if (seg) [...seg.children].forEach(b => b.setAttribute('aria-pressed', false));
   }
   applyCam();
 });
@@ -1473,14 +1485,10 @@ function viewRects() {
   return { film: { left: w - fw - 14, top: h - fh - 14, w: fw, h: fh, yb: 14 }, w: w, h: h };
 }
 function setXcam(aspect) {
-  const t = tiltCur * Math.PI / 180;
-  const n = new THREE.Vector3(Math.sin(t), Math.cos(t), 0);          // 台の法線＝X線束の方向
-  const head = new THREE.Vector3(-Math.cos(t), Math.sin(t), 0);      // 頭側＝フィルムの上
-  xcam.position.copy(n).multiplyScalar(bsRadius * 3.2);
-  const z = n.clone(), y = head.clone();
-  y.addScaledVector(z, -y.dot(z)).normalize();
-  const x = new THREE.Vector3().crossVectors(y, z);
-  xcam.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
+  // 管球も受像器も台に固定されているので、向きは体位によらず一定
+  xcam.position.copy(AZ).multiplyScalar(bsRadius * 3.2);
+  const x = new THREE.Vector3().crossVectors(AY, AZ);
+  xcam.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, AY.clone(), AZ.clone()));
   const hh = bsRadius * 1.06, hw = hh * aspect;
   xcam.left = -hw; xcam.right = hw; xcam.top = hh; xcam.bottom = -hh;
   xcam.near = 1; xcam.far = bsRadius * 9;
@@ -1511,7 +1519,7 @@ function setXray(on) {
   boneGroup.visible = on || showBone;
   boneGroup.traverse(o => { if (o.isMesh) o.material = on ? matBoneX : matBone; });
   coneMesh.visible = !on && compAmt > 0.01;
-  guides.visible = !on && labelMode >= 2 && viewMode !== 2;
+  guides.visible = !on && viewMode !== 2;
 }
 function render() {
   const r = viewRects();
@@ -1985,7 +1993,7 @@ function settle() {
   for (let i = 0; i < NMAIN; i++) if (regionList[regionOf[i]][0] !== 'duode') wVol[i] = cap[i] / sc * v;
   administered = targetMl; drained = 0;
   applyPose();
-  uUp.value.set(0, 1, 0).applyQuaternion(qA.copy(bodyGroup.quaternion).invert());
+  upLocal(uUp.value);
   computeHeights();
   for (let s = 0; s < 150; s++) flowStep(1 / 60);
   for (let n = 0; n < NN; n++) lvl[n] = levelOf(n);
@@ -2003,7 +2011,7 @@ function resize() {
 }
 new ResizeObserver(resize).observe(stage);
 
-const invQ = new THREE.Quaternion();
+const tiltRot = document.getElementById('tiltRot'), tiltTxt = document.getElementById('tiltTxt');
 let last = performance.now(), acc = 0;
 const ROLLSEQ = [0, 90, 270, 180, 0];
 function loop(now) {
@@ -2026,12 +2034,11 @@ function loop(now) {
   const k = 1 - Math.exp(-dt * 3.6);
   tiltCur += (tiltT - tiltCur) * k;
   rollCur += (rollT - rollCur) * k;
-  if (autoSpin) ctrl.theta += dt * 0.28;
+  if (autoSpin) ctrl.az += dt * 0.28;
   applyPose(); applyCam();
 
   bodyGroup.updateMatrixWorld();
-  invQ.copy(bodyGroup.quaternion).invert();
-  uUp.value.set(0, 1, 0).applyQuaternion(invQ);
+  upLocal(uUp.value);
 
   computeHeights();
   dose(dt);
@@ -2043,7 +2050,11 @@ function loop(now) {
   if (viewMode !== 0) fluoroTime += dt;
 
   acc += dt;
-  if (acc > 0.16) { acc = 0; updateReadouts(); updateFilmLabels(); }
+  if (acc > 0.16) {
+    acc = 0; updateReadouts(); updateFilmLabels();
+    tiltRot.setAttribute('transform', 'rotate(' + (-tiltCur).toFixed(1) + ' 54 44)');
+    tiltTxt.textContent = Math.round(tiltCur) + '°';
+  }
   render();
 }
 

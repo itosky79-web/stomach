@@ -11,12 +11,22 @@
 - **学習** — 立位 / 半立位 / シャツキー位（半立位第2斜位）/ 背臥位 / 腹臥位 / 頭低位 / 右側臥位 / 左側臥位 を切り替え、バリウムが流動する様子と二重造影が成立する壁面を見ます。斜位や中間の角度はフリーモードで連続的に作れます。胃型は鉤状胃で固定です。
 - **撮影手順** — 上部消化管X線検診の代表的な撮影順（食道 → 背臥位系の二重造影 → 噴門部 → 前壁 → 十二指腸 → 充盈像 → 圧迫像）を①から⑪まで。各ステップで体位が自動的に決まり、ねらいと注意点が表示されます。順に再生もできます。
 - **フリー** — 操作卓のスティックで透視台の起倒角（縦方向, −30〜90°）と体軸の回転角（横方向）を、レバーで圧迫を操作します。手を離すと主要角度にスナップします。
-- **問題** — 診療放射線技師国家試験の実際の過去問（第76〜78回）から、胃・消化管造影に関する7問を収録。厚生労働省が公表している問題PDFから抽出したもので、出典（第○回 午前/午後 第○問）を表示します。第76回午後第85問は別冊の上部消化管造影写真も同梱。「2つ選べ」の問題にも対応します。手元の問題を貼り付けて差し替えることもできます。
+- **問題** — 診療放射線技師国家試験の実際の過去問（第70・71・74〜78回）から、胃・消化管造影に関する13問を収録。厚生労働省が公表している問題PDF・正答PDFから抽出したもので、出典（第○回 午前/午後 第○問）を表示します。別冊の上部消化管造影写真2枚も同梱。「2つ選べ」に対応し、問題を開くとシミュレータがその体位になります。
 
 出典：厚生労働省「診療放射線技師国家試験問題および正答について」
 [第78回](https://www.mhlw.go.jp/seisakunitsuite/bunya/kenkou_iryou/iryou/topics/tp260424-06.html) /
 [第77回](https://www.mhlw.go.jp/seisakunitsuite/bunya/kenkou_iryou/iryou/topics/tp250428-06.html) /
-[第76回](https://www.mhlw.go.jp/seisakunitsuite/bunya/kenkou_iryou/iryou/topics/tp240424-06.html)
+[第76回](https://www.mhlw.go.jp/seisakunitsuite/bunya/kenkou_iryou/iryou/topics/tp240424-06.html) /
+[第75回](https://www.mhlw.go.jp/seisakunitsuite/bunya/kenkou_iryou/iryou/topics/tp230524-06.html) /
+[第74回](https://www.mhlw.go.jp/seisakunitsuite/bunya/kenkou_iryou/iryou/topics/tp220421-06.html) /
+[第71回](https://www.mhlw.go.jp/seisakunitsuite/bunya/kenkou_iryou/iryou/topics/tp190415-06.html) /
+[第70回](https://www.mhlw.go.jp/seisakunitsuite/bunya/kenkou_iryou/iryou/topics/tp180511-06.html)
+
+## コンソール
+
+右のコンソールは幅を変えられます。ステージとの境目をドラッグしてください（キーボードでも左右キーで調整できます）。
+
+「分離」を押すとコンソールが浮いたパネルになり、ステージが全幅になります。見出しをドラッグして好きな位置へ動かせ、右下の角で大きさを変えられます。画像問題を解きながら 3D モデルを大きく動かしたいときに使ってください。「結合」で元に戻ります。幅・位置・分離の状態はブラウザに保存されます。
 
 ### 問題の貼り付け書式
 

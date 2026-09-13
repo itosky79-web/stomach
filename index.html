@@ -1,4 +1,5 @@
 <title>胃バリウム透視シミュレーター</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=IBM+Plex+Mono:wght@400;600&display=swap">
@@ -15,6 +16,7 @@
   --r:4px;
 }
 *{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%; -webkit-tap-highlight-color:transparent}
 body{
   margin:0; background:var(--ink); color:var(--text);
   font-family:var(--gothic); font-size:14px; line-height:1.75;
@@ -328,16 +330,48 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
 .lab{font-size:10px; padding:0 5px; background:rgba(10,15,20,.6); border-color:rgba(49,72,92,.7)}
 .lab.axis{font-size:9px}
 
+/* ---------- スマートフォン・タブレット ---------- */
 @media (max-width:900px){
-  .work{grid-template-columns:1fr}
+  /* グリッドをやめて通常の積み重ねにする。
+     こうすると .work 全体が包含ブロックになり、3D を sticky で貼り付けられる */
+  .work{display:block}
   .split{display:none}
   .railbar{display:none !important}
-  .stage{height:min(58vh,460px)}
-  .rail{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); align-items:start;
-    height:auto; overflow:visible; padding-right:0}
+  .stage{
+    position:sticky; top:0; z-index:6;
+    height:clamp(230px,42vh,430px);
+    box-shadow:0 12px 20px -14px rgba(0,0,0,.95);
+  }
+  .rail{display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); align-items:start;
+    gap:10px; height:auto; overflow:visible; padding-right:0; margin-top:10px}
+  /* 問題タブでは 3D を固定しない。図と選択肢に画面をすべて使う */
+  body.quiz .stage{position:relative; box-shadow:none}
+  header{padding-block:14px 10px; margin-bottom:12px}
+  .bar{top:7px; left:7px; right:7px; gap:7px}
+  .seg button{padding:6px 10px}
+  .expose{padding:6px 13px}
+  #tiltGiz{width:98px; height:68px; left:6px; bottom:2px}
+  .films{margin-top:12px}
+}
+/* 横向きのスマホ・小さめのタブレットは左右に並べたほうが見やすい */
+@media (max-width:900px) and (min-width:660px) and (orientation:landscape){
+  .work{display:grid; grid-template-columns:minmax(0,1fr) 290px; gap:10px; align-items:start}
+  .stage{position:relative; height:clamp(240px,76vh,460px); box-shadow:none}
+  .rail{display:flex; flex-direction:column; height:clamp(240px,76vh,460px);
+    overflow-y:auto; margin-top:0; padding-right:6px}
 }
 @media (max-width:560px){
-  .wrap{padding-inline:16px}
+  #film .fh,#film .ff{font-size:8px; white-space:nowrap; overflow:hidden}
+  #film .fR,#film .fL{font-size:11px}
+  .wrap{padding-inline:14px;
+    padding-left:max(14px,env(safe-area-inset-left)); padding-right:max(14px,env(safe-area-inset-right));
+    padding-bottom:max(40px,env(safe-area-inset-bottom))}
+  h1{font-size:17px}
+  .stage{height:clamp(230px,44vh,400px)}
+  .tabs button{font-size:11.5px; padding:9px 1px}
+  button.opt{padding:8px 3px 7px}
+  .choices button{padding:8px 9px; font-size:12.5px}
+  .seqnav .act,.acts .act{padding:9px 4px}
 }
 @media (prefers-reduced-motion:reduce){
   *{transition-duration:.01ms !important}
@@ -1471,7 +1505,7 @@ function viewRects() {
     const fh = Math.max(120, Math.min(h - 26, (w - 26) * 1.25)), fw = fh / 1.25;
     return { film: { left: (w - fw) / 2, top: (h - fh) / 2, w: fw, h: fh, yb: (h - fh) / 2 }, w: w, h: h, full: true };
   }
-  const fw = Math.round(Math.min(238, Math.max(132, w * 0.29)));
+  const fw = Math.round(Math.min(238, Math.max(w < 420 ? 96 : 132, w * 0.29)));
   const fh = Math.round(Math.min(fw * 1.26, h * 0.62));
   return { film: { left: w - fw - 14, top: h - fh - 14, w: fw, h: fh, yb: 14 }, w: w, h: h };
 }
@@ -1733,6 +1767,7 @@ function setMode(m) {
   curMode = m; playing = false;
   [...tabs.children].forEach(b => b.setAttribute('aria-pressed', +b.dataset.m === m));
   for (let i = 0; i < 4; i++) document.getElementById('pane' + i).hidden = (i !== m);
+  document.body.classList.toggle('quiz', m === 3);          // スマホでは問題タブだけ3Dを固定しない
   if (m === 1 && seqIdx < 0) gotoStep(0);
   if (m === 2) syncFree();
   if (m === 3) { if (EXAM.length && !curQ) showQ(0); else if (!EXAM.length) qView('empty'); }

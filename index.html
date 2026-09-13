@@ -208,6 +208,96 @@ footer{
 }
 footer span{font-family:var(--mono); font-size:10px; letter-spacing:.1em}
 
+
+/* ---------- stage toolbar ---------- */
+.bar{position:absolute; top:10px; left:10px; right:10px; display:flex; justify-content:space-between; gap:10px; pointer-events:none; flex-wrap:wrap}
+.seg{display:flex; border:1px solid var(--line2); border-radius:3px; overflow:hidden; pointer-events:auto; background:rgba(10,15,20,.82); backdrop-filter:blur(4px)}
+.seg button{
+  padding:5px 11px; background:none; border:none; border-right:1px solid var(--line);
+  color:var(--muted); font-family:var(--mono); font-size:10px; letter-spacing:.1em; cursor:pointer;
+}
+.seg button:last-child{border-right:none}
+.seg button[aria-pressed="true"]{background:#1D3040; color:#EAF6FA}
+.seg button:hover{color:var(--text)}
+.barR{display:flex; gap:8px; align-items:center; pointer-events:auto}
+.expose{
+  padding:5px 14px; border:1px solid #6B4A2A; background:rgba(40,22,8,.9); border-radius:3px;
+  color:#F3C173; font-family:var(--mono); font-size:10.5px; letter-spacing:.12em; cursor:pointer;
+}
+.expose:hover{background:#4A2B10; color:#FFD79A}
+.fluoro{font-family:var(--mono); font-size:9.5px; letter-spacing:.08em; color:var(--dim); background:rgba(10,15,20,.8); padding:4px 8px; border-radius:3px}
+.fluoro b{color:var(--teal); font-weight:400}
+
+/* ---------- tabs ---------- */
+.tabs{display:grid; grid-template-columns:repeat(3,1fr); gap:0; border:1px solid var(--line2); border-radius:3px; overflow:hidden; margin-bottom:12px}
+.tabs button{
+  padding:8px 2px; background:var(--ink2); border:none; border-right:1px solid var(--line);
+  color:var(--muted); font-family:var(--gothic); font-size:11.5px; cursor:pointer;
+}
+.tabs button:last-child{border-right:none}
+.tabs button[aria-pressed="true"]{background:#1D3040; color:#EAF6FA; box-shadow:inset 0 -2px 0 var(--teal)}
+.pane[hidden]{display:none}
+
+/* ---------- sequence ---------- */
+.seqhead{font-size:11.5px; color:var(--muted); margin:0 0 9px; line-height:1.7}
+ol.seq{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:3px}
+ol.seq li{display:flex}
+ol.seq button{
+  flex:1; display:grid; grid-template-columns:22px 1fr; gap:7px; align-items:baseline; text-align:left;
+  padding:6px 8px; background:transparent; border:1px solid transparent; border-radius:3px;
+  color:var(--muted); font-family:var(--gothic); font-size:11.5px; cursor:pointer; line-height:1.5;
+}
+ol.seq button:hover{background:var(--panel2); color:var(--text)}
+ol.seq button[aria-current="step"]{background:#1B2E3D; border-color:var(--teal); color:#EAF6FA}
+ol.seq .no{font-family:var(--mono); font-size:10px; color:var(--teal)}
+ol.seq .tg2{display:block; font-size:10px; color:var(--dim); letter-spacing:.02em}
+ol.seq button[aria-current="step"] .tg2{color:#8FC8D8}
+.seqnav{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:10px}
+.seqaim{margin:10px 0 0; padding:10px 11px; background:var(--ink2); border-left:2px solid var(--amber); border-radius:0 2px 2px 0; font-size:12px; color:var(--muted); line-height:1.85}
+.seqaim b{color:var(--amber); font-weight:500; display:block; margin-bottom:3px; font-size:11px; letter-spacing:.04em}
+.prepost{margin:11px 0 0; font-size:11px; color:var(--dim); line-height:1.8; border-top:1px solid var(--line); padding-top:9px}
+.prepost b{color:var(--muted); font-weight:500}
+
+/* ---------- console ---------- */
+.readout{
+  display:flex; justify-content:space-between; align-items:baseline; padding:7px 10px; margin-bottom:10px;
+  background:#0B141B; border:1px solid var(--line); border-radius:2px;
+}
+.readout .big{font-family:var(--mono); font-size:13px; color:#EAF6FA; letter-spacing:.04em}
+.readout .sm{font-family:var(--mono); font-size:9.5px; color:var(--dim); letter-spacing:.12em}
+.detent{display:flex; gap:4px; margin-top:5px; flex-wrap:wrap}
+.detent button{
+  padding:3px 7px; background:var(--panel2); border:1px solid var(--line); border-radius:2px;
+  color:var(--dim); font-family:var(--mono); font-size:9.5px; cursor:pointer;
+}
+.detent button:hover{color:var(--text); border-color:var(--teal)}
+select.sel{
+  width:100%; padding:6px 8px; background:var(--panel2); border:1px solid var(--line); border-radius:3px;
+  color:var(--text); font-family:var(--gothic); font-size:12px; cursor:pointer;
+}
+select.sel:focus-visible{outline:2px solid var(--teal); outline-offset:2px}
+
+/* ---------- filmstrip ---------- */
+.films{margin-top:14px; border:1px solid var(--line); border-radius:var(--r); background:var(--panel); padding:12px 14px 14px}
+.films .fh2{display:flex; justify-content:space-between; align-items:baseline; margin:0 0 10px}
+.films h2{font-family:var(--mincho); font-weight:700; font-size:14px; margin:0; color:#E9F2F8}
+.films .hint{font-family:var(--mono); font-size:9.5px; letter-spacing:.12em; color:var(--dim)}
+.strip{display:flex; gap:9px; overflow-x:auto; padding-bottom:5px; min-height:132px; align-items:flex-start}
+.strip .empty{font-size:11.5px; color:var(--dim); padding:34px 4px; line-height:1.8}
+.strip figure{margin:0; flex:none; width:96px; cursor:zoom-in}
+.strip img{display:block; width:96px; height:120px; object-fit:cover; border:1px solid var(--line2); border-radius:2px; background:#05080B}
+.strip figcaption{font-family:var(--mono); font-size:8.5px; color:var(--dim); margin-top:4px; letter-spacing:.04em; line-height:1.4; word-break:break-all}
+.strip figure:hover img{border-color:var(--teal)}
+#lightbox{
+  position:fixed; inset:0; background:rgba(4,7,10,.93); display:none; z-index:50;
+  align-items:center; justify-content:center; padding:24px; flex-direction:column; gap:12px;
+}
+#lightbox.on{display:flex}
+#lightbox img{max-width:min(92vw,620px); max-height:78vh; border:1px solid var(--line2)}
+#lightbox p{margin:0; font-family:var(--mono); font-size:11px; color:var(--muted); letter-spacing:.08em}
+#lightbox button{padding:7px 20px; background:transparent; border:1px solid var(--line2); border-radius:3px; color:var(--muted); font-family:var(--gothic); font-size:12px; cursor:pointer}
+#lightbox button:hover{color:var(--text); border-color:var(--teal)}
+
 @media (max-width:1080px){
   .band{grid-template-columns:1fr 1fr}
   .band .card:last-child{grid-column:1/-1}
@@ -230,7 +320,7 @@ footer span{font-family:var(--mono); font-size:10px; letter-spacing:.1em}
 <header>
   <p class="eyebrow">Upper GI Series &middot; Double Contrast Simulator</p>
   <h1>胃バリウム透視シミュレータ</h1>
-  <p class="sub">体位を変えると重力方向が変わり、硫酸バリウム（陽性造影剤）と発泡剤のガス（陰性造影剤）が胃内で入れ替わります。どの壁面に二重造影像が成立するかを 3D で確かめられます。ドラッグで回転、ホイールでズーム、右ドラッグで平行移動。</p>
+  <p class="sub">体位を変えると重力方向が変わり、硫酸バリウム（陽性造影剤）と発泡剤のガス（陰性造影剤）が胃内で入れ替わります。3D で壁面の状態を見ながら、同じ瞬間のシミュレーション透視像を並べて確認できます。<strong style="color:#D9E4ED;font-weight:500">学習</strong>で体位ごとの違いを、<strong style="color:#D9E4ED;font-weight:500">撮影手順</strong>で検診の撮影順を、<strong style="color:#D9E4ED;font-weight:500">フリー</strong>で透視台を自分で操作します。ドラッグで回転、ホイールでズーム、右ドラッグで平行移動。</p>
 </header>
 
 <div class="work">
@@ -242,13 +332,85 @@ footer span{font-family:var(--mono); font-size:10px; letter-spacing:.1em}
       <div class="fR">R</div><div class="fL">L</div>
       <div class="ff">シミュレーション透視像</div>
     </div>
+    <div class="bar">
+      <div class="seg" id="viewSeg">
+        <button type="button" data-v="0">3D</button>
+        <button type="button" data-v="1" aria-pressed="true">3D + 透視</button>
+        <button type="button" data-v="2">X線像</button>
+      </div>
+      <div class="barR">
+        <span class="fluoro">透視 <b id="fluoroT">0.0</b> s ／ 撮影 <b id="shotN">0</b> 枚</span>
+        <button class="expose" id="bShot" type="button">撮影</button>
+      </div>
+    </div>
     <div class="viewhint">DRAG: ROTATE / WHEEL: ZOOM / RIGHT-DRAG: PAN</div>
   </div>
 
   <div class="rail">
     <div class="grp">
-      <p class="grp-h">体位 <b id="gravNote">重力 ↓</b></p>
-      <div class="pos-grid" id="posGrid"></div>
+      <div class="tabs" id="modeTabs">
+        <button type="button" data-m="0" aria-pressed="true">学習</button>
+        <button type="button" data-m="1">撮影手順</button>
+        <button type="button" data-m="2">フリー</button>
+      </div>
+
+      <div class="pane" id="pane0">
+        <p class="grp-h">体位 <b id="gravNote">ERECT</b></p>
+        <div class="pos-grid" id="posGrid"></div>
+      </div>
+
+      <div class="pane" id="pane1" hidden>
+        <p class="seqhead">上部消化管X線検診の代表的な撮影順です。順に追うと、なぜその体位でその面が写るのかが分かります。<br><span style="color:var(--dim)">※ 施設やガイドライン改訂で枚数・順序は異なります。</span></p>
+        <ol class="seq" id="seqList"></ol>
+        <div class="seqnav">
+          <button class="act" id="bPrev" type="button">前へ</button>
+          <button class="act" id="bPlay" type="button">順に再生</button>
+          <button class="act" id="bNext" type="button">次へ</button>
+        </div>
+        <p class="seqaim" id="seqAim"></p>
+        <p class="prepost"><b>前処置</b>：前日夜から絶食。鎮痙剤（抗コリン薬）は緑内障・前立腺肥大・重篤な心疾患で禁忌 → グルカゴンへ変更（褐色細胞腫・糖尿病では注意）。<br><b>後処置</b>：下剤と十分な水分でバリウムを排出。停滞は便秘・腸閉塞の原因になる。</p>
+      </div>
+
+      <div class="pane" id="pane2" hidden>
+        <div class="readout">
+          <span class="big" id="freePos">背臥位・正面</span>
+          <span class="sm" id="freeAng">0° / 0°</span>
+        </div>
+        <div class="slider">
+          <div class="sl-h"><label for="sTilt">透視台の起倒角</label><span class="sl-v"><span id="vTilt">0</span>°</span></div>
+          <input type="range" id="sTilt" min="-30" max="90" step="1" value="0">
+          <div class="detent" id="tiltDet">
+            <button type="button" data-t="90">立位</button>
+            <button type="button" data-t="45">半立位</button>
+            <button type="button" data-t="0">水平</button>
+            <button type="button" data-t="-30">頭低位</button>
+          </div>
+        </div>
+        <div class="slider" style="margin-top:10px">
+          <div class="sl-h"><label for="sRoll">体軸の回転角</label><span class="sl-v"><span id="vRoll">0</span>°</span></div>
+          <input type="range" id="sRoll" min="0" max="360" step="1" value="0">
+          <div class="detent" id="rollDet">
+            <button type="button" data-r="0">正面</button>
+            <button type="button" data-r="45">第1斜位</button>
+            <button type="button" data-r="315">第2斜位</button>
+            <button type="button" data-r="270">右側臥位</button>
+            <button type="button" data-r="90">左側臥位</button>
+            <button type="button" data-r="180">腹臥位</button>
+          </div>
+        </div>
+        <p class="grp-h" style="margin-top:14px">圧迫筒</p>
+        <select class="sel" id="selComp">
+          <option value="">圧迫しない</option>
+          <option value="antrum">前庭部を圧迫</option>
+          <option value="angle">胃角部を圧迫</option>
+          <option value="body">胃体部を圧迫</option>
+        </select>
+        <div class="slider" style="margin-top:8px">
+          <div class="sl-h"><label for="sComp">圧迫の強さ</label><span class="sl-v"><span id="vComp">0</span> %</span></div>
+          <input type="range" id="sComp" min="0" max="100" step="1" value="0">
+        </div>
+        <p class="prepost"><b>操作のヒント</b>：起倒角で重力方向を、回転角で斜位をつくります。透視で造影剤の動きを確かめてから「撮影」。透視時間を短くすることが被ばく低減の基本です。</p>
+      </div>
     </div>
 
     <div class="grp">
@@ -274,28 +436,40 @@ footer span{font-family:var(--mono); font-size:10px; letter-spacing:.1em}
     </div>
 
     <div class="grp">
-      <p class="grp-h">表示</p>
-      <div class="toggles">
-        <label class="tg"><input type="checkbox" id="tHi" checked>二重造影域をハイライト</label>
-        <label class="tg"><input type="checkbox" id="tLab" checked>部位ラベル</label>
-        <label class="tg"><input type="checkbox" id="tAx" checked>体軸ガイド</label>
-        <label class="tg"><input type="checkbox" id="tFilm" checked>透視像を表示</label>
-        <label class="tg"><input type="checkbox" id="tPyl">幽門を開く（十二指腸へ排出）</label>
-        <label class="tg"><input type="checkbox" id="tSpin">自動回転</label>
+      <p class="grp-h">体表・骨</p>
+      <div class="slider">
+        <div class="sl-h"><label for="sSkin">体表の透明度</label><span class="sl-v"><span id="vSkin">30</span> %</span></div>
+        <input type="range" id="sSkin" min="0" max="100" step="1" value="30">
+      </div>
+      <div class="toggles" style="margin-top:4px">
+        <label class="tg"><input type="checkbox" id="tBone" checked>骨格を表示（脊柱・肋骨・腸骨）</label>
       </div>
     </div>
 
     <div class="grp">
-      <p class="grp-h">操作 <b id="projName">正面</b></p>
-      <div class="acts">
+      <p class="grp-h">表示</p>
+      <div class="toggles">
+        <label class="tg"><input type="checkbox" id="tHi" checked>二重造影域をハイライト</label>
+        <label class="tg"><input type="checkbox" id="tRug" checked>粘膜皺襞を描出</label>
+        <label class="tg"><input type="checkbox" id="tLab" checked>部位ラベル</label>
+        <label class="tg"><input type="checkbox" id="tAx" checked>体軸ガイド</label>
+        <label class="tg"><input type="checkbox" id="tPyl">幽門を開く（十二指腸へ排出）</label>
+        <label class="tg"><input type="checkbox" id="tSpin">自動回転</label>
+      </div>
+      <div class="acts" style="margin-top:10px">
         <button class="act wide" id="bDrink" type="button">もう一度バリウムを飲ませる</button>
-        <button class="act" id="bProj" type="button">撮影方向を切替</button>
         <button class="act" id="bCoat" type="button">粘膜付着をリセット</button>
         <button class="act" id="bView" type="button">視点リセット</button>
         <button class="act" id="bRoll" type="button">体位変換で全周に付着</button>
+        <button class="act" id="bClear" type="button">フィルムを消去</button>
       </div>
     </div>
   </div>
+</div>
+
+<div class="films">
+  <div class="fh2"><h2>撮影したフィルム</h2><span class="hint">CLICK TO ENLARGE</span></div>
+  <div class="strip" id="strip"><p class="empty">「撮影」ボタンを押すと、その体位のシミュレーション写真がここに並びます。<br>撮影手順モードで①から順に撮ると、検診1件分のフィルムセットができます。</p></div>
 </div>
 
 <div class="band">
@@ -326,10 +500,12 @@ footer span{font-family:var(--mono); font-size:10px; letter-spacing:.1em}
 
   <section class="card">
     <h2>確認問題</h2>
-    <p class="cap">Board review &middot; 6 items</p>
+    <p class="cap">Board review &middot; 8 items</p>
     <div id="quiz"></div>
   </section>
 </div>
+
+<div id="lightbox"><img id="lbImg" alt="拡大表示したシミュレーション写真"><p id="lbCap"></p><button type="button" id="lbClose">閉じる</button></div>
 
 <footer>
   <span>SIMULATION MODEL &mdash; NOT A DIAGNOSTIC TOOL</span>
@@ -434,6 +610,47 @@ const ICONS = {
   trend:'<g transform="rotate(-16 21 15)"><path d="M13 11.6h21v7.2H13z"/><circle cx="9" cy="15.2" r="3.2"/></g><path d="M5 22.6h33" stroke-width="1" opacity=".5"/>'
 };
 
+/* ---------- 体位＝（透視台の起倒角, 体軸の回転角）---------- */
+const POSE_ANG = { stand:[90,0], supine:[0,0], prone:[0,180], rlat:[0,270], llat:[0,90], trend:[-30,0] };
+POSE_ORDER.forEach(k => { POSES[k].tilt = POSE_ANG[k][0]; POSES[k].roll = POSE_ANG[k][1]; });
+
+/* ---------- 標準的な撮影手順 ---------- */
+const SEQ = [
+  { no:'①', name:'立位・第1斜位', tilt:90, roll:45, tgt:'食道',
+    aim:'バリウムを飲み込んだ直後に食道を撮る。第1斜位（右前が台側）にすると食道が脊柱と心陰影から外れて重ならない。通過状態と粘膜面を見る。',
+    tip:'胃に落ちきる前の一瞬しかない。発泡剤→バリウムの順に服用させ、嚥下と同時に曝射する。' },
+  { no:'②', name:'背臥位・体位変換', tilt:0, roll:0, tgt:'全周の付着',
+    aim:'背臥位で体軸を左右に数回転させ、バリウムを胃粘膜の全周に塗り広げる。二重造影像の良否はこの付着で決まる。',
+    tip:'付着が不良だと以降のすべての写真が読めない。右回転・左回転を組み合わせる。' },
+  { no:'③', name:'背臥位・正面', tilt:0, roll:0, tgt:'胃体部後壁',
+    aim:'背側が低いので余分なバリウムは胃底部へ落ち、胃体部〜前庭部の後壁が薄い付着とガスで広げられる。二重造影法の基本像。',
+    tip:'胃癌スクリーニングでもっとも情報量の多い一枚。' },
+  { no:'④', name:'背臥位・第1斜位', tilt:0, roll:45, tgt:'胃角部〜前庭部後壁',
+    aim:'右側を挙上して胃角部を開く。正面位では小弯と大弯が重なる胃角部・前庭部後壁を分離して描出する。',
+    tip:'胃角部小弯は早期胃癌の好発部位。必ず開いた形で撮る。' },
+  { no:'⑤', name:'背臥位・第2斜位', tilt:0, roll:315, tgt:'穹窿部・胃体上部後壁',
+    aim:'左側を挙上して穹窿部（胃底部）と胃体上部後壁を描出する。背臥位正面ではバリウムが溜まって見えない領域。',
+    tip:'胃底部はバリウムが溜まりやすく死角になりやすい。' },
+  { no:'⑥', name:'頭低位・第2斜位', tilt:-25, roll:315, tgt:'噴門部',
+    aim:'台を頭低にして造影剤を胃底部・噴門部へ移動させ、食道胃接合部を描出する。胃食道逆流や食道裂孔ヘルニアの評価にも使う。',
+    tip:'頭低位では逆流が起こりやすい。誤嚥に注意して短時間で。' },
+  { no:'⑦', name:'腹臥位・第2斜位', tilt:0, roll:135, tgt:'胃体部前壁',
+    aim:'腹側が低くなり、前壁にバリウムが付着してガスは背側の胃底部へ抜ける。背臥位では撮れない前壁の二重造影。',
+    tip:'前壁は虚脱しやすいので、ガス量が十分あることを透視で確認してから。' },
+  { no:'⑧', name:'腹臥位・正面', tilt:0, roll:180, tgt:'前庭部前壁',
+    aim:'前庭部は腹側にあるため腹臥位ではバリウムが溜まりやすい。ガスを送り込みながら前庭部前壁を広げて撮る。',
+    tip:'前後壁をそろえて初めて胃全周の評価が完成する。' },
+  { no:'⑨', name:'右側臥位', tilt:0, roll:270, tgt:'十二指腸球部',
+    aim:'幽門側が低くなり造影剤が幽門を越えて十二指腸へ流入する。球部と下行脚の描出に用いる。',
+    tip:'流出させたくないときは逆に左側臥位にする。' },
+  { no:'⑩', name:'立位・正面／斜位（充盈像）', tilt:90, roll:20, tgt:'胃全体の形態',
+    aim:'立位でバリウムを下部へ落とし、胃の位置・形・伸展性と大弯側の輪郭を充盈像で評価する。胃型（鉤状胃・牛角胃など）の判定もここ。',
+    tip:'二重造影像を撮り終えてから最後に。上面には水平な鏡面（ニボー）ができる。' },
+  { no:'⑪', name:'立位・前庭部圧迫', tilt:90, roll:0, comp:'antrum', tgt:'前庭部・胃角部',
+    aim:'圧迫筒で前庭部を押さえ、バリウムを薄く伸ばして微細な隆起・陥凹を描出する。二重造影で見えにくい病変を拾う。',
+    tip:'圧迫像は充盈像の後。強く押しすぎると病変ごとつぶれる。' }
+];
+
 /* ---------- 確認問題 ---------- */
 const QUIZ = [
   ['立位で胃泡（ガス）が集まる部位と、そこで得られる像は？',
@@ -446,6 +663,10 @@ const QUIZ = [
    '<b>頭低位（背臥位・約30°）</b>。造影剤が胃底部から噴門部へ移動し、逆流や食道裂孔ヘルニアを動態で確認できる。'],
   ['立位でもバリウムが胃底部に貯留して胃体部への流入が遅れる胃型は？',
    '<b>瀑状胃（カスケード胃）</b>。後方へ張り出した胃底部の窪みが先に満たされ、縁を越えてから体部へ流れ落ちる。胃底部の二重造影が得にくい。'],
+  ['食道の撮影に立位第1斜位を用いるのはなぜか。',
+   '正面位では食道が<b>脊柱と心陰影に重なって</b>しまうため。右前斜位（第1斜位）にすると食道がそれらから外れ、通過状態と粘膜面を観察できる。'],
+  ['二重造影像を撮り終えたあと、最後に行う撮影は？',
+   '<b>立位充盈像</b>と<b>圧迫像</b>。充盈像で胃全体の位置・形・伸展性と大弯の輪郭を、圧迫像で前庭部・胃角部の微細な隆起や陥凹をみる。二重造影は造影剤の付着が良いうちに先に撮る。'],
   ['硫酸バリウムが陽性造影剤として働く理由と、禁忌となる病態は？',
    '原子番号<b>Z=56</b>と大きくK吸収端が<b>37.4 keV</b>にあるため、診断領域のX線に対し光電効果による吸収が大きい。水に不溶で吸収されない。<b>消化管穿孔の疑い・完全な消化管閉塞</b>では禁忌で、水溶性ヨード造影剤に変更する（誤嚥の危険があるときは高浸透圧のものを避ける）。']
 ];
@@ -488,11 +709,14 @@ function cr1(a, x) {                       // 1次元 Catmull-Rom
 /* ================= モデル用バッファ ================= */
 const pos = new Float32Array(NV * 3), nor = new Float32Array(NV * 3);
 const aLevel = new Float32Array(NV), aWet = new Float32Array(NV), hArr = new Float32Array(NV);
+const aRug = new Float32Array(NV * 3);          // (軸方向t, 周方向θ, 皺襞の強さ)
+const frameU = new Float32Array(NN * 3), frameV = new Float32Array(NN * 3);
 const centers = new Float32Array(NN * 3), radius = new Float32Array(NN);
 const area = new Float32Array(NN), dl = new Float32Array(NN), cap = new Float32Array(NN);
 const wVol = new Float32Array(NN), hmin = new Float32Array(NN), hmax = new Float32Array(NN), lvl = new Float32Array(NN);
 const regionOf = new Int8Array(NN);
 let edges = [], regionList = [], cardiaIdx = 0, pylIdx = 0, bsRadius = 12, boxHalf = [8, 10, 6];
+let anatOff = [0, 0, 0];
 let totalCap = 0, drained = 0;
 
 /* ---- 管の生成 ---- */
@@ -516,9 +740,12 @@ function buildRings(pts, rads, N, off, taper, radMul) {
     U.set(AP.x - T.x * d, AP.y - T.y * d, AP.z - T.z * d);
     if (U.lengthSq() < 1e-5) { U.set(1, 0, 0); const d2 = U.dot(T); U.set(1 - T.x * d2, -T.y * d2, -T.z * d2); }
     U.normalize(); V.crossVectors(T, U).normalize();
+    frameU[(off + i) * 3] = U.x; frameU[(off + i) * 3 + 1] = U.y; frameU[(off + i) * 3 + 2] = U.z;
+    frameV[(off + i) * 3] = V.x; frameV[(off + i) * 3 + 1] = V.y; frameV[(off + i) * 3 + 2] = V.z;
     const r = radius[off + i], rb = r * FLAT;
     for (let j = 0; j < CM; j++) {
       const th = j / CM * Math.PI * 2, cs = Math.cos(th), sn = Math.sin(th), k = ((off + i) * CM + j) * 3;
+      aRug[k] = i / (N - 1); aRug[k + 1] = j / CM;
       pos[k]     = centers[ci]     + r * cs * V.x + rb * sn * U.x;
       pos[k + 1] = centers[ci + 1] + r * cs * V.y + rb * sn * U.y;
       pos[k + 2] = centers[ci + 2] + r * cs * V.z + rb * sn * U.z;
@@ -534,6 +761,33 @@ function buildRings(pts, rads, N, off, taper, radMul) {
   }
 }
 
+/* 圧迫筒：指定部位を前後に押しつぶし、左右へ広げる */
+function applyCompression(key, amt) {
+  if (!(amt > 0) || !key) return;
+  let f = -1, l = -1;
+  for (let i = 0; i < NMAIN; i++) if (regionList[regionOf[i]][0] === key) { if (f < 0) f = i; l = i; }
+  if (f < 0) return;
+  const mid = (f + l) / 2, half = Math.max(1, (l - f) / 2);
+  for (let i = f; i <= l; i++) {
+    const t = Math.abs(i - mid) / half, w = Math.max(0, 1 - t * t);
+    const sq = 1 - 0.62 * amt * w, sp = 1 / Math.sqrt(Math.max(0.25, sq));
+    const c = i * 3, ux = frameU[c], uy = frameU[c + 1], uz = frameU[c + 2];
+    const vx = frameV[c], vy = frameV[c + 1], vz = frameV[c + 2];
+    for (let j = 0; j < CM; j++) {
+      const k = (i * CM + j) * 3;
+      const dx = pos[k] - centers[c], dy = pos[k + 1] - centers[c + 1], dz = pos[k + 2] - centers[c + 2];
+      const du = (dx * ux + dy * uy + dz * uz) * sq, dv = (dx * vx + dy * vy + dz * vz) * sp;
+      pos[k] = centers[c] + du * ux + dv * vx;
+      pos[k + 1] = centers[c + 1] + du * uy + dv * vy;
+      pos[k + 2] = centers[c + 2] + du * uz + dv * vz;
+    }
+    area[i] *= sq * sp; cap[i] = area[i] * dl[i];
+    compMid = i <= mid + 0.5 && i >= mid - 0.5 ? i : compMid;
+  }
+  compMid = Math.round(mid);
+}
+let compMid = -1;
+
 function tubeIndex(N, M, base, idx, p) {
   for (let i = 0; i < N - 1; i++) for (let j = 0; j < M; j++) {
     const j2 = (j + 1) % M;
@@ -548,8 +802,8 @@ const indices = new Uint32Array(((NMAIN - 1) + (NESO - 1)) * CM * 6);
 { let p = tubeIndex(NMAIN, CM, 0, indices, 0); tubeIndex(NESO, CM, NMAIN * CM, indices, p); }
 
 /* ---- モデル再構築 ---- */
-function rebuild(typeKey, air) {
-  const S = TYPES[typeKey];
+function rebuild() {
+  const S = TYPES[curType], air = airLevel;
   const nCtl = S.pts.length - 1;
   regionList = S.regions;
   const pylStart = S.regions.find(r => r[0] === 'pylorus')[2];
@@ -576,6 +830,17 @@ function rebuild(typeKey, air) {
   }
   for (let i = NMAIN; i < NN; i++) regionOf[i] = -1;
 
+  // 皺襞の強さ：胃底部・胃体部で明瞭、前庭部で乏しく、十二指腸にはない
+  const FOLD = { fundus: 1.0, body: 1.0, angle: 0.6, antrum: 0.22, pylorus: 0.1, duode: 0.0 };
+  for (let i = 0; i < NMAIN; i++) {
+    const f = FOLD[regionList[regionOf[i]][0]];
+    for (let j = 0; j < CM; j++) aRug[(i * CM + j) * 3 + 2] = f;
+  }
+  for (let i = NMAIN; i < NN; i++) for (let j = 0; j < CM; j++) aRug[(i * CM + j) * 3 + 2] = 0.75;
+
+  compMid = -1;
+  applyCompression(compRegion, compAmt);
+
   // 中心合わせ
   let mnx = 1e9, mny = 1e9, mnz = 1e9, mxx = -1e9, mxy = -1e9, mxz = -1e9;
   for (let i = 0; i < NMAIN; i++) {
@@ -585,6 +850,7 @@ function rebuild(typeKey, air) {
     mnz = Math.min(mnz, centers[k + 2] - r); mxz = Math.max(mxz, centers[k + 2] + r);
   }
   const ox = (mnx + mxx) / 2, oy = (mny + mxy) / 2, oz = (mnz + mxz) / 2;
+  anatOff = [ox, oy, oz];
   for (let i = 0; i < NV * 3; i += 3) { pos[i] -= ox; pos[i + 1] -= oy; pos[i + 2] -= oz; }
   for (let i = 0; i < NN * 3; i += 3) { centers[i] -= ox; centers[i + 1] -= oy; centers[i + 2] -= oz; }
   boxHalf = [(mxx - mnx) / 2, (mxy - mny) / 2, (mxz - mnz) / 2];
@@ -610,45 +876,125 @@ function rebuild(typeKey, air) {
   geom.computeVertexNormals();
 }
 
+
+/* ================= 体表と骨格 ================= */
+function lathe(prof, NR, MR) {                    // prof: [y, 左右半径, 前後半径]
+  const vp = new Float32Array((NR * MR + 2) * 3);
+  const idx = [];
+  for (let i = 0; i < NR; i++) {
+    const t = i / (NR - 1) * (prof.length - 1);
+    const y = cr1(prof.map(q => q[0]), t), a = cr1(prof.map(q => q[1]), t), b = cr1(prof.map(q => q[2]), t);
+    for (let j = 0; j < MR; j++) {
+      const th = j / MR * Math.PI * 2, k = (i * MR + j) * 3;
+      vp[k] = a * Math.cos(th); vp[k + 1] = y; vp[k + 2] = b * Math.sin(th);
+    }
+  }
+  const cTop = NR * MR, cBot = NR * MR + 1;
+  vp[cTop * 3] = 0; vp[cTop * 3 + 1] = prof[0][0] + 1.2; vp[cTop * 3 + 2] = 0;
+  vp[cBot * 3] = 0; vp[cBot * 3 + 1] = prof[prof.length - 1][0] - 1.2; vp[cBot * 3 + 2] = 0;
+  for (let i = 0; i < NR - 1; i++) for (let j = 0; j < MR; j++) {
+    const j2 = (j + 1) % MR, A = i * MR + j, B = i * MR + j2, C = (i + 1) * MR + j2, D = (i + 1) * MR + j;
+    idx.push(A, C, B, A, D, C);
+  }
+  for (let j = 0; j < MR; j++) { const j2 = (j + 1) % MR; idx.push(cTop, j, j2); idx.push(cBot, (NR - 1) * MR + j2, (NR - 1) * MR + j); }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.BufferAttribute(vp, 3));
+  g.setIndex(idx); g.computeVertexNormals();
+  return g;
+}
+
+const SIMPLE_VERT = `
+varying vec3 vN; varying vec3 vVd; varying vec3 vL;
+void main(){
+  vL = position;
+  vec4 wp = modelMatrix * vec4(position,1.0);
+  vN = normalize(mat3(modelMatrix) * normal);
+  vVd = normalize(cameraPosition - wp.xyz);
+  gl_Position = projectionMatrix * viewMatrix * wp;
+}`;
+function litMat(color, opacity, baseA, rimA) {
+  return new THREE.ShaderMaterial({
+    uniforms: { uC: { value: new THREE.Color(color) }, uO: { value: opacity },
+                uA: { value: new THREE.Vector2(baseA === undefined ? 0.34 : baseA, rimA === undefined ? 1.25 : rimA) } },
+    vertexShader: SIMPLE_VERT,
+    fragmentShader: `precision highp float; uniform vec3 uC; uniform float uO; uniform vec2 uA;
+      varying vec3 vN; varying vec3 vVd; varying vec3 vL;
+      void main(){
+        vec3 n = normalize(vN);
+        float l1 = max(dot(n, normalize(vec3(0.42,0.80,0.62))),0.0);
+        float l2 = max(dot(n, normalize(vec3(-0.70,0.10,-0.45))),0.0);
+        float fr = pow(1.0 - abs(dot(n, normalize(vVd))), 2.4);
+        vec3 col = uC * (0.34 + 0.62*l1 + 0.22*l2) + vec3(0.36,0.50,0.60)*fr*0.7;
+        gl_FragColor = vec4(col, clamp(uO * (uA.x + uA.y*fr), 0.0, 1.0));
+      }`,
+    transparent: true, depthWrite: false, side: THREE.DoubleSide
+  });
+}
+function xrayMat(density, bone, edgeCap) {
+  return new THREE.ShaderMaterial({
+    uniforms: { uD: { value: density }, uBone: { value: bone ? 1 : 0 }, uE: { value: edgeCap || 5.0 } },
+    vertexShader: SIMPLE_VERT,
+    fragmentShader: `precision highp float; uniform float uD; uniform float uBone; uniform float uE;
+      varying vec3 vN; varying vec3 vVd; varying vec3 vL;
+      void main(){
+        vec3 n = normalize(vN);
+        float edge = clamp(1.0/max(abs(dot(n, normalize(vVd))),0.16), 1.0, uE);
+        float d = uD * edge;
+        // 横隔膜より頭側は肺野なので軟部組織の濃度を落とす
+        if(uBone < 0.5){ float dia = 13.5 - 0.05*vL.x*vL.x; d *= mix(1.0, 0.18, smoothstep(dia-1.5, dia+2.0, vL.y)); }
+        gl_FragColor = vec4(vec3(0.90,0.93,1.0) * d, 1.0);
+      }`,
+    transparent: true, depthWrite: false, depthTest: false,
+    blending: THREE.AdditiveBlending, side: THREE.DoubleSide
+  });
+}
+
 /* ================= シーン ================= */
 const stage = document.getElementById('stage');
 const canvas = document.getElementById('gl');
-const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false });
+const renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: false, preserveDrawingBuffer: false });
 renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
 renderer.autoClear = false;
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(32, 1, 0.5, 400);
-const bodyGroup = new THREE.Group();
-scene.add(bodyGroup);
-
-const xcam = new THREE.OrthographicCamera(-12, 12, 16, -16, 1, 400);
-bodyGroup.add(xcam);
+const camera = new THREE.PerspectiveCamera(32, 1, 0.5, 500);
+const xcam = new THREE.OrthographicCamera(-12, 12, 16, -16, 1, 500);
+scene.add(xcam);
+const bodyGroup = new THREE.Group(); scene.add(bodyGroup);
+const anatGroup = new THREE.Group(); bodyGroup.add(anatGroup);   // 体表・骨格（解剖座標）
 
 const geom = new THREE.BufferGeometry();
 geom.setAttribute('position', new THREE.BufferAttribute(pos, 3));
 geom.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
 geom.setAttribute('aLevel', new THREE.BufferAttribute(aLevel, 1));
 geom.setAttribute('aWet', new THREE.BufferAttribute(aWet, 1));
+geom.setAttribute('aRug', new THREE.BufferAttribute(aRug, 3));
 geom.setIndex(new THREE.BufferAttribute(indices, 1));
 
 const VERT = `
-attribute float aLevel; attribute float aWet;
+attribute float aLevel; attribute float aWet; attribute vec3 aRug;
 uniform vec3 uUp;
-varying float vH; varying float vLevel; varying float vWet;
+varying float vH; varying float vLevel; varying float vWet; varying vec3 vR;
 varying vec3 vNL; varying vec3 vNW; varying vec3 vVd;
 void main(){
-  vH = dot(position, uUp); vLevel = aLevel; vWet = aWet; vNL = normal;
+  vH = dot(position, uUp); vLevel = aLevel; vWet = aWet; vNL = normal; vR = aRug;
   vec4 wp = modelMatrix * vec4(position,1.0);
   vNW = normalize(mat3(modelMatrix) * normal);
   vVd = normalize(cameraPosition - wp.xyz);
   gl_Position = projectionMatrix * viewMatrix * wp;
 }`;
+const RUGAE = `
+float rugae(vec3 r, float on){
+  float f = sin(r.y*6.2831*6.0 + r.x*24.0) * 0.5 + 0.5;
+  f = pow(f, 1.9);
+  return mix(1.0, 0.30 + 1.55*f, r.z * on);
+}`;
 
 const FRAG_SOLID = `
 precision highp float;
-uniform vec3 uUp; uniform float uFlip; uniform float uHi;
-varying float vH; varying float vLevel; varying float vWet;
+uniform vec3 uUp; uniform float uFlip; uniform float uHi; uniform float uRug;
+varying float vH; varying float vLevel; varying float vWet; varying vec3 vR;
 varying vec3 vNL; varying vec3 vNW; varying vec3 vVd;
+${RUGAE}
 void main(){
   vec3 n = normalize(vNW) * uFlip;
   vec3 nl = normalize(vNL) * uFlip;
@@ -656,9 +1002,10 @@ void main(){
   float down = clamp(-dot(nl, uUp), 0.0, 1.0);
   float coat = smoothstep(0.12, 0.55, vWet);
   float dbl = (1.0 - below) * coat * smoothstep(0.02, 0.22, down);
+  float rg = rugae(vR, uRug);
   vec3 cBar = vec3(0.957,0.969,0.984);
   vec3 cMuc = vec3(0.760,0.400,0.428);
-  vec3 cDbl = mix(vec3(0.92,0.92,0.90), vec3(0.980,0.745,0.330), uHi);
+  vec3 cDbl = mix(vec3(0.92,0.92,0.90), vec3(0.980,0.745,0.330), uHi) * mix(1.0, rg, 0.45);
   vec3 base = mix(cMuc, cBar, below);
   base = mix(base, cDbl, dbl);
   float l1 = max(dot(n, normalize(vec3(0.42,0.80,0.62))), 0.0);
@@ -672,31 +1019,32 @@ void main(){
 
 const FRAG_XRAY = `
 precision highp float;
-uniform vec3 uUp;
-varying float vH; varying float vLevel; varying float vWet;
+uniform vec3 uUp; uniform float uRug;
+varying float vH; varying float vLevel; varying float vWet; varying vec3 vR;
 varying vec3 vNL; varying vec3 vNW; varying vec3 vVd;
+${RUGAE}
 void main(){
   vec3 n = normalize(vNW);
   float below = step(vH, vLevel);
   float coat = smoothstep(0.10, 0.50, vWet);
   float edge = clamp(1.0 / max(abs(dot(n, normalize(vVd))), 0.20), 1.0, 4.6);
-  float d = below * 0.235 + (1.0 - below) * coat * 0.050;
+  float d = below * 0.235 + (1.0 - below) * coat * 0.058 * rugae(vR, uRug);
   d *= edge;
   gl_FragColor = vec4(vec3(0.93,0.955,1.0) * d, 1.0);
 }`;
 
 const uUp = { value: new THREE.Vector3(0, 1, 0) };
-const uHi = { value: 1 };
+const uHi = { value: 1 }, uRug = { value: 1 };
 function solidMat(side, flip) {
   return new THREE.ShaderMaterial({
     vertexShader: VERT, fragmentShader: FRAG_SOLID,
-    uniforms: { uUp: uUp, uFlip: { value: flip }, uHi: uHi },
+    uniforms: { uUp: uUp, uFlip: { value: flip }, uHi: uHi, uRug: uRug },
     transparent: true, depthWrite: false, side: side
   });
 }
 const matBack = solidMat(THREE.BackSide, -1), matFront = solidMat(THREE.FrontSide, 1);
 const matXray = new THREE.ShaderMaterial({
-  vertexShader: VERT, fragmentShader: FRAG_XRAY, uniforms: { uUp: uUp },
+  vertexShader: VERT, fragmentShader: FRAG_XRAY, uniforms: { uUp: uUp, uRug: uRug },
   transparent: true, depthWrite: false, depthTest: false,
   blending: THREE.AdditiveBlending, side: THREE.DoubleSide
 });
@@ -710,7 +1058,7 @@ const surfGeom = new THREE.BufferGeometry();
 surfGeom.setAttribute('position', new THREE.BufferAttribute(surfPos, 3));
 surfGeom.setDrawRange(0, 0);
 const matSurf = new THREE.ShaderMaterial({
-  uniforms: { uUp: uUp },
+  uniforms: {},
   vertexShader: `varying vec3 vP; void main(){ vP=(modelMatrix*vec4(position,1.0)).xyz; gl_Position=projectionMatrix*viewMatrix*modelMatrix*vec4(position,1.0);}`,
   fragmentShader: `precision highp float; varying vec3 vP;
     void main(){ float g = 0.80 + 0.20*sin(vP.x*1.6)*sin(vP.z*1.6);
@@ -725,29 +1073,103 @@ const matSurfX = new THREE.ShaderMaterial({
 const meshSurf = new THREE.Mesh(surfGeom, matSurf); meshSurf.renderOrder = 2;
 bodyGroup.add(meshSurf);
 
+/* ---- 体表 ---- */
+const TORSO = [[25, 9.0, 6.4], [19, 12.6, 8.2], [13, 13.8, 9.0], [6, 13.4, 9.4], [-2, 12.9, 9.4],
+               [-9, 12.6, 9.2], [-15, 13.4, 8.8], [-21, 11.6, 7.8], [-25, 8.6, 6.4]];
+const torsoGeom = lathe(TORSO, 48, 36);
+const matSkin = litMat(0xB8CBD8, 0.30, 0.07, 1.9), matSkinX = xrayMat(0.042, false, 3.2);
+const meshSkin = new THREE.Mesh(torsoGeom, matSkin); meshSkin.renderOrder = 6;
+anatGroup.add(meshSkin);
+
+/* ---- 骨格 ---- */
+const boneGroup = new THREE.Group(); anatGroup.add(boneGroup);
+const matBone = litMat(0xD6DEE6, 0.26, 0.07, 0.95), matBoneX = xrayMat(0.075, true, 2.1);
+{
+  const vb = new THREE.CylinderGeometry(1.75, 1.75, 2.25, 14, 1, false);
+  for (let i = 0; i < 11; i++) {
+    const m = new THREE.Mesh(vb, matBone);
+    m.position.set(0, 14 - i * 3.0, -6.4); m.renderOrder = 0; boneGroup.add(m);
+  }
+  for (let i = 0; i < 5; i++) {
+    const y = 13.4 - i * 3.1;
+    for (const sx of [1, -1]) {
+      const c = new THREE.CatmullRomCurve3([
+        new THREE.Vector3(1.6 * sx, y, -6.0), new THREE.Vector3(7.0 * sx, y - 0.9, -3.2),
+        new THREE.Vector3(9.9 * sx, y - 2.8, 1.6), new THREE.Vector3(7.3 * sx, y - 4.8, 4.9),
+        new THREE.Vector3(3.4 * sx, y - 6.0, 6.2)]);
+      const m = new THREE.Mesh(new THREE.TubeGeometry(c, 28, 0.34, 6, false), matBone);
+      m.renderOrder = 0; boneGroup.add(m);
+    }
+  }
+  for (const sx of [1, -1]) {
+    const c = new THREE.CatmullRomCurve3([
+      new THREE.Vector3(2.4 * sx, -17.5, -5.6), new THREE.Vector3(7.6 * sx, -14.6, -2.4),
+      new THREE.Vector3(11.4 * sx, -12.6, 2.2), new THREE.Vector3(9.6 * sx, -15.4, 5.0)]);
+    const m = new THREE.Mesh(new THREE.TubeGeometry(c, 26, 0.9, 7, false), matBone);
+    m.renderOrder = 0; boneGroup.add(m);
+  }
+}
+
+/* ---- 圧迫筒 ---- */
+const coneMesh = new THREE.Mesh(new THREE.CylinderGeometry(2.5, 3.1, 2.6, 24, 1, false), litMat(0x8FA6B6, 0.85, 0.55, 0.9));
+coneMesh.renderOrder = 7; coneMesh.visible = false; bodyGroup.add(coneMesh);
+
 /* ---- ガイド ---- */
 const guides = new THREE.Group(); scene.add(guides);
-const grid = new THREE.GridHelper(70, 14, 0x223140, 0x18232E);
-grid.material.transparent = true; grid.material.opacity = 0.55; guides.add(grid);
+const grid = new THREE.GridHelper(90, 18, 0x223140, 0x18232E);
+grid.material.transparent = true; grid.material.opacity = 0.5; guides.add(grid);
 const arrow = new THREE.ArrowHelper(new THREE.Vector3(0, -1, 0), new THREE.Vector3(-15, 8, 0), 9, 0x52B8CE, 2.4, 1.5);
 guides.add(arrow);
 
 /* ================= 状態 ================= */
-let curType = 'hook', curPose = 'stand';
-let pylorusOpen = false, showLabels = true, showAxis = true, showFilm = true, autoSpin = false;
-let airLevel = 0.6, targetMl = 120, administered = 0, projMode = 0;
-let qFrom = new THREE.Quaternion(), qTo = new THREE.Quaternion(), tAnim = 1;
+let curType = 'hook', curMode = 0, curPose = 'stand';
+let pylorusOpen = false, showLabels = true, showAxis = true, showRug = true, showBone = true;
+let autoSpin = false, viewMode = 1, skinOpacity = 0.30;
+let airLevel = 0.6, targetMl = 120, administered = 0;
+let compRegion = '', compAmt = 0;
+let tiltCur = 90, rollCur = 0, tiltT = 90, rollT = 0;
+let seqIdx = -1, playing = false, playT = 0;
+let fluoroTime = 0, shotCount = 0, films = [];
 let rollQueue = [], rollTimer = 0;
 
-const PROJ = [['正面', 0], ['第1斜位', 40], ['第2斜位', -40], ['右側面', 90]];
-
-function poseQuat(key) {
-  const b = POSES[key].basis;
-  const m = new THREE.Matrix4().makeBasis(
+const Zax = new THREE.Vector3(0, 0, 1), Yax = new THREE.Vector3(0, 1, 0);
+const qBase = (function () {
+  const b = POSES.supine.basis;
+  return new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(
     new THREE.Vector3(b[0][0], b[0][1], b[0][2]),
     new THREE.Vector3(b[1][0], b[1][1], b[1][2]),
-    new THREE.Vector3(b[2][0], b[2][1], b[2][2]));
-  return new THREE.Quaternion().setFromRotationMatrix(m);
+    new THREE.Vector3(b[2][0], b[2][1], b[2][2])));
+})();
+const qA = new THREE.Quaternion(), qB = new THREE.Quaternion();
+function applyPose() {
+  qA.setFromAxisAngle(Zax, -tiltCur * Math.PI / 180);
+  qB.setFromAxisAngle(Yax, rollCur * Math.PI / 180);
+  bodyGroup.quaternion.copy(qA).multiply(qBase).multiply(qB);
+}
+function goPose(t, r) {
+  tiltT = t;
+  rollT = rollCur + (((r - rollCur) % 360 + 540) % 360 - 180);
+  rollQueue = [];
+}
+const ROLLN = [[0, '正面'], [45, '第1斜位'], [90, '左側臥位'], [135, '腹臥位第2斜位'],
+               [180, '腹臥位正面'], [225, '腹臥位第1斜位'], [270, '右側臥位'], [315, '第2斜位']];
+function poseName(tilt, roll) {
+  const r = ((roll % 360) + 360) % 360;
+  let best = ROLLN[0], bd = 999;
+  for (const e of ROLLN) { const d = Math.min(Math.abs(r - e[0]), 360 - Math.abs(r - e[0])); if (d < bd) { bd = d; best = e; } }
+  const tl = tilt >= 70 ? '立位' : tilt >= 25 ? '半立位' : tilt > -10 ? '水平' : '頭低位';
+  if (best[1] === '正面' || best[1] === '第1斜位' || best[1] === '第2斜位')
+    return (tl === '水平' ? '背臥位' : tl) + best[1];
+  return (tl === '水平' ? '' : tl + '・') + best[1];
+}
+function nearestPose(tilt, roll) {
+  let best = 'supine', bd = 1e9;
+  for (const k of POSE_ORDER) {
+    const dr = Math.min(Math.abs(POSES[k].roll - roll), 360 - Math.abs(((POSES[k].roll - roll) % 360 + 360) % 360));
+    const d = Math.abs(POSES[k].tilt - tilt) * 1.1 + dr;
+    if (d < bd) { bd = d; best = k; }
+  }
+  return best;
 }
 
 /* ================= 流体ソルバ ================= */
@@ -845,7 +1267,7 @@ function buildSurface() {
       }
       if (hits.length === 2) cur = { a: hits[0], b: hits[1], n: n };
     }
-    if (cur && prev && prev.n === n - 1 && !(n === NMAIN)) {
+    if (cur && prev && prev.n === n - 1 && n !== NMAIN) {
       const d1 = (cur.a[0] - prev.a[0]) ** 2 + (cur.a[1] - prev.a[1]) ** 2 + (cur.a[2] - prev.a[2]) ** 2;
       const d2 = (cur.a[0] - prev.b[0]) ** 2 + (cur.a[1] - prev.b[1]) ** 2 + (cur.a[2] - prev.b[2]) ** 2;
       if (d2 < d1) { const t = cur.a; cur.a = cur.b; cur.b = t; }
@@ -858,28 +1280,43 @@ function buildSurface() {
   surfGeom.setDrawRange(0, p / 3);
 }
 
-/* ================= カメラ操作 ================= */
-const ctrl = { theta: 0.36, phi: 1.46, dist: 46, target: new THREE.Vector3(0, 0, 0) };
+/* ================= 組み立て ================= */
+function rebuildAll() {
+  rebuild();
+  anatGroup.position.set(-anatOff[0], -anatOff[1], -anatOff[2]);
+  geom.attributes.aRug.needsUpdate = true;
+  if (compAmt > 0.01 && compMid >= 0) {
+    const c = compMid * 3, sg = frameU[c + 2] >= 0 ? 1 : -1;
+    const ux = frameU[c] * sg, uy = frameU[c + 1] * sg, uz = frameU[c + 2] * sg;
+    const d = radius[compMid] * 0.85 + 1.8;
+    coneMesh.position.set(centers[c] + ux * d, centers[c + 1] + uy * d, centers[c + 2] + uz * d);
+    coneMesh.quaternion.setFromUnitVectors(Yax, new THREE.Vector3(-ux, -uy, -uz));
+  }
+}
+
+/* ================= カメラ ================= */
+const ctrl = { theta: 0.30, phi: 1.46, dist: 46, target: new THREE.Vector3(0, 0, 0) };
+function camOff() { const f = Math.max(-0.4, Math.min(1, tiltCur / 90)); return [f * Math.PI / 2, (1 - f) * -0.42]; }
 function applyCam() {
-  const sp = Math.sin(ctrl.phi);
+  const o = camOff(), th = ctrl.theta + o[0];
+  const ph = Math.max(0.14, Math.min(Math.PI - 0.14, ctrl.phi + o[1])), sp = Math.sin(ph);
   camera.position.set(
-    ctrl.target.x + ctrl.dist * sp * Math.sin(ctrl.theta),
-    ctrl.target.y + ctrl.dist * Math.cos(ctrl.phi),
-    ctrl.target.z + ctrl.dist * sp * Math.cos(ctrl.theta));
+    ctrl.target.x + ctrl.dist * sp * Math.sin(th),
+    ctrl.target.y + ctrl.dist * Math.cos(ph),
+    ctrl.target.z + ctrl.dist * sp * Math.cos(th));
   camera.lookAt(ctrl.target);
+  camera.updateMatrixWorld();
+  const rt = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0);
+  arrow.position.set(ctrl.target.x + rt.x * ctrl.dist * -0.40, bsRadius * 0.6, ctrl.target.z + rt.z * ctrl.dist * -0.40);
 }
 function fitCam() {
-  ctrl.dist = bsRadius / Math.sin(camera.fov * Math.PI / 360) * 1.04;
-  ctrl.target.set(0, 0, 0); ctrl.theta = 0.36; ctrl.phi = 1.46;
-  grid.position.y = -(bsRadius + 3);
-  arrow.position.set(-(bsRadius + 3.5), bsRadius * 0.55, 0);
+  ctrl.dist = bsRadius / Math.sin(camera.fov * Math.PI / 360) * 1.06;
+  ctrl.target.set(0, 0, 0); ctrl.theta = 0.30; ctrl.phi = 1.46;
+  grid.position.y = -27;
   applyCam();
 }
 let drag = null, pinch = 0;
-canvas.addEventListener('pointerdown', e => {
-  canvas.setPointerCapture(e.pointerId);
-  drag = { x: e.clientX, y: e.clientY, pan: e.button === 2 || e.shiftKey };
-});
+canvas.addEventListener('pointerdown', e => { canvas.setPointerCapture(e.pointerId); drag = { x: e.clientX, y: e.clientY, pan: e.button === 2 || e.shiftKey }; });
 canvas.addEventListener('pointermove', e => {
   if (!drag) return;
   const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
@@ -901,70 +1338,166 @@ canvas.addEventListener('pointercancel', endDrag);
 canvas.addEventListener('contextmenu', e => e.preventDefault());
 canvas.addEventListener('wheel', e => {
   e.preventDefault();
-  ctrl.dist = Math.max(bsRadius * 0.6, Math.min(bsRadius * 4.5, ctrl.dist * (1 + Math.sign(e.deltaY) * 0.10)));
+  ctrl.dist = Math.max(bsRadius * 0.5, Math.min(bsRadius * 5, ctrl.dist * (1 + Math.sign(e.deltaY) * 0.10)));
   applyCam();
 }, { passive: false });
 canvas.addEventListener('touchmove', e => {
   if (e.touches.length === 2) {
     const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
-    if (pinch) { ctrl.dist = Math.max(bsRadius * 0.6, Math.min(bsRadius * 4.5, ctrl.dist * pinch / d)); applyCam(); }
+    if (pinch) { ctrl.dist = Math.max(bsRadius * 0.5, Math.min(bsRadius * 5, ctrl.dist * pinch / d)); applyCam(); }
     pinch = d; drag = null;
   }
 }, { passive: true });
 canvas.addEventListener('touchend', () => { pinch = 0; });
 
-/* ================= 透視像（インセット）================= */
-function filmRect() {
-  const w = stage.clientWidth, h = stage.clientHeight;
-  const fw = Math.round(Math.min(238, Math.max(136, w * 0.29)));
-  const fh = Math.round(Math.min(fw * 1.26, h * 0.64));
-  return { left: w - fw - 14, top: h - fh - 14, w: fw, h: fh, yb: 14 };
-}
+/* ================= 撮影系（透視台に固定された管球）================= */
 const filmEl = document.getElementById('film');
-function layoutFilm() {
-  const r = filmRect();
-  filmEl.style.left = r.left + 'px'; filmEl.style.top = r.top + 'px';
-  filmEl.style.width = r.w + 'px'; filmEl.style.height = r.h + 'px';
-  filmEl.style.display = showFilm ? 'block' : 'none';
-  const hh = bsRadius * 1.06, hw = hh * (r.w / r.h);
-  xcam.left = -hw; xcam.right = hw; xcam.top = hh; xcam.bottom = -hh;
-  xcam.near = 1; xcam.far = bsRadius * 8; xcam.updateProjectionMatrix();
-  const ang = PROJ[projMode][1] * Math.PI / 180, D = bsRadius * 3;
-  const z = new THREE.Vector3(-Math.sin(ang) * D, 0, Math.cos(ang) * D);
-  xcam.position.copy(z);
-  z.normalize();
-  const y = new THREE.Vector3(0, 1, 0); y.addScaledVector(z, -y.dot(z)).normalize();
+const fRel = filmEl.querySelector('.fR'), fLel = filmEl.querySelector('.fL');
+function viewRects() {
+  const w = stage.clientWidth, h = stage.clientHeight;
+  if (viewMode === 0) return { film: null, w: w, h: h };
+  if (viewMode === 2) {
+    const fh = Math.max(120, Math.min(h - 26, (w - 26) * 1.25)), fw = fh / 1.25;
+    return { film: { left: (w - fw) / 2, top: (h - fh) / 2, w: fw, h: fh, yb: (h - fh) / 2 }, w: w, h: h, full: true };
+  }
+  const fw = Math.round(Math.min(238, Math.max(132, w * 0.29)));
+  const fh = Math.round(Math.min(fw * 1.26, h * 0.62));
+  return { film: { left: w - fw - 14, top: h - fh - 14, w: fw, h: fh, yb: 14 }, w: w, h: h };
+}
+function setXcam(aspect) {
+  const t = tiltCur * Math.PI / 180;
+  const n = new THREE.Vector3(Math.sin(t), Math.cos(t), 0);          // 台の法線＝X線束の方向
+  const head = new THREE.Vector3(-Math.cos(t), Math.sin(t), 0);      // 頭側＝フィルムの上
+  xcam.position.copy(n).multiplyScalar(bsRadius * 3.2);
+  const z = n.clone(), y = head.clone();
+  y.addScaledVector(z, -y.dot(z)).normalize();
   const x = new THREE.Vector3().crossVectors(y, z);
   xcam.quaternion.setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
+  const hh = bsRadius * 1.06, hw = hh * aspect;
+  xcam.left = -hw; xcam.right = hw; xcam.top = hh; xcam.bottom = -hh;
+  xcam.near = 1; xcam.far = bsRadius * 9;
+  xcam.updateProjectionMatrix();
+  xcam.updateMatrixWorld();
 }
-
-/* ================= 描画 ================= */
+function layoutFilm() {
+  const r = viewRects();
+  if (!r.film) { filmEl.style.display = 'none'; return; }
+  filmEl.style.display = 'block';
+  filmEl.style.left = r.film.left + 'px'; filmEl.style.top = r.film.top + 'px';
+  filmEl.style.width = r.film.w + 'px'; filmEl.style.height = r.film.h + 'px';
+}
+function updateFilmLabels() {
+  document.getElementById('filmPos').textContent = poseName(tiltCur, rollCur);
+  document.getElementById('filmProj').textContent = TYPES[curType].name + (compAmt > 0.01 ? '・圧迫' : '');
+  const lw = new THREE.Vector3(1, 0, 0).applyQuaternion(bodyGroup.quaternion);
+  const cx = new THREE.Vector3().setFromMatrixColumn(xcam.matrixWorld, 0);
+  const lr = lw.dot(cx) >= 0;
+  fRel.textContent = lr ? 'R' : 'L'; fLel.textContent = lr ? 'L' : 'R';
+}
+function setXray(on) {
+  meshBack.visible = !on;
+  meshFront.material = on ? matXray : matFront;
+  meshSurf.material = on ? matSurfX : matSurf;
+  meshSkin.material = on ? matSkinX : matSkin;
+  meshSkin.visible = on || skinOpacity > 0.005;
+  boneGroup.visible = showBone;
+  boneGroup.traverse(o => { if (o.isMesh) o.material = on ? matBoneX : matBone; });
+  coneMesh.visible = !on && compAmt > 0.01;
+  guides.visible = !on && showAxis && viewMode !== 2;
+}
 function render() {
-  const w = stage.clientWidth, h = stage.clientHeight;
+  const r = viewRects();
   renderer.setScissorTest(false);
-  renderer.setViewport(0, 0, w, h); renderer.setScissor(0, 0, w, h);
-  renderer.setClearColor(0x0A0F14, 1); renderer.clear();
-  guides.visible = showAxis;
-  renderer.render(scene, camera);
-
-  if (showFilm) {
-    const r = filmRect();
-    meshBack.visible = false; guides.visible = false;
-    meshFront.material = matXray; meshSurf.material = matSurfX;
+  renderer.setViewport(0, 0, r.w, r.h); renderer.setScissor(0, 0, r.w, r.h);
+  renderer.setClearColor(r.full ? 0x070B0F : 0x0A0F14, 1); renderer.clear();
+  if (!r.full) { setXray(false); renderer.render(scene, camera); }
+  if (r.film) {
+    setXcam(r.film.w / r.film.h);
+    setXray(true);
     renderer.setScissorTest(true);
-    renderer.setViewport(r.left, r.yb, r.w, r.h);
-    renderer.setScissor(r.left, r.yb, r.w, r.h);
+    renderer.setViewport(r.film.left, r.film.yb, r.film.w, r.film.h);
+    renderer.setScissor(r.film.left, r.film.yb, r.film.w, r.film.h);
     renderer.setClearColor(0x05080B, 1); renderer.clear();
     renderer.render(scene, xcam);
     renderer.setScissorTest(false);
-    meshBack.visible = true;
-    meshFront.material = matFront; meshSurf.material = matSurf;
+    setXray(false);
   }
+}
+
+/* ---- フィルム撮影 ---- */
+const capW = 520, capH = 650;
+const capRT = new THREE.WebGLRenderTarget(capW, capH, { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBAFormat });
+const capCv = document.createElement('canvas'); capCv.width = capW; capCv.height = capH;
+const capCx = capCv.getContext('2d');
+const capBuf = new Uint8Array(capW * capH * 4);
+const strip = document.getElementById('strip');
+function capture() {
+  setXcam(capW / capH);
+  setXray(true);
+  renderer.setScissorTest(false);
+  renderer.setRenderTarget(capRT);
+  renderer.setClearColor(0x05080B, 1); renderer.clear();
+  renderer.render(scene, xcam);
+  renderer.readRenderTargetPixels(capRT, 0, 0, capW, capH, capBuf);
+  renderer.setRenderTarget(null);
+  setXray(false);
+
+  const img = capCx.createImageData(capW, capH);
+  for (let y = 0; y < capH; y++) {
+    const src = (capH - 1 - y) * capW * 4, dst = y * capW * 4;
+    for (let x = 0; x < capW * 4; x++) img.data[dst + x] = capBuf[src + x];
+  }
+  capCx.putImageData(img, 0, 0);
+  const g = capCx.createRadialGradient(capW / 2, capH / 2, capH * 0.30, capW / 2, capH / 2, capH * 0.72);
+  g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(0,0,0,0.42)');
+  capCx.fillStyle = g; capCx.fillRect(0, 0, capW, capH);
+
+  shotCount++;
+  const name = poseName(tiltCur, rollCur);
+  const sub = curMode === 1 && seqIdx >= 0 ? SEQ[seqIdx].no + ' ' + SEQ[seqIdx].tgt
+            : compAmt > 0.01 ? '圧迫像' : TYPES[curType].name;
+  capCx.strokeStyle = 'rgba(150,180,200,0.35)'; capCx.lineWidth = 2;
+  capCx.strokeRect(6, 6, capW - 12, capH - 12);
+  capCx.font = '600 19px monospace'; capCx.fillStyle = 'rgba(200,224,238,0.78)';
+  const lw = new THREE.Vector3(1, 0, 0).applyQuaternion(bodyGroup.quaternion);
+  const cx = new THREE.Vector3().setFromMatrixColumn(xcam.matrixWorld, 0);
+  const lr = lw.dot(cx) >= 0;
+  capCx.fillText(lr ? 'R' : 'L', 18, capH / 2); capCx.fillText(lr ? 'L' : 'R', capW - 34, capH / 2);
+  capCx.font = '13px monospace'; capCx.fillStyle = 'rgba(150,190,210,0.85)';
+  capCx.fillText(String(shotCount).padStart(2, '0') + '  ' + name, 18, 30);
+  capCx.textAlign = 'right';
+  capCx.fillText(sub, capW - 18, 30);
+  capCx.fillStyle = 'rgba(110,150,175,0.7)'; capCx.font = '11px monospace';
+  capCx.fillText('SIMULATION', capW - 18, capH - 18);
+  capCx.textAlign = 'left';
+  capCx.fillText('Ba ' + Math.round(targetMl) + ' mL / gas ' + Math.round(airLevel * 100) + '%', 18, capH - 18);
+
+  const url = capCv.toDataURL('image/png');
+  films.push({ url: url, cap: String(shotCount).padStart(2, '0') + ' ' + name, sub: sub });
+  if (films.length > 12) films.shift();
+  renderStrip();
+  document.getElementById('shotN').textContent = shotCount;
+}
+function renderStrip() {
+  if (!films.length) { strip.innerHTML = '<p class="empty">「撮影」ボタンを押すと、その体位のシミュレーション写真がここに並びます。<br>撮影手順モードで①から順に撮ると、検診1件分のフィルムセットができます。</p>'; return; }
+  strip.innerHTML = '';
+  films.forEach(f => {
+    const fig = document.createElement('figure');
+    const im = document.createElement('img'); im.src = f.url; im.alt = f.cap + ' のシミュレーション写真';
+    const cp = document.createElement('figcaption'); cp.textContent = f.cap;
+    fig.appendChild(im); fig.appendChild(cp);
+    fig.addEventListener('click', () => {
+      document.getElementById('lbImg').src = f.url;
+      document.getElementById('lbCap').textContent = f.cap + '  —  ' + f.sub;
+      document.getElementById('lightbox').classList.add('on');
+    });
+    strip.appendChild(fig);
+  });
 }
 
 /* ================= ラベル ================= */
 const labelBox = document.getElementById('labels');
-let labels = [];
+let labels = [], regionRange = [];
 const tmpV = new THREE.Vector3(), camL = new THREE.Vector3();
 function mkLabel(text, cls) {
   const el = document.createElement('div');
@@ -991,7 +1524,6 @@ function curvAnchor(n, sign) {
   v.normalize().multiplyScalar(sign * (radius[n] + 1.5));
   return tmpV.set(centers[c] + v.x, centers[c + 1] + v.y, centers[c + 2] + v.z);
 }
-let regionRange = [];
 function buildLabels() {
   labelBox.innerHTML = ''; labels = []; regionRange = [];
   for (let k = 0; k < regionList.length; k++) {
@@ -1000,8 +1532,8 @@ function buildLabels() {
     if (f < 0) { f = l = Math.min(NMAIN - 1, Math.round((k + 0.5) / regionList.length * NMAIN)); }
     regionRange.push([f, l]);
     const mid = Math.round((f + l) / 2);
-    const shortName = { '十二指腸球部': '球部', '幽門部': '幽門' }[regionList[k][1]] || regionList[k][1];
-    labels.push({ el: mkLabel(shortName), get: () => surfAnchor(mid, 0.24), kind: 'r' });
+    const sn = { '十二指腸球部': '球部', '幽門部': '幽門' }[regionList[k][1]] || regionList[k][1];
+    labels.push({ el: mkLabel(sn), get: () => surfAnchor(mid, 0.24), kind: 'r' });
   }
   labels.push({ el: mkLabel('噴門'), get: () => surfAnchor(cardiaIdx, 0.42), kind: 'r' });
   labels.push({ el: mkLabel('食道'), get: () => surfAnchor(NMAIN + 7, 0.6), kind: 'r' });
@@ -1017,12 +1549,18 @@ function buildLabels() {
 }
 function updateLabels() {
   const w = stage.clientWidth, h = stage.clientHeight;
+  const hideAll = viewMode === 2;
   camL.copy(camera.position); bodyGroup.worldToLocal(camL);
   for (const L of labels) {
-    const on = L.kind === 'r' ? showLabels : showAxis;
+    const on = !hideAll && (L.kind === 'r' ? showLabels : showAxis);
     if (!on) { L.el.style.opacity = '0'; continue; }
     const v = L.get().clone();
     if (L.kind !== 'w') v.applyMatrix4(bodyGroup.matrixWorld);
+    if (L.kind === 'a') {
+      const dir = v.clone().normalize();
+      const toCam = camera.position.clone().sub(ctrl.target).normalize();
+      if (Math.abs(dir.dot(toCam)) > 0.86) { L.el.style.opacity = '0'; continue; }
+    }
     const p = v.project(camera);
     if (p.z > 1) { L.el.style.opacity = '0'; continue; }
     L.el.style.transform = 'translate(-50%,-50%) translate(' + ((p.x * .5 + .5) * w) + 'px,' + ((-p.y * .5 + .5) * h) + 'px)';
@@ -1058,7 +1596,6 @@ function updateReadouts() {
         const idx = b + j, kk = idx * 3;
         const down = -(nor[kk] * ux + nor[kk + 1] * uy + nor[kk + 2] * uz);
         nt++; ct += aWet[idx];
-        // ガスに接した「下側の壁」のうち、バリウムが付着している割合＝二重造影の成立度
         if (hArr[idx] > L && down > 0.12) { nDep++; if (aWet[idx] > 0.35) nd++; }
       }
     }
@@ -1080,58 +1617,164 @@ function updateReadouts() {
   document.getElementById('gStom').textContent = Math.round(stom + eso);
   document.getElementById('gDuo').textContent = Math.round(duo);
   document.getElementById('gCap').textContent = Math.round(totalCap);
+  document.getElementById('fluoroT').textContent = fluoroTime.toFixed(1);
 }
 function updateNotes() {
-  const P = POSES[curPose], T = TYPES[curType];
-  document.getElementById('noteLead').innerHTML = P.lead;
-  document.getElementById('noteBody').innerHTML = P.body;
+  const T = TYPES[curType];
+  let lead, body;
+  if (curMode === 1 && seqIdx >= 0) {
+    const S = SEQ[seqIdx];
+    lead = '<em>' + S.no + ' ' + S.name + '</em>　目標は<em>' + S.tgt + '</em>。';
+    body = S.aim + '<br><span style="color:var(--dim)">' + S.tip + '</span>';
+  } else {
+    const P = POSES[nearestPose(tiltT, rollT)];
+    lead = P.lead; body = P.body;
+  }
+  document.getElementById('noteLead').innerHTML = lead;
+  document.getElementById('noteBody').innerHTML = body;
   document.getElementById('noteType').innerHTML = '<strong style="color:#D9E4ED">' + T.name + '</strong> — ' + T.note;
-  document.getElementById('gravNote').textContent = P.ruby;
+  document.getElementById('gravNote').textContent = poseName(tiltT, rollT);
   document.getElementById('typeNote').textContent = T.short;
-  document.getElementById('filmPos').textContent = P.name;
-  document.getElementById('filmProj').textContent = PROJ[projMode][0];
-  document.getElementById('projName').textContent = PROJ[projMode][0];
+  document.getElementById('freePos').textContent = poseName(tiltT, rollT);
+  document.getElementById('freeAng').textContent = Math.round(tiltT) + '° / ' + Math.round(((rollT % 360) + 360) % 360) + '°';
+  if (curMode === 1 && seqIdx >= 0) {
+    document.getElementById('seqAim').innerHTML = '<b>' + SEQ[seqIdx].no + ' ' + SEQ[seqIdx].name + '　→　' + SEQ[seqIdx].tgt + '</b>' + SEQ[seqIdx].aim;
+  }
 }
 
 /* ================= UI ================= */
 const posGrid = document.getElementById('posGrid'), typeGrid = document.getElementById('typeGrid');
 POSE_ORDER.forEach(key => {
   const b = document.createElement('button');
-  b.className = 'opt'; b.type = 'button'; b.setAttribute('aria-pressed', key === curPose);
+  b.className = 'opt'; b.type = 'button'; b.dataset.k = key;
+  b.setAttribute('aria-pressed', key === curPose);
   b.innerHTML = '<svg width="44" height="26" viewBox="0 0 44 26" fill="currentColor" stroke="currentColor" stroke-linecap="round">' + ICONS[key] + '</svg>' + POSES[key].name;
-  b.addEventListener('click', () => setPose(key));
-  posGrid.appendChild(b); b.dataset.k = key;
+  b.addEventListener('click', () => setPreset(key));
+  posGrid.appendChild(b);
 });
 Object.keys(TYPES).forEach(key => {
   const b = document.createElement('button');
-  b.className = 'opt'; b.type = 'button'; b.setAttribute('aria-pressed', key === curType);
+  b.className = 'opt'; b.type = 'button'; b.dataset.k = key;
+  b.setAttribute('aria-pressed', key === curType);
   b.innerHTML = TYPES[key].name + '<span class="ruby">' + TYPES[key].ruby + '</span>';
   b.addEventListener('click', () => setType(key));
-  typeGrid.appendChild(b); b.dataset.k = key;
+  typeGrid.appendChild(b);
 });
-function setPose(key) {
-  curPose = key; rollQueue = [];
+function setPreset(key) {
+  curPose = key; playing = false;
   [...posGrid.children].forEach(b => b.setAttribute('aria-pressed', b.dataset.k === key));
-  qFrom.copy(bodyGroup.quaternion); qTo.copy(poseQuat(key)); tAnim = 0;
-  updateNotes();
+  goPose(POSES[key].tilt, POSES[key].roll);
+  syncFree(); updateNotes();
 }
 function setType(key) {
   curType = key;
   [...typeGrid.children].forEach(b => b.setAttribute('aria-pressed', b.dataset.k === key));
-  rebuild(curType, airLevel); buildLabels(); buildTable(); settle(); fitCam(); layoutFilm(); updateNotes();
+  rebuildAll(); buildLabels(); buildTable(); settle(); fitCam(); layoutFilm(); updateNotes();
 }
-const sBa = document.getElementById('sBa'), sAir = document.getElementById('sAir');
+
+/* --- モードタブ --- */
+const tabs = document.getElementById('modeTabs');
+[...tabs.children].forEach(b => b.addEventListener('click', () => setMode(+b.dataset.m)));
+function setMode(m) {
+  curMode = m; playing = false;
+  [...tabs.children].forEach(b => b.setAttribute('aria-pressed', +b.dataset.m === m));
+  for (let i = 0; i < 3; i++) document.getElementById('pane' + i).hidden = (i !== m);
+  if (m === 1 && seqIdx < 0) gotoStep(0);
+  if (m === 2) syncFree();
+  updateNotes();
+}
+
+/* --- 撮影手順 --- */
+const seqList = document.getElementById('seqList');
+SEQ.forEach((S, i) => {
+  const li = document.createElement('li');
+  const b = document.createElement('button'); b.type = 'button'; b.dataset.i = i;
+  b.innerHTML = '<span class="no">' + S.no + '</span><span>' + S.name + '<span class="tg2">' + S.tgt + '</span></span>';
+  b.addEventListener('click', () => { playing = false; gotoStep(i); });
+  li.appendChild(b); seqList.appendChild(li);
+});
+function gotoStep(i) {
+  seqIdx = Math.max(0, Math.min(SEQ.length - 1, i));
+  const S = SEQ[seqIdx];
+  [...seqList.querySelectorAll('button')].forEach(b => {
+    if (+b.dataset.i === seqIdx) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
+  });
+  goPose(S.tilt, S.roll);
+  const wantComp = S.comp || '';
+  if (wantComp !== compRegion || (wantComp ? 0.7 : 0) !== compAmt) {
+    compRegion = wantComp; compAmt = wantComp ? 0.7 : 0;
+    document.getElementById('selComp').value = compRegion;
+    document.getElementById('sComp').value = Math.round(compAmt * 100);
+    document.getElementById('vComp').textContent = Math.round(compAmt * 100);
+    rebuildAll();
+  }
+  if (seqIdx === 1) rollQueue = ['R'];    // ②体位変換：左右へ振る
+  syncFree(); updateNotes();
+}
+document.getElementById('bPrev').addEventListener('click', () => { playing = false; gotoStep(seqIdx - 1); });
+document.getElementById('bNext').addEventListener('click', () => { playing = false; gotoStep(seqIdx + 1); });
+document.getElementById('bPlay').addEventListener('click', e => {
+  playing = !playing; playT = 0;
+  e.target.textContent = playing ? '一時停止' : '順に再生';
+  if (playing && seqIdx < 0) gotoStep(0);
+});
+
+/* --- フリーモード --- */
+const sTilt = document.getElementById('sTilt'), sRoll = document.getElementById('sRoll');
+function syncFree() {
+  const r = Math.round(((rollT % 360) + 360) % 360);
+  sTilt.value = Math.round(tiltT); sRoll.value = r;
+  document.getElementById('vTilt').textContent = Math.round(tiltT);
+  document.getElementById('vRoll').textContent = r;
+}
+sTilt.addEventListener('input', () => {
+  tiltT = +sTilt.value; document.getElementById('vTilt').textContent = sTilt.value;
+  playing = false; rollQueue = []; updateNotes();
+});
+sRoll.addEventListener('input', () => {
+  const r = +sRoll.value;
+  rollT = rollCur + (((r - rollCur) % 360 + 540) % 360 - 180);
+  document.getElementById('vRoll').textContent = r;
+  playing = false; rollQueue = []; updateNotes();
+});
+document.getElementById('tiltDet').addEventListener('click', e => {
+  if (e.target.dataset.t === undefined) return;
+  tiltT = +e.target.dataset.t; syncFree(); updateNotes();
+});
+document.getElementById('rollDet').addEventListener('click', e => {
+  if (e.target.dataset.r === undefined) return;
+  const r = +e.target.dataset.r;
+  rollT = rollCur + (((r - rollCur) % 360 + 540) % 360 - 180);
+  syncFree(); updateNotes();
+});
+const selComp = document.getElementById('selComp'), sComp = document.getElementById('sComp');
+function applyComp() {
+  compRegion = selComp.value;
+  compAmt = compRegion ? +sComp.value / 100 : 0;
+  document.getElementById('vComp').textContent = Math.round(compAmt * 100);
+  rebuildAll(); updateNotes();
+}
+selComp.addEventListener('change', () => { if (selComp.value && +sComp.value < 10) { sComp.value = 65; } applyComp(); });
+sComp.addEventListener('input', applyComp);
+
+/* --- 共通スライダ・トグル --- */
+const sBa = document.getElementById('sBa'), sAir = document.getElementById('sAir'), sSkin = document.getElementById('sSkin');
 sBa.addEventListener('input', () => { targetMl = +sBa.value; document.getElementById('vBa').textContent = sBa.value; });
 sAir.addEventListener('input', () => {
   airLevel = +sAir.value / 100; document.getElementById('vAir').textContent = sAir.value;
-  rebuild(curType, airLevel); layoutFilm();
+  rebuildAll(); layoutFilm();
+});
+sSkin.addEventListener('input', () => {
+  skinOpacity = +sSkin.value / 100; document.getElementById('vSkin').textContent = sSkin.value;
+  matSkin.uniforms.uO.value = skinOpacity;
 });
 const bind = (id, fn) => document.getElementById(id).addEventListener('change', e => fn(e.target.checked));
 bind('tHi', v => { uHi.value = v ? 1 : 0; });
+bind('tRug', v => { showRug = v; uRug.value = v ? 1 : 0; });
 bind('tLab', v => { showLabels = v; });
 bind('tAx', v => { showAxis = v; });
-bind('tFilm', v => { showFilm = v; layoutFilm(); });
-bind('tPyl', v => { pylorusOpen = v; rebuild(curType, airLevel); });
+bind('tBone', v => { showBone = v; });
+bind('tPyl', v => { pylorusOpen = v; rebuildAll(); });
 bind('tSpin', v => { autoSpin = v; });
 document.getElementById('bDrink').addEventListener('click', () => {
   for (let n = 0; n < NN; n++) wVol[n] = 0;
@@ -1140,10 +1783,19 @@ document.getElementById('bDrink').addEventListener('click', () => {
 });
 document.getElementById('bCoat').addEventListener('click', () => { for (let i = 0; i < NV; i++) aWet[i] = 0; });
 document.getElementById('bView').addEventListener('click', fitCam);
-document.getElementById('bProj').addEventListener('click', () => { projMode = (projMode + 1) % PROJ.length; layoutFilm(); updateNotes(); });
-document.getElementById('bRoll').addEventListener('click', () => {
-  rollQueue = ['supine', 'rlat', 'prone', 'llat', curPose]; rollTimer = 0;
-});
+document.getElementById('bRoll').addEventListener('click', () => { rollQueue = ['R']; rollTimer = 0; });
+document.getElementById('bClear').addEventListener('click', () => { films = []; shotCount = 0; document.getElementById('shotN').textContent = '0'; renderStrip(); });
+document.getElementById('bShot').addEventListener('click', capture);
+const viewSeg = document.getElementById('viewSeg');
+[...viewSeg.children].forEach(b => b.addEventListener('click', () => {
+  viewMode = +b.dataset.v;
+  [...viewSeg.children].forEach(x => x.setAttribute('aria-pressed', +x.dataset.v === viewMode));
+  layoutFilm();
+}));
+const lb = document.getElementById('lightbox');
+document.getElementById('lbClose').addEventListener('click', () => lb.classList.remove('on'));
+lb.addEventListener('click', e => { if (e.target === lb) lb.classList.remove('on'); });
+addEventListener('keydown', e => { if (e.key === 'Escape') lb.classList.remove('on'); });
 
 const quiz = document.getElementById('quiz');
 QUIZ.forEach((q, i) => {
@@ -1160,15 +1812,14 @@ function settle() {
   const v = Math.min(targetMl, sc * 0.92);
   for (let i = 0; i < NMAIN; i++) if (regionList[regionOf[i]][0] !== 'duode') wVol[i] = cap[i] / sc * v;
   administered = targetMl; drained = 0;
-  const iq = new THREE.Quaternion().copy(qTo).invert();
-  uUp.value.set(0, 1, 0).applyQuaternion(iq);
+  applyPose();
+  uUp.value.set(0, 1, 0).applyQuaternion(qA.copy(bodyGroup.quaternion).invert());
   computeHeights();
   for (let s = 0; s < 150; s++) flowStep(1 / 60);
   for (let n = 0; n < NN; n++) lvl[n] = levelOf(n);
-  // 体位変換で胃粘膜には全周にバリウムが付着済み、十二指腸と食道は未付着
   for (let i = 0; i < NMAIN; i++) {
-    const v = regionList[regionOf[i]][0] === 'duode' ? 0 : 1;
-    for (let j = 0; j < CM; j++) aWet[i * CM + j] = v;
+    const on = regionList[regionOf[i]][0] === 'duode' ? 0 : 1;
+    for (let j = 0; j < CM; j++) aWet[i * CM + j] = on;
   }
   for (let i = NMAIN * CM; i < NV; i++) aWet[i] = 0;
 }
@@ -1182,20 +1833,29 @@ new ResizeObserver(resize).observe(stage);
 
 const invQ = new THREE.Quaternion();
 let last = performance.now(), acc = 0;
+const ROLLSEQ = [0, 90, 270, 180, 0];
 function loop(now) {
   requestAnimationFrame(loop);
-  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  const dt = Math.max(0, Math.min(0.05, (now - last) / 1000)); last = now;
 
+  if (playing) {
+    playT += dt;
+    if (playT > 3.4) { playT = 0; if (seqIdx >= SEQ.length - 1) { playing = false; document.getElementById('bPlay').textContent = '順に再生'; } else gotoStep(seqIdx + 1); }
+  }
   if (rollQueue.length) {
     rollTimer -= dt;
-    if (rollTimer <= 0) { const k = rollQueue.shift(); rollTimer = 1.15; if (k) { curPose = k; [...posGrid.children].forEach(b => b.setAttribute('aria-pressed', b.dataset.k === k)); qFrom.copy(bodyGroup.quaternion); qTo.copy(poseQuat(k)); tAnim = 0; updateNotes(); } }
+    if (rollTimer <= 0) {
+      rollTimer = 1.2;
+      if (rollQueue[0] === 'R') { rollQueue = ROLLSEQ.slice(); }
+      const r = rollQueue.shift();
+      if (r !== undefined) { rollT = rollCur + (((r - rollCur) % 360 + 540) % 360 - 180); syncFree(); }
+    }
   }
-  if (tAnim < 1) {
-    tAnim = Math.min(1, tAnim + dt / 1.15);
-    const e = tAnim < 0.5 ? 2 * tAnim * tAnim : 1 - Math.pow(-2 * tAnim + 2, 2) / 2;
-    bodyGroup.quaternion.copy(qFrom).slerp(qTo, e);
-  }
-  if (autoSpin) { ctrl.theta += dt * 0.28; applyCam(); }
+  const k = 1 - Math.exp(-dt * 3.6);
+  tiltCur += (tiltT - tiltCur) * k;
+  rollCur += (rollT - rollCur) * k;
+  if (autoSpin) ctrl.theta += dt * 0.28;
+  applyPose(); applyCam();
 
   bodyGroup.updateMatrixWorld();
   invQ.copy(bodyGroup.quaternion).invert();
@@ -1208,17 +1868,17 @@ function loop(now) {
   updateWet(dt);
   buildSurface();
   updateLabels();
+  if (viewMode !== 0) fluoroTime += dt;
 
   acc += dt;
-  if (acc > 0.16) { acc = 0; updateReadouts(); }
+  if (acc > 0.16) { acc = 0; updateReadouts(); updateFilmLabels(); }
   render();
 }
 
-qTo.copy(poseQuat(curPose)); bodyGroup.quaternion.copy(qTo);
-rebuild(curType, airLevel);
-buildLabels(); buildTable(); settle(); updateNotes();
-resize(); fitCam(); layoutFilm();
-updateReadouts();
+matSkin.uniforms.uO.value = skinOpacity;
+rebuildAll(); buildLabels(); buildTable(); settle();
+setPreset('stand'); tiltCur = tiltT; rollCur = rollT;
+updateNotes(); resize(); fitCam(); layoutFilm(); updateReadouts(); renderStrip();
 requestAnimationFrame(loop);
 })();
 </script>

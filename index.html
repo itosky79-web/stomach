@@ -79,7 +79,14 @@ h1{
 }
 
 /* ---------- rail ---------- */
-.rail{display:flex; flex-direction:column; gap:12px}
+.rail{
+  display:flex; flex-direction:column; gap:12px;
+  height:clamp(430px,64vh,700px); overflow-y:auto; overscroll-behavior:contain;
+  padding-right:6px; scrollbar-width:thin; scrollbar-color:var(--line2) transparent;
+}
+.rail::-webkit-scrollbar{width:7px}
+.rail::-webkit-scrollbar-thumb{background:var(--line2); border-radius:4px}
+.rail::-webkit-scrollbar-track{background:transparent}
 .grp{background:var(--panel); border:1px solid var(--line); border-radius:var(--r); padding:12px 13px 13px}
 .grp-h{
   font-family:var(--mono); font-size:10px; letter-spacing:.2em; color:var(--dim);
@@ -152,6 +159,7 @@ button.act.wide{grid-column:1/-1; color:var(--barium); border-color:#456A80}
 .seg button:last-child{border-right:none}
 .seg button[aria-pressed="true"]{background:#1D3040; color:#EAF6FA}
 .seg button:hover{color:var(--text)}
+.barL{display:flex; gap:8px; align-items:center; flex-wrap:wrap; pointer-events:auto}
 .barR{display:flex; gap:8px; align-items:center; pointer-events:auto}
 .expose{
   padding:5px 14px; border:1px solid #6B4A2A; background:rgba(40,22,8,.9); border-radius:3px;
@@ -275,6 +283,17 @@ select.sel:focus-visible{outline:2px solid var(--teal); outline-offset:2px}
 .lhandle::after{content:""; position:absolute; left:5px; right:5px; top:7px; height:1px; background:rgba(10,16,20,.6)}
 
 /* ---------- 問題 ---------- */
+.qnote{margin:0 0 10px; font-size:12px; line-height:1.8; color:var(--muted)}
+#qPaste{
+  width:100%; height:190px; resize:vertical; padding:9px 10px; border-radius:3px;
+  background:var(--ink2); border:1px solid var(--line2); color:var(--text);
+  font-family:var(--mono); font-size:11.5px; line-height:1.7;
+}
+#qPaste:focus-visible{outline:2px solid var(--teal); outline-offset:1px}
+pre.fmt{
+  margin:7px 0 0; padding:9px 10px; background:var(--ink2); border-radius:3px; overflow-x:auto;
+  font-family:var(--mono); font-size:10.5px; line-height:1.65; color:var(--muted); white-space:pre;
+}
 .qhead{display:flex; justify-content:space-between; align-items:center; margin-bottom:9px}
 .qhead span{font-family:var(--mono); font-size:10px; letter-spacing:.12em; color:var(--dim)}
 .qhead button{padding:4px 9px; font-size:10.5px}
@@ -314,7 +333,8 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
 @media (max-width:900px){
   .work{grid-template-columns:1fr}
   .stage{height:min(58vh,460px)}
-  .rail{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); align-items:start}
+  .rail{display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); align-items:start;
+    height:auto; overflow:visible; padding-right:0}
 }
 @media (max-width:560px){
   .wrap{padding-inline:16px}
@@ -341,10 +361,17 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
       <div class="ff">シミュレーション透視像</div>
     </div>
     <div class="bar">
-      <div class="seg" id="viewSeg">
-        <button type="button" data-v="0">3D</button>
-        <button type="button" data-v="1" aria-pressed="true">3D + 透視</button>
-        <button type="button" data-v="2">X線像</button>
+      <div class="barL">
+        <div class="seg" id="viewSeg">
+          <button type="button" data-v="0">3D</button>
+          <button type="button" data-v="1" aria-pressed="true">3D + 透視</button>
+          <button type="button" data-v="2">X線像</button>
+        </div>
+        <div class="seg" id="viewpt">
+          <button type="button" data-p="room" aria-pressed="true">室内</button>
+          <button type="button" data-p="tube">管球</button>
+          <button type="button" data-p="oblique">寄る</button>
+        </div>
       </div>
       <div class="barR">
         <span class="fluoro">透視 <b id="fluoroT">0.0</b> s ／ 撮影 <b id="shotN">0</b> 枚</span>
@@ -429,14 +456,45 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
       </div>
 
       <div class="pane" id="pane3" hidden>
-        <div class="qhead"><span id="qNo">問 1 / 12</span><button class="act" id="bReadQ" type="button">像から当てる</button></div>
-        <p class="qtext" id="qText"></p>
-        <p class="qsrc" id="qSrc"></p>
-        <ol class="choices" id="qChoices"></ol>
-        <p class="qexp" id="qExp" hidden></p>
-        <div class="seqnav" style="grid-template-columns:1fr 1fr">
-          <button class="act" id="bQPrev" type="button">前の問題</button>
-          <button class="act" id="bQNext" type="button">次の問題</button>
+        <div id="qEmpty">
+          <p class="qnote">過去問は収録していません。手元の問題集や公表されている問題を貼り付けて使ってください。出典もそのまま表示されます。</p>
+          <div class="acts">
+            <button class="act wide" id="bLoadOpen" type="button">国試の問題を貼り付ける</button>
+            <button class="act wide" id="bReadQ" type="button">像から体位を当てる（読影練習）</button>
+          </div>
+        </div>
+        <div id="qBox" hidden>
+          <div class="qhead"><span id="qNo">問 1 / 1</span><button class="act" id="bLoadOpen2" type="button">読み込み直す</button></div>
+          <p class="qtext" id="qText"></p>
+          <p class="qsrc" id="qSrc"></p>
+          <ol class="choices" id="qChoices"></ol>
+          <p class="qexp" id="qExp" hidden></p>
+          <div class="seqnav" style="grid-template-columns:1fr 1fr">
+            <button class="act" id="bQPrev" type="button">前の問題</button>
+            <button class="act" id="bQNext" type="button">次の問題</button>
+          </div>
+        </div>
+        <div id="qImport" hidden>
+          <textarea id="qPaste" spellcheck="false" placeholder="ここに貼り付け"></textarea>
+          <div class="seqnav" style="grid-template-columns:1fr 1fr; margin-top:8px">
+            <button class="act" id="bImportCancel" type="button">やめる</button>
+            <button class="act wide" id="bImport" type="button" style="grid-column:auto">読み込む</button>
+          </div>
+          <details class="fold"><summary>書式</summary>
+            <pre class="fmt">出典: 第○回 午前 第○問
+問題: 設問の本文。
+1: 選択肢
+2: 選択肢
+3: 選択肢
+4: 選択肢
+5: 選択肢
+答え: 2
+解説: 解説の文。
+体位: 0,0
+---
+（2問目以降は --- で区切る）</pre>
+            <p>「体位」は 起倒角,回転角。書いておくとその問題を開いたときシミュレータがその体位になります（省略可）。</p>
+          </details>
         </div>
       </div>
     </div>
@@ -468,13 +526,8 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
     </div>
 
     <div class="grp">
-      <p class="grp-h">視点</p>
-      <div class="seg wide" id="viewpt">
-        <button type="button" data-p="room" aria-pressed="true">室内</button>
-        <button type="button" data-p="tube">管球</button>
-        <button type="button" data-p="oblique">寄る</button>
-      </div>
-      <p class="grp-h" style="margin-top:12px">ラベル</p>
+      <details class="fold"><summary>表示と操作</summary>
+      <p class="grp-h" style="margin-top:10px">ラベル</p>
       <div class="seg wide" id="labSeg">
         <button type="button" data-l="0">なし</button>
         <button type="button" data-l="1" aria-pressed="true">主要</button>
@@ -492,8 +545,10 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
         <button class="act" id="bView" type="button">視点リセット</button>
         <button class="act" id="bClear" type="button">フィルム消去</button>
       </div>
+      </details>
     </div>
   </div>
+</div>
 
 <div class="films">
   <div class="fh2"><h2>撮影したフィルム</h2><span class="hint">CLICK TO ENLARGE</span></div>
@@ -597,10 +652,12 @@ const ICONS = (function () {
   const lying = '<circle cx="11" cy="16" r="3.4"/><rect x="15" y="12.6" width="19" height="6.8" rx="3.4"/>';
   //  SVG は y が下向きなので、頭（左端）を上げるには正の角度で時計回りに回す
   const tilted = (deg, extra) => '<g transform="rotate(' + deg + ' 22.5 16)">' + lying + '</g>' + (extra || '');
-  const cross = (letter) =>
-    '<ellipse cx="22" cy="13.4" rx="7" ry="7" fill="none" stroke-width="1.6"/>' +
-    '<path d="M29 13.4a2.6 2.6 0 0 1 2.4 0" fill="none" stroke-width="1.4"/>' +
-    '<text x="22" y="16.4" font-size="7.5" text-anchor="middle" font-family="monospace" stroke="none">' + letter + '</text>';
+  //  頭側から見た体幹の断面。腹側（三角）が向く方向で右下・左下を描き分ける
+  const cross = (letter, dir) =>
+    '<circle cx="22" cy="12.6" r="6.6" fill="none" stroke-width="1.6"/>' +
+    '<circle cx="' + (22 - 4.3 * dir) + '" cy="12.6" r="1.6"/>' +
+    '<path d="M' + (22 + 5.4 * dir) + ' 9.4L' + (22 + 10 * dir) + ' 12.6L' + (22 + 5.4 * dir) + ' 15.8Z"/>' +
+    '<text x="' + (22 - 1.4 * dir) + '" y="15.2" font-size="7.5" text-anchor="middle" font-family="monospace" stroke="none">' + letter + '</text>';
   return {
     stand: '<circle cx="22" cy="5.6" r="3.3"/><rect x="18.6" y="9.2" width="7" height="10.2" rx="3"/>' +
            '<path d="M20 19.4v3.2M24 19.4v3.2" stroke-width="1.7"/>' + floor,
@@ -611,8 +668,8 @@ const ICONS = (function () {
     supine: lying + '<path d="M21 12.6a3.2 3.2 0 0 1 6 0" fill="none" stroke-width="1.5"/>' + floor,
     prone: lying + '<path d="M21 19.4a3.2 3.2 0 0 0 6 0" fill="none" stroke-width="1.5"/>' + floor,
     trend: tilted(-20) + floor,
-    rlat: cross('R') + floor,
-    llat: cross('L') + floor
+    rlat: cross('R', 1) + floor,
+    llat: cross('L', -1) + floor
   };
 })();
 
@@ -647,51 +704,6 @@ const SEQ = [
 ];
 
 
-/* ---------- 国試形式の問題（オリジナル）---------- */
-const EXAM = [
-  { q:'下部食道と食道胃接合部を重なりなく描出する半立位第2斜位の名称はどれか。',
-    c:['トレンデレンブルグ位','シャツキー位','ファウラー位','シムス位','砕石位'], a:1, set:[45,315],
-    e:'シャツキー位。食道裂孔ヘルニアや下部食道輪（シャツキーリング）の評価に用いる。' },
-  { q:'台を約45°起こし、胃底部・噴門部の二重造影を得やすくする体位はどれか。',
-    c:['立位','半立位','背臥位','腹臥位','右側臥位'], a:1, set:[45,0],
-    e:'半立位。立位と背臥位の中間で造影剤の貯留位置を調整でき、立位では描出しにくい穹窿部・噴門部に使う。' },
-  { q:'胃X線二重造影法で胃体部後壁の像を得るのはどれか。',
-    c:['立位正面','背臥位正面','腹臥位正面','右側臥位','左側臥位'], a:1, set:[0,0],
-    e:'背側が低く余分なバリウムが胃底部へ落ちるため、後壁が薄い付着とガスで広がる。二重造影の基本体位。' },
-  { q:'胃底部（穹窿部）の二重造影像が得られるのはどれか。',
-    c:['立位','背臥位','腹臥位','右側臥位','頭低位'], a:0, set:[90,0],
-    e:'立位ではガス（胃泡）が最も高い胃底部に集まり、バリウムは下部へ落ちる。' },
-  { q:'胃前壁の二重造影像を得る体位はどれか。',
-    c:['立位','背臥位','腹臥位','右側臥位','左側臥位'], a:2, set:[0,180],
-    e:'腹側が低くなり前壁にバリウムが付着、ガスは背側の胃底部へ抜ける。' },
-  { q:'十二指腸球部へ造影剤を流入させるのに適するのはどれか。',
-    c:['立位','背臥位','腹臥位','右側臥位','左側臥位'], a:3, set:[0,270],
-    e:'幽門側が低くなるため造影剤が幽門を越える。流出を抑えたいときは左側臥位。' },
-  { q:'食道胃接合部の描出と胃食道逆流の評価に用いるのはどれか。',
-    c:['立位第1斜位','背臥位正面','腹臥位正面','右側臥位','頭低位'], a:4, set:[-25,315],
-    e:'頭側を低くして造影剤を胃底部から噴門部へ移動させる。' },
-  { q:'前庭部・幽門部の二重造影が得やすいのはどれか。',
-    c:['立位','背臥位','腹臥位','右側臥位','左側臥位'], a:4, set:[0,90],
-    e:'胃底部が受け皿となって造影剤を保持し、前庭部にガスが入る。' },
-  { q:'食道の撮影に立位第1斜位を用いる理由はどれか。',
-    c:['食道が脊柱・心陰影と重ならない','拡大率が小さい','被ばくが少ない','嚥下しやすい','散乱線が減る'], a:0, set:[90,45],
-    e:'正面位では食道が脊柱と心陰影に重なる。右前斜位にすると分離して描出できる。' },
-  { q:'立位でもバリウムが胃底部に貯留し、胃体部への流入が遅れる胃型はどれか。',
-    c:['鉤状胃','牛角胃','瀑状胃','下垂胃','正常胃'], a:2, set:[90,0], type:'casc',
-    e:'瀑状胃。後方に張り出した胃底部の窪みが先に満たされ、縁を越えてから体部へ落ちる。' },
-  { q:'日本人に最も多い胃型はどれか。',
-    c:['鉤状胃','牛角胃','瀑状胃','下垂胃','横位胃'], a:0, set:[90,0], type:'hook',
-    e:'鉤状胃。胃角が明瞭で幽門部が胃体下部より高いJ字型。' },
-  { q:'上部消化管X線検査で最後に行うのはどれか。',
-    c:['食道撮影','背臥位二重造影','前壁二重造影','立位充盈像・圧迫像','体位変換'], a:3, set:[90,20],
-    e:'二重造影像は付着が良いうちに先に撮り、充盈像と圧迫像は最後に行う。' },
-  { q:'硫酸バリウムについて正しいのはどれか。',
-    c:['原子番号は26である','K吸収端は37.4 keVである','陰性造影剤である','水に易溶である','消化管穿孔時にも使用できる'], a:1,
-    e:'Z=56、K吸収端37.4 keVで光電効果による吸収が大きい陽性造影剤。水に不溶。穿孔疑いでは禁忌で水溶性ヨード造影剤を用いる。' },
-  { q:'発泡剤を用いる目的はどれか。',
-    c:['バリウムの粘度を下げる','胃を拡張して陰性造影剤とする','蠕動を抑制する','便秘を防ぐ','散乱線を減らす'], a:1,
-    e:'炭酸ガスで胃を拡張し、バリウム（陽性）とガス（陰性）の二重造影を成立させる。' }
-];
 </script>
 <script>
 "use strict";
@@ -1741,7 +1753,7 @@ function setMode(m) {
   for (let i = 0; i < 4; i++) document.getElementById('pane' + i).hidden = (i !== m);
   if (m === 1 && seqIdx < 0) gotoStep(0);
   if (m === 2) syncFree();
-  if (m === 3 && !curQ) showQ(0);
+  if (m === 3) { if (EXAM.length && !curQ) showQ(0); else if (!EXAM.length) qView('empty'); }
   updateNotes();
 }
 
@@ -1836,56 +1848,94 @@ function setComp(region, amt) {
   rebuildAll();
 }
 
-/* --- 国試形式の問題 --- */
-let qIdx = 0, curQ = null, qLocked = false;
-const qText = document.getElementById('qText'), qChoices = document.getElementById('qChoices'), qExp = document.getElementById('qExp');
+/* --- 問題（過去問を貼り付けて使う）--- */
+const QKEY = 'stomach.exam.v1';
+let EXAM = [], qIdx = 0, curQ = null, qLocked = false;
+const qText = document.getElementById('qText'), qChoices = document.getElementById('qChoices');
+const qExp = document.getElementById('qExp'), qSrc = document.getElementById('qSrc');
+const qEmpty = document.getElementById('qEmpty'), qBox = document.getElementById('qBox');
+const qImport = document.getElementById('qImport'), qPaste = document.getElementById('qPaste');
+const TYPEBYNAME = { '鉤状胃': 'hook', '牛角胃': 'horn', '瀑状胃': 'casc', '下垂胃': 'ptos' };
+
+function parseExam(txt) {
+  const out = [];
+  txt.split(/^[ \t]*-{3,}[ \t]*$/m).forEach(block => {
+    const q = { c: [] };
+    let m;
+    block.split(/\r?\n/).forEach(line => {
+      const t = line.trim(); if (!t) return;
+      if ((m = t.match(/^出典[:：]\s*(.+)$/))) q.src = m[1];
+      else if ((m = t.match(/^問題[:：]\s*(.+)$/))) q.q = m[1];
+      else if ((m = t.match(/^([1-9])\s*[.:：)、]\s*(.+)$/))) q.c.push(m[2]);
+      else if ((m = t.match(/^(?:答え|解答|正解)[:：]?\s*([1-9])/))) q.a = +m[1] - 1;
+      else if ((m = t.match(/^解説[:：]\s*(.+)$/))) q.e = m[1];
+      else if ((m = t.match(/^体位[:：]\s*(-?\d+)\s*[,，]\s*(-?\d+)/))) q.set = [+m[1], +m[2]];
+      else if ((m = t.match(/^胃型[:：]\s*(\S+)/))) q.type = TYPEBYNAME[m[1]] || m[1];
+      else if (!q.q) q.q = t;
+    });
+    if (q.q && q.c.length >= 2 && q.a >= 0 && q.a < q.c.length) out.push(q);
+  });
+  return out;
+}
+function saveExam() { try { localStorage.setItem(QKEY, JSON.stringify(EXAM)); } catch (e) { } }
+function loadExam() { try { const v = localStorage.getItem(QKEY); if (v) EXAM = JSON.parse(v) || []; } catch (e) { EXAM = []; } }
+function qView(which) {
+  qEmpty.hidden = which !== 'empty'; qBox.hidden = which !== 'quiz'; qImport.hidden = which !== 'import';
+}
 function showQ(i) {
+  if (!EXAM.length) { qView('empty'); return; }
   qIdx = (i + EXAM.length) % EXAM.length;
   curQ = EXAM[qIdx];
   document.getElementById('qNo').textContent = '問 ' + (qIdx + 1) + ' / ' + EXAM.length;
-  if (curQ.type && curQ.type !== curType) setType(curQ.type);
+  if (curQ.type && TYPES[curQ.type] && curQ.type !== curType) setType(curQ.type);
   if (curQ.set) goPose(curQ.set[0], curQ.set[1]);
   setComp('', 0); syncFree();
   renderQ();
 }
-const qSrc = document.getElementById('qSrc');
 function renderQ() {
-  qLocked = false;
+  qLocked = false; qView('quiz');
   qText.textContent = curQ.q;
-  qSrc.innerHTML = '<b>出典</b> ' + (curQ.src || 'オリジナル問題（国試形式）／実際の過去問ではありません');
-  qExp.hidden = true; qExp.textContent = curQ.e;
+  qSrc.innerHTML = curQ.src ? '<b>出典</b> ' + curQ.src : '';
+  qExp.hidden = true; qExp.textContent = curQ.e || '';
   qChoices.innerHTML = '';
   curQ.c.forEach((t, i) => {
     const li = document.createElement('li');
     const b = document.createElement('button'); b.type = 'button';
     b.innerHTML = '<span class="n">' + (i + 1) + '</span><span>' + t + '</span>';
-    b.addEventListener('click', () => answerQ(i, b));
+    b.addEventListener('click', () => answerQ(i));
     li.appendChild(b); qChoices.appendChild(li);
   });
 }
-function answerQ(i, btn) {
+function answerQ(i) {
   if (qLocked) return;
   qLocked = true;
-  const btns = [...qChoices.querySelectorAll('button')];
-  btns.forEach((b, j) => {
+  [...qChoices.querySelectorAll('button')].forEach((b, j) => {
     b.disabled = true;
-    if (j === curQ.a) b.classList.add('ok');
-    else if (j === i) b.classList.add('ng');
+    if (j === curQ.a) b.classList.add('ok'); else if (j === i) b.classList.add('ng');
   });
-  qExp.hidden = false;
+  if (curQ.e) qExp.hidden = false;
   if (curQ.set) goPose(curQ.set[0], curQ.set[1]);
 }
 document.getElementById('bQPrev').addEventListener('click', () => showQ(qIdx - 1));
 document.getElementById('bQNext').addEventListener('click', () => showQ(qIdx + 1));
+const openImport = () => { qPaste.value = ''; qView('import'); qPaste.focus(); };
+document.getElementById('bLoadOpen').addEventListener('click', openImport);
+document.getElementById('bLoadOpen2').addEventListener('click', openImport);
+document.getElementById('bImportCancel').addEventListener('click', () => { qView(EXAM.length ? 'quiz' : 'empty'); });
+document.getElementById('bImport').addEventListener('click', () => {
+  const got = parseExam(qPaste.value);
+  if (!got.length) { qPaste.value = '読み取れませんでした。書式を確認してください。\n\n' + qPaste.value; return; }
+  EXAM = got; saveExam(); showQ(0);
+});
 document.getElementById('bReadQ').addEventListener('click', () => {
   const keys = POSE_ORDER.slice();
   const ans = keys[Math.floor(Math.random() * keys.length)];
   const others = keys.filter(k => k !== ans).sort(() => Math.random() - 0.5).slice(0, 4);
   const cs = [ans].concat(others).sort(() => Math.random() - 0.5);
   curQ = { q: '表示されている透視像の体位はどれか。', c: cs.map(k => POSES[k].name), a: cs.indexOf(ans),
-           src: 'シミュレータが生成した像（オリジナル）',
+           src: '読影練習（シミュレータの生成像／国試の問題ではありません）',
            e: POSES[ans].name + '。' + POSES[ans].lead.replace(/<\/?em>/g, '') };
-  document.getElementById('qNo').textContent = '読影';
+  document.getElementById('qNo').textContent = '読影練習';
   goPose(POSES[ans].tilt, POSES[ans].roll);
   setComp('', 0); syncFree();
   viewMode = 2; syncViewSeg(); layoutFilm();
@@ -1901,7 +1951,8 @@ sAir.addEventListener('input', () => {
 });
 sSkin.addEventListener('input', () => {
   skinOpacity = +sSkin.value / 100; document.getElementById('vSkin').textContent = sSkin.value;
-  matSkin.uniforms.uO.value = skinOpacity;
+  loadExam();
+matSkin.uniforms.uO.value = skinOpacity;
 });
 const bind = (id, fn) => document.getElementById(id).addEventListener('change', e => fn(e.target.checked));
 bind('tHi', v => { uHi.value = v ? 1 : 0; });

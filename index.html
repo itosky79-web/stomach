@@ -141,7 +141,7 @@ button.act.wide{grid-column:1/-1; color:var(--barium); border-color:#456A80}
 .gauge span{color:var(--text); font-variant-numeric:tabular-nums}
 
 /* ---------- readouts ---------- */
-.band{display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,1fr) minmax(0,.95fr); gap:16px; margin-top:18px}
+.band{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; margin-top:16px}
 .card{background:var(--panel); border:1px solid var(--line); border-radius:var(--r); padding:15px 16px 17px}
 .card h2{
   font-family:var(--mincho); font-weight:700; font-size:15px; letter-spacing:.05em;
@@ -243,8 +243,8 @@ footer span{font-family:var(--mono); font-size:10px; letter-spacing:.1em}
 ol.seq{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:3px}
 ol.seq li{display:flex}
 ol.seq button{
-  flex:1; display:grid; grid-template-columns:22px 1fr; gap:7px; align-items:baseline; text-align:left;
-  padding:6px 8px; background:transparent; border:1px solid transparent; border-radius:3px;
+  flex:1; display:grid; grid-template-columns:20px 1fr; gap:6px; align-items:baseline; text-align:left;
+  padding:5px 7px; background:transparent; border:1px solid transparent; border-radius:3px;
   color:var(--muted); font-family:var(--gothic); font-size:11.5px; cursor:pointer; line-height:1.5;
 }
 ol.seq button:hover{background:var(--panel2); color:var(--text)}
@@ -253,7 +253,7 @@ ol.seq .no{font-family:var(--mono); font-size:10px; color:var(--teal)}
 ol.seq .tg2{display:block; font-size:10px; color:var(--dim); letter-spacing:.02em}
 ol.seq button[aria-current="step"] .tg2{color:#8FC8D8}
 .seqnav{display:grid; grid-template-columns:1fr 1fr 1fr; gap:6px; margin-top:10px}
-.seqaim{margin:10px 0 0; padding:10px 11px; background:var(--ink2); border-left:2px solid var(--amber); border-radius:0 2px 2px 0; font-size:12px; color:var(--muted); line-height:1.85}
+.seqaim{margin:9px 0 0; padding:10px 11px; background:var(--ink2); border-left:2px solid var(--amber); border-radius:0 2px 2px 0; font-size:12px; color:var(--muted); line-height:1.85}
 .seqaim b{color:var(--amber); font-weight:500; display:block; margin-bottom:3px; font-size:11px; letter-spacing:.04em}
 .prepost{margin:11px 0 0; font-size:11px; color:var(--dim); line-height:1.8; border-top:1px solid var(--line); padding-top:9px}
 .prepost b{color:var(--muted); font-weight:500}
@@ -298,6 +298,81 @@ select.sel:focus-visible{outline:2px solid var(--teal); outline-offset:2px}
 #lightbox button{padding:7px 20px; background:transparent; border:1px solid var(--line2); border-radius:3px; color:var(--muted); font-family:var(--gothic); font-size:12px; cursor:pointer}
 #lightbox button:hover{color:var(--text); border-color:var(--teal)}
 
+
+/* ---------- 4タブ・セグメント ---------- */
+.tabs{grid-template-columns:repeat(4,1fr)}
+.tabs button{font-size:11px; padding:7px 1px}
+.seg.wide{display:grid; grid-template-columns:repeat(3,1fr); background:var(--ink2)}
+.seg.wide button{padding:6px 2px; text-align:center; font-size:10px}
+
+/* ---------- 操作卓 ---------- */
+.console{display:flex; gap:12px; align-items:flex-start; margin:2px 0 10px}
+.stickwrap{flex:1; min-width:0}
+.stick{
+  position:relative; width:100%; aspect-ratio:1/1; max-width:184px; margin:0 auto;
+  background:radial-gradient(120% 120% at 50% 20%,#16212C,#0A1117);
+  border:1px solid var(--line2); border-radius:8px; touch-action:none; cursor:grab;
+  box-shadow:inset 0 2px 10px rgba(0,0,0,.7);
+}
+.stick:active{cursor:grabbing}
+.stick svg{position:absolute; inset:0; width:100%; height:100%}
+.knob{
+  position:absolute; width:30px; height:30px; margin:-15px 0 0 -15px; border-radius:50%;
+  background:radial-gradient(60% 60% at 38% 32%,#F6D9A6,#C98A2E 62%,#8A5A17);
+  border:1px solid #6E4A16; box-shadow:0 3px 8px rgba(0,0,0,.65), inset 0 -2px 4px rgba(0,0,0,.4);
+  pointer-events:none; transition:none;
+}
+.knob::after{content:""; position:absolute; inset:9px; border-radius:50%; background:rgba(60,35,8,.55)}
+.stick:focus-visible{outline:2px solid var(--teal); outline-offset:3px}
+.sticklab{margin:7px 0 0; text-align:center; font-family:var(--mono); font-size:9px; letter-spacing:.1em; color:var(--dim)}
+.leverwrap{flex:none; width:46px}
+.lever{
+  position:relative; width:26px; height:150px; margin:0 auto; border-radius:5px;
+  background:linear-gradient(180deg,#0A1117,#16212C); border:1px solid var(--line2);
+  box-shadow:inset 0 2px 8px rgba(0,0,0,.7); touch-action:none; cursor:ns-resize;
+}
+.lhandle{
+  position:absolute; left:-4px; width:34px; height:16px; margin-top:-8px; border-radius:3px;
+  background:linear-gradient(180deg,#9FB4C4,#5E7386); border:1px solid #3C5265;
+  box-shadow:0 2px 5px rgba(0,0,0,.6); pointer-events:none;
+}
+.lhandle::after{content:""; position:absolute; left:5px; right:5px; top:7px; height:1px; background:rgba(10,16,20,.6)}
+
+/* ---------- 問題 ---------- */
+.qhead{display:flex; justify-content:space-between; align-items:center; margin-bottom:9px}
+.qhead span{font-family:var(--mono); font-size:10px; letter-spacing:.12em; color:var(--dim)}
+.qhead button{padding:4px 9px; font-size:10.5px}
+.qtext{margin:0 0 10px; font-size:13px; line-height:1.7; color:#E9F2F8; text-wrap:balance}
+ol.choices{list-style:none; margin:0 0 10px; padding:0; display:flex; flex-direction:column; gap:4px; counter-reset:ch}
+ol.choices button{
+  width:100%; text-align:left; display:grid; grid-template-columns:16px 1fr; gap:7px; align-items:baseline;
+  padding:6px 9px; background:var(--panel2); border:1px solid var(--line); border-radius:3px;
+  color:var(--muted); font-family:var(--gothic); font-size:12px; cursor:pointer; line-height:1.5;
+}
+ol.choices button:hover:not([disabled]){border-color:var(--line2); color:var(--text)}
+ol.choices button[disabled]{cursor:default}
+ol.choices .n{font-family:var(--mono); font-size:10px; color:var(--dim)}
+ol.choices button.ok{background:#12291E; border-color:#2F6B49; color:#9FE3BC}
+ol.choices button.ok .n{color:#4FBF88}
+ol.choices button.ng{background:#2A1416; border-color:#6E3036; color:#E9A0A0}
+ol.choices button.ng .n{color:#D06A6A}
+.qexp{margin:0 0 10px; padding:9px 11px; background:var(--ink2); border-left:2px solid var(--teal);
+  border-radius:0 2px 2px 0; font-size:12px; color:var(--muted); line-height:1.8}
+.qexp[hidden]{display:none}
+
+/* ---------- 折りたたみ ---------- */
+details.fold{margin-top:10px; border-top:1px solid var(--line); padding-top:8px}
+details.fold summary{list-style:none; cursor:pointer; font-family:var(--mono); font-size:9.5px;
+  letter-spacing:.12em; color:var(--dim)}
+details.fold summary::-webkit-details-marker{display:none}
+details.fold summary::before{content:"+ "; color:var(--teal)}
+details.fold[open] summary::before{content:"− "}
+details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1.8}
+
+/* ラベルは小さく控えめに */
+.lab{font-size:10px; padding:0 5px; background:rgba(10,15,20,.6); border-color:rgba(49,72,92,.7)}
+.lab.axis{font-size:9px}
+
 @media (max-width:1080px){
   .band{grid-template-columns:1fr 1fr}
   .band .card:last-child{grid-column:1/-1}
@@ -320,7 +395,7 @@ select.sel:focus-visible{outline:2px solid var(--teal); outline-offset:2px}
 <header>
   <p class="eyebrow">Upper GI Series &middot; Double Contrast Simulator</p>
   <h1>胃バリウム透視シミュレータ</h1>
-  <p class="sub">体位を変えると重力方向が変わり、硫酸バリウム（陽性造影剤）と発泡剤のガス（陰性造影剤）が胃内で入れ替わります。3D で壁面の状態を見ながら、同じ瞬間のシミュレーション透視像を並べて確認できます。<strong style="color:#D9E4ED;font-weight:500">学習</strong>で体位ごとの違いを、<strong style="color:#D9E4ED;font-weight:500">撮影手順</strong>で検診の撮影順を、<strong style="color:#D9E4ED;font-weight:500">フリー</strong>で透視台を自分で操作します。ドラッグで回転、ホイールでズーム、右ドラッグで平行移動。</p>
+  <p class="sub">体位を変えると重力方向が変わり、バリウム（陽性造影剤）とガス（陰性造影剤）が胃内で入れ替わります。3D と同じ瞬間の透視像を並べて確認できます。</p>
 </header>
 
 <div class="work">
@@ -350,17 +425,16 @@ select.sel:focus-visible{outline:2px solid var(--teal); outline-offset:2px}
     <div class="grp">
       <div class="tabs" id="modeTabs">
         <button type="button" data-m="0" aria-pressed="true">学習</button>
-        <button type="button" data-m="1">撮影手順</button>
+        <button type="button" data-m="1">手順</button>
         <button type="button" data-m="2">フリー</button>
+        <button type="button" data-m="3">問題</button>
       </div>
 
       <div class="pane" id="pane0">
-        <p class="grp-h">体位 <b id="gravNote">ERECT</b></p>
         <div class="pos-grid" id="posGrid"></div>
       </div>
 
       <div class="pane" id="pane1" hidden>
-        <p class="seqhead">上部消化管X線検診の代表的な撮影順です。順に追うと、なぜその体位でその面が写るのかが分かります。<br><span style="color:var(--dim)">※ 施設やガイドライン改訂で枚数・順序は異なります。</span></p>
         <ol class="seq" id="seqList"></ol>
         <div class="seqnav">
           <button class="act" id="bPrev" type="button">前へ</button>
@@ -368,104 +442,114 @@ select.sel:focus-visible{outline:2px solid var(--teal); outline-offset:2px}
           <button class="act" id="bNext" type="button">次へ</button>
         </div>
         <p class="seqaim" id="seqAim"></p>
-        <p class="prepost"><b>前処置</b>：前日夜から絶食。鎮痙剤（抗コリン薬）は緑内障・前立腺肥大・重篤な心疾患で禁忌 → グルカゴンへ変更（褐色細胞腫・糖尿病では注意）。<br><b>後処置</b>：下剤と十分な水分でバリウムを排出。停滞は便秘・腸閉塞の原因になる。</p>
+        <details class="fold"><summary>前処置・後処置</summary>
+          <p>前日夜から絶食。鎮痙剤（抗コリン薬）は緑内障・前立腺肥大・重篤な心疾患で禁忌 → グルカゴンへ。<br>検査後は下剤と水分でバリウムを排出する。</p>
+        </details>
       </div>
 
       <div class="pane" id="pane2" hidden>
-        <div class="readout">
-          <span class="big" id="freePos">背臥位・正面</span>
-          <span class="sm" id="freeAng">0° / 0°</span>
-        </div>
-        <div class="slider">
-          <div class="sl-h"><label for="sTilt">透視台の起倒角</label><span class="sl-v"><span id="vTilt">0</span>°</span></div>
-          <input type="range" id="sTilt" min="-30" max="90" step="1" value="0">
-          <div class="detent" id="tiltDet">
-            <button type="button" data-t="90">立位</button>
-            <button type="button" data-t="45">半立位</button>
-            <button type="button" data-t="0">水平</button>
-            <button type="button" data-t="-30">頭低位</button>
+        <div class="readout"><span class="big" id="freePos">立位正面</span><span class="sm" id="freeAng">90° / 0°</span></div>
+        <div class="console">
+          <div class="stickwrap">
+            <div class="stick" id="stick" tabindex="0" role="application" aria-label="透視台の起倒角と体軸回転を操作するスティック">
+              <svg viewBox="0 0 200 200" aria-hidden="true">
+                <rect x="6" y="6" width="188" height="188" rx="10" fill="none" stroke="#24323F"/>
+                <line x1="100" y1="18" x2="100" y2="182" stroke="#1E2C38"/>
+                <line x1="18" y1="100" x2="182" y2="100" stroke="#1E2C38"/>
+                <circle cx="100" cy="100" r="72" fill="none" stroke="#1A2733" stroke-dasharray="3 5"/>
+                <g fill="#5E7386" font-family="monospace" font-size="11">
+                  <text x="100" y="17" text-anchor="middle">立位</text>
+                  <text x="100" y="196" text-anchor="middle">頭低</text>
+                  <text x="12" y="104" text-anchor="start">腹臥</text>
+                  <text x="188" y="104" text-anchor="end">腹臥</text>
+                </g>
+                <g fill="#52B8CE" font-family="monospace" font-size="9" opacity=".75">
+                  <text x="150" y="118" text-anchor="middle">第1</text>
+                  <text x="50" y="118" text-anchor="middle">第2</text>
+                </g>
+              </svg>
+              <div class="knob" id="knob"></div>
+            </div>
+            <p class="sticklab">起倒角 ↕ ／ 体軸回転 ↔</p>
+          </div>
+          <div class="leverwrap">
+            <div class="lever" id="lever"><div class="lhandle" id="lhandle"></div></div>
+            <p class="sticklab">圧迫</p>
           </div>
         </div>
-        <div class="slider" style="margin-top:10px">
-          <div class="sl-h"><label for="sRoll">体軸の回転角</label><span class="sl-v"><span id="vRoll">0</span>°</span></div>
-          <input type="range" id="sRoll" min="0" max="360" step="1" value="0">
-          <div class="detent" id="rollDet">
-            <button type="button" data-r="0">正面</button>
-            <button type="button" data-r="45">第1斜位</button>
-            <button type="button" data-r="315">第2斜位</button>
-            <button type="button" data-r="270">右側臥位</button>
-            <button type="button" data-r="90">左側臥位</button>
-            <button type="button" data-r="180">腹臥位</button>
-          </div>
-        </div>
-        <p class="grp-h" style="margin-top:14px">圧迫筒</p>
         <select class="sel" id="selComp">
           <option value="">圧迫しない</option>
-          <option value="antrum">前庭部を圧迫</option>
-          <option value="angle">胃角部を圧迫</option>
-          <option value="body">胃体部を圧迫</option>
+          <option value="antrum">前庭部</option>
+          <option value="angle">胃角部</option>
+          <option value="body">胃体部</option>
         </select>
-        <div class="slider" style="margin-top:8px">
-          <div class="sl-h"><label for="sComp">圧迫の強さ</label><span class="sl-v"><span id="vComp">0</span> %</span></div>
-          <input type="range" id="sComp" min="0" max="100" step="1" value="0">
+      </div>
+
+      <div class="pane" id="pane3" hidden>
+        <div class="qhead"><span id="qNo">問 1 / 12</span><button class="act" id="bReadQ" type="button">像から当てる</button></div>
+        <p class="qtext" id="qText"></p>
+        <ol class="choices" id="qChoices"></ol>
+        <p class="qexp" id="qExp" hidden></p>
+        <div class="seqnav" style="grid-template-columns:1fr 1fr">
+          <button class="act" id="bQPrev" type="button">前の問題</button>
+          <button class="act" id="bQNext" type="button">次の問題</button>
         </div>
-        <p class="prepost"><b>操作のヒント</b>：起倒角で重力方向を、回転角で斜位をつくります。透視で造影剤の動きを確かめてから「撮影」。透視時間を短くすることが被ばく低減の基本です。</p>
       </div>
     </div>
 
     <div class="grp">
-      <p class="grp-h">胃型 <b id="typeNote">日本人に最多</b></p>
+      <p class="grp-h">胃型 <b id="typeNote"></b></p>
       <div class="type-grid" id="typeGrid"></div>
     </div>
 
     <div class="grp">
       <p class="grp-h">造影剤・発泡剤</p>
       <div class="slider">
-        <div class="sl-h"><label for="sBa">バリウム投与量</label><span class="sl-v"><span id="vBa">120</span> mL</span></div>
+        <div class="sl-h"><label for="sBa">バリウム</label><span class="sl-v"><span id="vBa">120</span> mL</span></div>
         <input type="range" id="sBa" min="0" max="250" step="5" value="120">
       </div>
       <div class="slider">
-        <div class="sl-h"><label for="sAir">発泡剤によるガス拡張</label><span class="sl-v"><span id="vAir">60</span> %</span></div>
+        <div class="sl-h"><label for="sAir">ガス拡張</label><span class="sl-v"><span id="vAir">60</span> %</span></div>
         <input type="range" id="sAir" min="0" max="100" step="1" value="60">
       </div>
+      <div class="slider">
+        <div class="sl-h"><label for="sSkin">体表</label><span class="sl-v"><span id="vSkin">22</span> %</span></div>
+        <input type="range" id="sSkin" min="0" max="100" step="1" value="22">
+      </div>
       <div class="gauge">
-        <span class="lbl">胃内 <span id="gStom">0</span> mL</span>
-        <span class="lbl">十二指腸 <span id="gDuo">0</span> mL</span>
+        <span class="lbl">胃内 <span id="gStom">0</span></span>
+        <span class="lbl">十二指腸 <span id="gDuo">0</span></span>
         <span class="lbl">容量 <span id="gCap">0</span> mL</span>
       </div>
     </div>
 
     <div class="grp">
-      <p class="grp-h">体表・骨</p>
-      <div class="slider">
-        <div class="sl-h"><label for="sSkin">体表の透明度</label><span class="sl-v"><span id="vSkin">30</span> %</span></div>
-        <input type="range" id="sSkin" min="0" max="100" step="1" value="30">
+      <p class="grp-h">視点</p>
+      <div class="seg wide" id="viewpt">
+        <button type="button" data-p="op" aria-pressed="true">術者</button>
+        <button type="button" data-p="tube">管球</button>
+        <button type="button" data-p="front">正面</button>
       </div>
-      <div class="toggles" style="margin-top:4px">
-        <label class="tg"><input type="checkbox" id="tBone" checked>骨格を表示（脊柱・肋骨・腸骨）</label>
+      <p class="grp-h" style="margin-top:12px">ラベル</p>
+      <div class="seg wide" id="labSeg">
+        <button type="button" data-l="0">なし</button>
+        <button type="button" data-l="1" aria-pressed="true">主要</button>
+        <button type="button" data-l="2">詳細</button>
       </div>
-    </div>
-
-    <div class="grp">
-      <p class="grp-h">表示</p>
-      <div class="toggles">
-        <label class="tg"><input type="checkbox" id="tHi" checked>二重造影域をハイライト</label>
-        <label class="tg"><input type="checkbox" id="tRug" checked>粘膜皺襞を描出</label>
-        <label class="tg"><input type="checkbox" id="tLab" checked>部位ラベル</label>
-        <label class="tg"><input type="checkbox" id="tAx" checked>体軸ガイド</label>
-        <label class="tg"><input type="checkbox" id="tPyl">幽門を開く（十二指腸へ排出）</label>
-        <label class="tg"><input type="checkbox" id="tSpin">自動回転</label>
+      <div class="toggles" style="margin-top:11px">
+        <label class="tg"><input type="checkbox" id="tHi" checked>二重造影をハイライト</label>
+        <label class="tg"><input type="checkbox" id="tRug" checked>粘膜皺襞</label>
+        <label class="tg"><input type="checkbox" id="tBone">骨格を3Dにも表示</label>
+        <label class="tg"><input type="checkbox" id="tPyl">幽門を開く</label>
       </div>
       <div class="acts" style="margin-top:10px">
-        <button class="act wide" id="bDrink" type="button">もう一度バリウムを飲ませる</button>
-        <button class="act" id="bCoat" type="button">粘膜付着をリセット</button>
+        <button class="act" id="bDrink" type="button">飲み直す</button>
+        <button class="act" id="bRoll" type="button">全周に付着</button>
         <button class="act" id="bView" type="button">視点リセット</button>
-        <button class="act" id="bRoll" type="button">体位変換で全周に付着</button>
-        <button class="act" id="bClear" type="button">フィルムを消去</button>
+        <button class="act" id="bClear" type="button">フィルム消去</button>
       </div>
     </div>
   </div>
-</div>
 
 <div class="films">
   <div class="fh2"><h2>撮影したフィルム</h2><span class="hint">CLICK TO ENLARGE</span></div>
@@ -498,11 +582,6 @@ select.sel:focus-visible{outline:2px solid var(--teal); outline-offset:2px}
     </dl>
   </section>
 
-  <section class="card">
-    <h2>確認問題</h2>
-    <p class="cap">Board review &middot; 8 items</p>
-    <div id="quiz"></div>
-  </section>
 </div>
 
 <div id="lightbox"><img id="lbImg" alt="拡大表示したシミュレーション写真"><p id="lbCap"></p><button type="button" id="lbClose">閉じる</button></div>
@@ -534,7 +613,7 @@ const TYPES = {
     cardia:2.0,
     regions:[['fundus','胃底部',0,2.1],['body','胃体部',2.1,5.6],['angle','胃角部',5.6,6.9],
              ['antrum','前庭部',6.9,9.5],['pylorus','幽門部',9.5,10.7],['duode','十二指腸球部',10.7,13]],
-    note:'胃角が明瞭で、幽門部が胃体下部よりも高い位置にある釣り針（J字）状。日本人に最も多い胃型で、立位では最下点である胃体下部〜胃角部にバリウムが溜まる。'
+    note:'胃角が明瞭で、幽門部が胃体下部より高いJ字型。日本人に最も多い。'
   },
   horn: {
     name:'牛角胃', ruby:'STEER-HORN', short:'肥満型に多い',
@@ -545,7 +624,7 @@ const TYPES = {
     cardia:1.9,
     regions:[['fundus','胃底部',0,2.0],['body','胃体部',2.0,5.0],['angle','胃角部',5.0,6.2],
              ['antrum','前庭部',6.2,8.0],['pylorus','幽門部',8.0,9.0],['duode','十二指腸球部',9.0,11]],
-    note:'胃の長軸が水平に近い高位横位型。噴門側が広く幽門へ向かって細くなり、胃角は鈍で不明瞭。肥満体型や高齢者にみられる。胃全体が高い位置にあるため立位でも上腹部に留まる。'
+    note:'長軸が水平に近い高位横位型。胃角は鈍。肥満体型・高齢者に多い。'
   },
   casc: {
     name:'瀑状胃', ruby:'CASCADE', short:'胃底部が後方へ',
@@ -556,7 +635,7 @@ const TYPES = {
     cardia:2.0,
     regions:[['fundus','胃底部',0,3.2],['body','胃体部',3.2,7.0],['angle','胃角部',7.0,8.2],
              ['antrum','前庭部',8.2,10.6],['pylorus','幽門部',10.6,11.8],['duode','十二指腸球部',11.8,14]],
-    note:'胃底部が後方へ大きく張り出して窪みをつくる。立位でもバリウムはまず後方の胃底部に貯留し、量が増えると縁を越えて胃体部へ滝のように流れ落ちる。胃底部の二重造影が得にくく、腹臥位や頭低位での工夫を要する。'
+    note:'胃底部が後方に張り出して窪む。立位でもまず胃底部に溜まり、縁を越えて体部へ落ちる。胃底部の二重造影が得にくい。'
   },
   ptos: {
     name:'下垂胃', ruby:'GASTROPTOSIS', short:'無力性・縦長',
@@ -567,36 +646,30 @@ const TYPES = {
     cardia:1.9,
     regions:[['fundus','胃底部',0,2.1],['body','胃体部',2.1,6.2],['angle','胃角部',6.2,7.6],
              ['antrum','前庭部',7.6,10.6],['pylorus','幽門部',10.6,11.8],['duode','十二指腸球部',11.8,14]],
-    note:'細長い縦位型で、胃下極が腸骨稜より下方まで下垂する無力性の胃。立位では造影剤が深く下部に落ち込み、幽門が高い位置に残るため胃排出が遅れやすい。'
+    note:'細長い縦位型。胃下極が腸骨稜より下方まで下垂し、排出が遅れやすい。'
   }
 };
 
 /* ---------- 体位：体軸の像ベクトル（左・頭・腹 → ワールド） ---------- */
 const POSES = {
-  stand:{ name:'立位', ruby:'ERECT',
-    basis:[[1,0,0],[0,1,0],[0,0,1]],
-    lead:'バリウムは最下点の<em>胃体下部〜胃角部</em>へ落ち、胃泡（ガス）は<em>胃底部</em>に集まる。',
-    body:'重力に対して胃が縦に立つため、上下方向の分離がもっとも明瞭になる体位。胃底部には必ずガスが入るので<strong>胃底部（穹窿部）の二重造影</strong>に適する。下部は造影剤で満たされた<strong>充盈像</strong>となり、大弯の輪郭や充盈欠損の評価に用いる。立位では胃全体がやや下降し、バリウム上面には水平な鏡面（ニボー）が形成される。'},
-  supine:{ name:'背臥位', ruby:'SUPINE',
-    basis:[[0,0,-1],[-1,0,0],[0,1,0]],
-    lead:'背側が低くなり、バリウムは<em>胃底部〜胃体部後壁</em>へ、ガスは<em>前庭部〜体部前方</em>へ。',
-    body:'二重造影法の<strong>基本体位</strong>。胃底部は背側かつ頭側にあるため造影剤の受け皿となり、余分なバリウムがそこへ逃げる一方、胃体部から前庭部の<strong>後壁</strong>は薄いバリウム被膜とガスで広げられ、良好な二重造影像になる。胃癌のスクリーニングで最も情報量が多い面。'},
-  prone:{ name:'腹臥位', ruby:'PRONE',
-    basis:[[0,0,1],[-1,0,0],[0,-1,0]],
-    lead:'腹側が低くなり、バリウムは<em>前庭部・胃体部前壁側</em>へ、ガスは<em>胃底部</em>へ。',
-    body:'背臥位と裏返しの関係になり、<strong>前壁</strong>の二重造影が得られる体位。前庭部は腹側にあるため造影剤が集まりやすく、ガスが背側の胃底部へ抜ける。前壁は背臥位では描出できないので、前後壁をそろえるために必ず撮影する。圧迫法と組み合わせることも多い。'},
-  rlat:{ name:'右側臥位', ruby:'RIGHT LAT',
-    basis:[[0,1,0],[-1,0,0],[0,0,1]],
-    lead:'幽門側が低くなり、バリウムは<em>前庭部〜幽門</em>に集まって<em>十二指腸</em>へ流入する。',
-    body:'胃の幽門側（患者の右側）が下になるため、造影剤が幽門を越えて<strong>十二指腸球部</strong>へ流れやすい。球部や下行脚の描出に用いる体位。同時にガスは胃底部へ移動する。胃排出を促したいときの体位でもある。'},
-  llat:{ name:'左側臥位', ruby:'LEFT LAT',
-    basis:[[0,-1,0],[-1,0,0],[0,0,-1]],
-    lead:'噴門・胃底部側が低くなり、バリウムは<em>胃底部</em>へ、ガスは<em>前庭部〜幽門部</em>へ。',
-    body:'胃底部が受け皿となって造影剤を保持するため、<strong>前庭部・幽門部の二重造影</strong>が得やすい。十二指腸への流出も抑えられるので、前庭部の病変をじっくり観察したいときに有利。背臥位からの体位変換の途中でも粘膜面へ均一にバリウムを塗り広げられる。'},
-  trend:{ name:'頭低位', ruby:'TRENDELENBURG',
-    basis:[[0,0,-1],[-0.866,-0.5,0],[-0.5,0.866,0]],
-    lead:'頭側が低くなり、バリウムが<em>胃底部・噴門部</em>へ移動、食道へ逆流しうる。',
-    body:'背臥位のまま撮影台を頭低（約30°）に傾けた体位。造影剤が噴門部に達するため<strong>食道胃接合部</strong>の描出に適し、<strong>胃食道逆流症や食道裂孔ヘルニア</strong>の評価に用いられる。下部食道への逆流の有無を動態で観察する。'}
+  stand:{ name:'立位', ruby:'ERECT', basis:[[1,0,0],[0,1,0],[0,0,1]],
+    lead:'バリウムは最下点の<em>胃体下部〜胃角部</em>へ、ガスは<em>胃底部</em>へ。',
+    body:'胃底部の二重造影と下部の充盈像。バリウム上面に水平な鏡面（ニボー）ができる。'},
+  supine:{ name:'背臥位', ruby:'SUPINE', basis:[[0,0,-1],[-1,0,0],[0,1,0]],
+    lead:'背側が低い。余分なバリウムは<em>胃底部</em>へ落ち、<em>胃体〜前庭部後壁</em>がガスで広がる。',
+    body:'二重造影法の基本体位。後壁の描出に最も適する。'},
+  prone:{ name:'腹臥位', ruby:'PRONE', basis:[[0,0,1],[-1,0,0],[0,-1,0]],
+    lead:'腹側が低い。バリウムは<em>前庭部・前壁側</em>へ、ガスは<em>胃底部</em>へ。',
+    body:'背臥位では撮れない前壁の二重造影。前後壁がそろって全周の評価になる。'},
+  rlat:{ name:'右側臥位', ruby:'RIGHT LAT', basis:[[0,1,0],[-1,0,0],[0,0,1]],
+    lead:'幽門側が低い。バリウムが幽門を越えて<em>十二指腸</em>へ流入する。',
+    body:'球部・下行脚の描出に使う。胃排出を促したいときの体位。'},
+  llat:{ name:'左側臥位', ruby:'LEFT LAT', basis:[[0,-1,0],[-1,0,0],[0,0,-1]],
+    lead:'胃底部側が低い。バリウムは<em>胃底部</em>、ガスは<em>前庭部〜幽門部</em>へ。',
+    body:'前庭部・幽門部の二重造影が得やすい。十二指腸への流出も抑えられる。'},
+  trend:{ name:'頭低位', ruby:'TRENDELENBURG', basis:[[0,0,-1],[-0.866,-0.5,0],[-0.5,0.866,0]],
+    lead:'頭側が低い。バリウムが<em>胃底部・噴門部</em>へ移動する。',
+    body:'食道胃接合部の描出。胃食道逆流・食道裂孔ヘルニアの評価に用いる。'}
 };
 const POSE_ORDER = ['stand','supine','prone','rlat','llat','trend'];
 
@@ -617,58 +690,68 @@ POSE_ORDER.forEach(k => { POSES[k].tilt = POSE_ANG[k][0]; POSES[k].roll = POSE_A
 /* ---------- 標準的な撮影手順 ---------- */
 const SEQ = [
   { no:'①', name:'立位・第1斜位', tilt:90, roll:45, tgt:'食道',
-    aim:'バリウムを飲み込んだ直後に食道を撮る。第1斜位（右前が台側）にすると食道が脊柱と心陰影から外れて重ならない。通過状態と粘膜面を見る。',
-    tip:'胃に落ちきる前の一瞬しかない。発泡剤→バリウムの順に服用させ、嚥下と同時に曝射する。' },
+    aim:'嚥下直後に撮る。第1斜位にすると食道が脊柱・心陰影から外れる。' },
   { no:'②', name:'背臥位・体位変換', tilt:0, roll:0, tgt:'全周の付着',
-    aim:'背臥位で体軸を左右に数回転させ、バリウムを胃粘膜の全周に塗り広げる。二重造影像の良否はこの付着で決まる。',
-    tip:'付着が不良だと以降のすべての写真が読めない。右回転・左回転を組み合わせる。' },
+    aim:'左右に数回転させ粘膜全周にバリウムを付着させる。ここで二重造影の良否が決まる。' },
   { no:'③', name:'背臥位・正面', tilt:0, roll:0, tgt:'胃体部後壁',
-    aim:'背側が低いので余分なバリウムは胃底部へ落ち、胃体部〜前庭部の後壁が薄い付着とガスで広げられる。二重造影法の基本像。',
-    tip:'胃癌スクリーニングでもっとも情報量の多い一枚。' },
+    aim:'余分なバリウムが胃底部へ落ち、胃体〜前庭部後壁が広がる。二重造影の基本像。' },
   { no:'④', name:'背臥位・第1斜位', tilt:0, roll:45, tgt:'胃角部〜前庭部後壁',
-    aim:'右側を挙上して胃角部を開く。正面位では小弯と大弯が重なる胃角部・前庭部後壁を分離して描出する。',
-    tip:'胃角部小弯は早期胃癌の好発部位。必ず開いた形で撮る。' },
+    aim:'右側挙上で胃角部を開く。胃角部小弯は早期胃癌の好発部位。' },
   { no:'⑤', name:'背臥位・第2斜位', tilt:0, roll:315, tgt:'穹窿部・胃体上部後壁',
-    aim:'左側を挙上して穹窿部（胃底部）と胃体上部後壁を描出する。背臥位正面ではバリウムが溜まって見えない領域。',
-    tip:'胃底部はバリウムが溜まりやすく死角になりやすい。' },
+    aim:'左側挙上で、正面位ではバリウムに隠れる穹窿部を出す。' },
   { no:'⑥', name:'頭低位・第2斜位', tilt:-25, roll:315, tgt:'噴門部',
-    aim:'台を頭低にして造影剤を胃底部・噴門部へ移動させ、食道胃接合部を描出する。胃食道逆流や食道裂孔ヘルニアの評価にも使う。',
-    tip:'頭低位では逆流が起こりやすい。誤嚥に注意して短時間で。' },
+    aim:'造影剤を噴門部へ移動させる。逆流・食道裂孔ヘルニアも評価できる。' },
   { no:'⑦', name:'腹臥位・第2斜位', tilt:0, roll:135, tgt:'胃体部前壁',
-    aim:'腹側が低くなり、前壁にバリウムが付着してガスは背側の胃底部へ抜ける。背臥位では撮れない前壁の二重造影。',
-    tip:'前壁は虚脱しやすいので、ガス量が十分あることを透視で確認してから。' },
+    aim:'前壁に付着しガスは胃底部へ。背臥位では撮れない面。' },
   { no:'⑧', name:'腹臥位・正面', tilt:0, roll:180, tgt:'前庭部前壁',
-    aim:'前庭部は腹側にあるため腹臥位ではバリウムが溜まりやすい。ガスを送り込みながら前庭部前壁を広げて撮る。',
-    tip:'前後壁をそろえて初めて胃全周の評価が完成する。' },
+    aim:'前庭部前壁を広げる。前後壁がそろって全周の評価になる。' },
   { no:'⑨', name:'右側臥位', tilt:0, roll:270, tgt:'十二指腸球部',
-    aim:'幽門側が低くなり造影剤が幽門を越えて十二指腸へ流入する。球部と下行脚の描出に用いる。',
-    tip:'流出させたくないときは逆に左側臥位にする。' },
-  { no:'⑩', name:'立位・正面／斜位（充盈像）', tilt:90, roll:20, tgt:'胃全体の形態',
-    aim:'立位でバリウムを下部へ落とし、胃の位置・形・伸展性と大弯側の輪郭を充盈像で評価する。胃型（鉤状胃・牛角胃など）の判定もここ。',
-    tip:'二重造影像を撮り終えてから最後に。上面には水平な鏡面（ニボー）ができる。' },
+    aim:'幽門を越えて球部へ造影剤を流入させる。' },
+  { no:'⑩', name:'立位・充盈像', tilt:90, roll:20, tgt:'胃全体の形態',
+    aim:'胃の位置・形・伸展性と大弯の輪郭をみる。胃型の判定もここ。' },
   { no:'⑪', name:'立位・前庭部圧迫', tilt:90, roll:0, comp:'antrum', tgt:'前庭部・胃角部',
-    aim:'圧迫筒で前庭部を押さえ、バリウムを薄く伸ばして微細な隆起・陥凹を描出する。二重造影で見えにくい病変を拾う。',
-    tip:'圧迫像は充盈像の後。強く押しすぎると病変ごとつぶれる。' }
+    aim:'バリウムを薄く伸ばして微細な隆起・陥凹を出す。最後に行う。' }
 ];
 
-/* ---------- 確認問題 ---------- */
-const QUIZ = [
-  ['立位で胃泡（ガス）が集まる部位と、そこで得られる像は？',
-   'ガスは最も高い<b>胃底部（穹窿部）</b>に集まり、粘膜にバリウムが付着していれば<b>胃底部の二重造影像</b>が得られる。下方の胃体下部〜前庭部は充盈像となる。'],
-  ['背臥位正面で二重造影像が得られるのは前壁か後壁か。',
-   '<b>後壁</b>。背側が低いため余分なバリウムは胃底部側へ落ち、後壁は薄い付着とガスで広げられる。前壁を見るには腹臥位にする。'],
-  ['十二指腸球部へ造影剤を流入させたいときの体位は？',
-   '<b>右側臥位</b>。幽門側が低くなり造影剤が幽門を越えて十二指腸へ流れる。逆に流出を抑えたいときは左側臥位。'],
-  ['噴門部・食道胃接合部の観察や胃食道逆流の評価に用いる体位は？',
-   '<b>頭低位（背臥位・約30°）</b>。造影剤が胃底部から噴門部へ移動し、逆流や食道裂孔ヘルニアを動態で確認できる。'],
-  ['立位でもバリウムが胃底部に貯留して胃体部への流入が遅れる胃型は？',
-   '<b>瀑状胃（カスケード胃）</b>。後方へ張り出した胃底部の窪みが先に満たされ、縁を越えてから体部へ流れ落ちる。胃底部の二重造影が得にくい。'],
-  ['食道の撮影に立位第1斜位を用いるのはなぜか。',
-   '正面位では食道が<b>脊柱と心陰影に重なって</b>しまうため。右前斜位（第1斜位）にすると食道がそれらから外れ、通過状態と粘膜面を観察できる。'],
-  ['二重造影像を撮り終えたあと、最後に行う撮影は？',
-   '<b>立位充盈像</b>と<b>圧迫像</b>。充盈像で胃全体の位置・形・伸展性と大弯の輪郭を、圧迫像で前庭部・胃角部の微細な隆起や陥凹をみる。二重造影は造影剤の付着が良いうちに先に撮る。'],
-  ['硫酸バリウムが陽性造影剤として働く理由と、禁忌となる病態は？',
-   '原子番号<b>Z=56</b>と大きくK吸収端が<b>37.4 keV</b>にあるため、診断領域のX線に対し光電効果による吸収が大きい。水に不溶で吸収されない。<b>消化管穿孔の疑い・完全な消化管閉塞</b>では禁忌で、水溶性ヨード造影剤に変更する（誤嚥の危険があるときは高浸透圧のものを避ける）。']
+
+/* ---------- 国試形式の問題（オリジナル）---------- */
+const EXAM = [
+  { q:'胃X線二重造影法で胃体部後壁の像を得るのはどれか。',
+    c:['立位正面','背臥位正面','腹臥位正面','右側臥位','左側臥位'], a:1, set:[0,0],
+    e:'背側が低く余分なバリウムが胃底部へ落ちるため、後壁が薄い付着とガスで広がる。二重造影の基本体位。' },
+  { q:'胃底部（穹窿部）の二重造影像が得られるのはどれか。',
+    c:['立位','背臥位','腹臥位','右側臥位','頭低位'], a:0, set:[90,0],
+    e:'立位ではガス（胃泡）が最も高い胃底部に集まり、バリウムは下部へ落ちる。' },
+  { q:'胃前壁の二重造影像を得る体位はどれか。',
+    c:['立位','背臥位','腹臥位','右側臥位','左側臥位'], a:2, set:[0,180],
+    e:'腹側が低くなり前壁にバリウムが付着、ガスは背側の胃底部へ抜ける。' },
+  { q:'十二指腸球部へ造影剤を流入させるのに適するのはどれか。',
+    c:['立位','背臥位','腹臥位','右側臥位','左側臥位'], a:3, set:[0,270],
+    e:'幽門側が低くなるため造影剤が幽門を越える。流出を抑えたいときは左側臥位。' },
+  { q:'食道胃接合部の描出と胃食道逆流の評価に用いるのはどれか。',
+    c:['立位第1斜位','背臥位正面','腹臥位正面','右側臥位','頭低位'], a:4, set:[-25,315],
+    e:'頭側を低くして造影剤を胃底部から噴門部へ移動させる。' },
+  { q:'前庭部・幽門部の二重造影が得やすいのはどれか。',
+    c:['立位','背臥位','腹臥位','右側臥位','左側臥位'], a:4, set:[0,90],
+    e:'胃底部が受け皿となって造影剤を保持し、前庭部にガスが入る。' },
+  { q:'食道の撮影に立位第1斜位を用いる理由はどれか。',
+    c:['食道が脊柱・心陰影と重ならない','拡大率が小さい','被ばくが少ない','嚥下しやすい','散乱線が減る'], a:0, set:[90,45],
+    e:'正面位では食道が脊柱と心陰影に重なる。右前斜位にすると分離して描出できる。' },
+  { q:'立位でもバリウムが胃底部に貯留し、胃体部への流入が遅れる胃型はどれか。',
+    c:['鉤状胃','牛角胃','瀑状胃','下垂胃','正常胃'], a:2, set:[90,0], type:'casc',
+    e:'瀑状胃。後方に張り出した胃底部の窪みが先に満たされ、縁を越えてから体部へ落ちる。' },
+  { q:'日本人に最も多い胃型はどれか。',
+    c:['鉤状胃','牛角胃','瀑状胃','下垂胃','横位胃'], a:0, set:[90,0], type:'hook',
+    e:'鉤状胃。胃角が明瞭で幽門部が胃体下部より高いJ字型。' },
+  { q:'上部消化管X線検査で最後に行うのはどれか。',
+    c:['食道撮影','背臥位二重造影','前壁二重造影','立位充盈像・圧迫像','体位変換'], a:3, set:[90,20],
+    e:'二重造影像は付着が良いうちに先に撮り、充盈像と圧迫像は最後に行う。' },
+  { q:'硫酸バリウムについて正しいのはどれか。',
+    c:['原子番号は26である','K吸収端は37.4 keVである','陰性造影剤である','水に易溶である','消化管穿孔時にも使用できる'], a:1,
+    e:'Z=56、K吸収端37.4 keVで光電効果による吸収が大きい陽性造影剤。水に不溶。穿孔疑いでは禁忌で水溶性ヨード造影剤を用いる。' },
+  { q:'発泡剤を用いる目的はどれか。',
+    c:['バリウムの粘度を下げる','胃を拡張して陰性造影剤とする','蠕動を抑制する','便秘を防ぐ','散乱線を減らす'], a:1,
+    e:'炭酸ガスで胃を拡張し、バリウム（陽性）とガス（陰性）の二重造影を成立させる。' }
 ];
 </script>
 <script>
@@ -1078,6 +1161,7 @@ const TORSO = [[25, 9.0, 6.4], [19, 12.6, 8.2], [13, 13.8, 9.0], [6, 13.4, 9.4],
                [-9, 12.6, 9.2], [-15, 13.4, 8.8], [-21, 11.6, 7.8], [-25, 8.6, 6.4]];
 const torsoGeom = lathe(TORSO, 48, 36);
 const matSkin = litMat(0xB8CBD8, 0.30, 0.07, 1.9), matSkinX = xrayMat(0.042, false, 3.2);
+matSkin.side = THREE.FrontSide;
 const meshSkin = new THREE.Mesh(torsoGeom, matSkin); meshSkin.renderOrder = 6;
 anatGroup.add(meshSkin);
 
@@ -1111,7 +1195,7 @@ const matBone = litMat(0xD6DEE6, 0.26, 0.07, 0.95), matBoneX = xrayMat(0.075, tr
 }
 
 /* ---- 圧迫筒 ---- */
-const coneMesh = new THREE.Mesh(new THREE.CylinderGeometry(2.5, 3.1, 2.6, 24, 1, false), litMat(0x8FA6B6, 0.85, 0.55, 0.9));
+const coneMesh = new THREE.Mesh(new THREE.CylinderGeometry(2.0, 2.5, 2.2, 24, 1, false), litMat(0x8FA6B6, 0.6, 0.5, 0.8));
 coneMesh.renderOrder = 7; coneMesh.visible = false; bodyGroup.add(coneMesh);
 
 /* ---- ガイド ---- */
@@ -1123,8 +1207,8 @@ guides.add(arrow);
 
 /* ================= 状態 ================= */
 let curType = 'hook', curMode = 0, curPose = 'stand';
-let pylorusOpen = false, showLabels = true, showAxis = true, showRug = true, showBone = true;
-let autoSpin = false, viewMode = 1, skinOpacity = 0.30;
+let pylorusOpen = false, labelMode = 1, showRug = true, showBone = false;
+let autoSpin = false, viewMode = 1, skinOpacity = 0.22;
 let airLevel = 0.6, targetMl = 120, administered = 0;
 let compRegion = '', compAmt = 0;
 let tiltCur = 90, rollCur = 0, tiltT = 90, rollT = 0;
@@ -1295,28 +1379,52 @@ function rebuildAll() {
 }
 
 /* ================= カメラ ================= */
-const ctrl = { theta: 0.30, phi: 1.46, dist: 46, target: new THREE.Vector3(0, 0, 0) };
-function camOff() { const f = Math.max(-0.4, Math.min(1, tiltCur / 90)); return [f * Math.PI / 2, (1 - f) * -0.42]; }
+const ctrl = { theta: 0.60, phi: 0.95, dist: 46, target: new THREE.Vector3(0, 0, 0) };
+const VIEWS = { op: [0.60, 0.95], front: [0.32, 1.42] };
+let viewPreset = 'op';
 function applyCam() {
-  const o = camOff(), th = ctrl.theta + o[0];
-  const ph = Math.max(0.14, Math.min(Math.PI - 0.14, ctrl.phi + o[1])), sp = Math.sin(ph);
-  camera.position.set(
-    ctrl.target.x + ctrl.dist * sp * Math.sin(th),
-    ctrl.target.y + ctrl.dist * Math.cos(ph),
-    ctrl.target.z + ctrl.dist * sp * Math.cos(th));
+  if (viewPreset === 'tube') {                       // 管球の位置から見る
+    const t = tiltCur * Math.PI / 180;
+    const nrm = new THREE.Vector3(Math.sin(t), Math.cos(t), 0);
+    camera.up.set(-Math.cos(t), Math.sin(t), 0);
+    camera.position.copy(ctrl.target).addScaledVector(nrm, ctrl.dist);
+  } else {                                           // 術者の定位置（勝手に動かない）
+    camera.up.set(0, 1, 0);
+    const sp = Math.sin(ctrl.phi);
+    camera.position.set(
+      ctrl.target.x + ctrl.dist * sp * Math.sin(ctrl.theta),
+      ctrl.target.y + ctrl.dist * Math.cos(ctrl.phi),
+      ctrl.target.z + ctrl.dist * sp * Math.cos(ctrl.theta));
+  }
   camera.lookAt(ctrl.target);
   camera.updateMatrixWorld();
   const rt = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0);
   arrow.position.set(ctrl.target.x + rt.x * ctrl.dist * -0.40, bsRadius * 0.6, ctrl.target.z + rt.z * ctrl.dist * -0.40);
 }
-function fitCam() {
-  ctrl.dist = bsRadius / Math.sin(camera.fov * Math.PI / 360) * 1.06;
-  ctrl.target.set(0, 0, 0); ctrl.theta = 0.30; ctrl.phi = 1.46;
-  grid.position.y = -27;
+function setView(p) {
+  viewPreset = p;
+  if (VIEWS[p]) { ctrl.theta = VIEWS[p][0]; ctrl.phi = VIEWS[p][1]; }
+  const seg = document.getElementById('viewpt');
+  if (seg) [...seg.children].forEach(b => b.setAttribute('aria-pressed', b.dataset.p === p));
   applyCam();
 }
+function fitCam() {
+  ctrl.dist = bsRadius / Math.sin(camera.fov * Math.PI / 360) * 1.10;
+  ctrl.target.set(0, 0, 0);
+  grid.position.y = -27;
+  setView(viewPreset === 'tube' ? 'tube' : 'op');
+}
 let drag = null, pinch = 0;
-canvas.addEventListener('pointerdown', e => { canvas.setPointerCapture(e.pointerId); drag = { x: e.clientX, y: e.clientY, pan: e.button === 2 || e.shiftKey }; });
+canvas.addEventListener('pointerdown', e => {
+  canvas.setPointerCapture(e.pointerId);
+  if (viewPreset === 'tube') {
+    const d = camera.position.clone().sub(ctrl.target);
+    ctrl.phi = Math.acos(Math.max(-1, Math.min(1, d.y / d.length())));
+    ctrl.theta = Math.atan2(d.x, d.z);
+    setView('op');
+  }
+  drag = { x: e.clientX, y: e.clientY, pan: e.button === 2 || e.shiftKey };
+});
 canvas.addEventListener('pointermove', e => {
   if (!drag) return;
   const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
@@ -1400,10 +1508,10 @@ function setXray(on) {
   meshSurf.material = on ? matSurfX : matSurf;
   meshSkin.material = on ? matSkinX : matSkin;
   meshSkin.visible = on || skinOpacity > 0.005;
-  boneGroup.visible = showBone;
+  boneGroup.visible = on || showBone;
   boneGroup.traverse(o => { if (o.isMesh) o.material = on ? matBoneX : matBone; });
   coneMesh.visible = !on && compAmt > 0.01;
-  guides.visible = !on && showAxis && viewMode !== 2;
+  guides.visible = !on && labelMode >= 2 && viewMode !== 2;
 }
 function render() {
   const r = viewRects();
@@ -1533,13 +1641,14 @@ function buildLabels() {
     regionRange.push([f, l]);
     const mid = Math.round((f + l) / 2);
     const sn = { '十二指腸球部': '球部', '幽門部': '幽門' }[regionList[k][1]] || regionList[k][1];
-    labels.push({ el: mkLabel(sn), get: () => surfAnchor(mid, 0.24), kind: 'r' });
+    const main = ['胃底部', '胃体部', '胃角部', '前庭部'].indexOf(regionList[k][1]) >= 0;
+    labels.push({ el: mkLabel(sn), get: () => surfAnchor(mid, 0.24), kind: main ? 'r1' : 'r2' });
   }
-  labels.push({ el: mkLabel('噴門'), get: () => surfAnchor(cardiaIdx, 0.42), kind: 'r' });
-  labels.push({ el: mkLabel('食道'), get: () => surfAnchor(NMAIN + 7, 0.6), kind: 'r' });
+  labels.push({ el: mkLabel('噴門'), get: () => surfAnchor(cardiaIdx, 0.42), kind: 'r2' });
+  labels.push({ el: mkLabel('食道'), get: () => surfAnchor(NMAIN + 7, 0.6), kind: 'r2' });
   const ang = Math.round((regionRange[2][0] + regionRange[2][1]) / 2);
-  labels.push({ el: mkLabel('小弯', 'curv'), get: () => curvAnchor(ang, 1), kind: 'r' });
-  labels.push({ el: mkLabel('大弯', 'curv'), get: () => curvAnchor(ang, -1), kind: 'r' });
+  labels.push({ el: mkLabel('小弯', 'curv'), get: () => curvAnchor(ang, 1), kind: 'r2' });
+  labels.push({ el: mkLabel('大弯', 'curv'), get: () => curvAnchor(ang, -1), kind: 'r2' });
   const ax = [['頭側', 0, 1, 0], ['足側', 0, -1, 0], ['腹側', 0, 0, 1], ['背側', 0, 0, -1]];
   for (const a of ax) labels.push({
     el: mkLabel(a[0], 'axis'), kind: 'a',
@@ -1552,8 +1661,7 @@ function updateLabels() {
   const hideAll = viewMode === 2;
   camL.copy(camera.position); bodyGroup.worldToLocal(camL);
   for (const L of labels) {
-    const on = !hideAll && (L.kind === 'r' ? showLabels : showAxis);
-    if (!on) { L.el.style.opacity = '0'; continue; }
+    if (hideAll || labelMode < (L.kind === 'r1' ? 1 : 2)) { L.el.style.opacity = '0'; continue; }
     const v = L.get().clone();
     if (L.kind !== 'w') v.applyMatrix4(bodyGroup.matrixWorld);
     if (L.kind === 'a') {
@@ -1633,7 +1741,6 @@ function updateNotes() {
   document.getElementById('noteLead').innerHTML = lead;
   document.getElementById('noteBody').innerHTML = body;
   document.getElementById('noteType').innerHTML = '<strong style="color:#D9E4ED">' + T.name + '</strong> — ' + T.note;
-  document.getElementById('gravNote').textContent = poseName(tiltT, rollT);
   document.getElementById('typeNote').textContent = T.short;
   document.getElementById('freePos').textContent = poseName(tiltT, rollT);
   document.getElementById('freeAng').textContent = Math.round(tiltT) + '° / ' + Math.round(((rollT % 360) + 360) % 360) + '°';
@@ -1678,9 +1785,10 @@ const tabs = document.getElementById('modeTabs');
 function setMode(m) {
   curMode = m; playing = false;
   [...tabs.children].forEach(b => b.setAttribute('aria-pressed', +b.dataset.m === m));
-  for (let i = 0; i < 3; i++) document.getElementById('pane' + i).hidden = (i !== m);
+  for (let i = 0; i < 4; i++) document.getElementById('pane' + i).hidden = (i !== m);
   if (m === 1 && seqIdx < 0) gotoStep(0);
   if (m === 2) syncFree();
+  if (m === 3 && !curQ) showQ(0);
   updateNotes();
 }
 
@@ -1700,15 +1808,8 @@ function gotoStep(i) {
     if (+b.dataset.i === seqIdx) b.setAttribute('aria-current', 'step'); else b.removeAttribute('aria-current');
   });
   goPose(S.tilt, S.roll);
-  const wantComp = S.comp || '';
-  if (wantComp !== compRegion || (wantComp ? 0.7 : 0) !== compAmt) {
-    compRegion = wantComp; compAmt = wantComp ? 0.7 : 0;
-    document.getElementById('selComp').value = compRegion;
-    document.getElementById('sComp').value = Math.round(compAmt * 100);
-    document.getElementById('vComp').textContent = Math.round(compAmt * 100);
-    rebuildAll();
-  }
-  if (seqIdx === 1) rollQueue = ['R'];    // ②体位変換：左右へ振る
+  setComp(S.comp || '', S.comp ? 0.7 : 0);
+  if (seqIdx === 1) rollQueue = ['R'];
   syncFree(); updateNotes();
 }
 document.getElementById('bPrev').addEventListener('click', () => { playing = false; gotoStep(seqIdx - 1); });
@@ -1719,45 +1820,123 @@ document.getElementById('bPlay').addEventListener('click', e => {
   if (playing && seqIdx < 0) gotoStep(0);
 });
 
-/* --- フリーモード --- */
-const sTilt = document.getElementById('sTilt'), sRoll = document.getElementById('sRoll');
+/* --- 操作卓：スティックとレバー --- */
+const stick = document.getElementById('stick'), knob = document.getElementById('knob');
+const lever = document.getElementById('lever'), lhandle = document.getElementById('lhandle');
+const selComp = document.getElementById('selComp');
+function knobTo(nx, ny) { knob.style.left = (50 + nx * 44) + '%'; knob.style.top = (50 - ny * 44) + '%'; }
 function syncFree() {
-  const r = Math.round(((rollT % 360) + 360) % 360);
-  sTilt.value = Math.round(tiltT); sRoll.value = r;
-  document.getElementById('vTilt').textContent = Math.round(tiltT);
-  document.getElementById('vRoll').textContent = r;
+  let r = ((rollT % 360) + 360) % 360; if (r > 180) r -= 360;
+  knobTo(r / 180, (tiltT + 30) / 60 - 1);
+  lhandle.style.top = (100 - compAmt * 100) + '%';
+  document.getElementById('freePos').textContent = poseName(tiltT, rollT);
+  document.getElementById('freeAng').textContent = Math.round(tiltT) + '° / ' + Math.round(((rollT % 360) + 360) % 360) + '°';
 }
-sTilt.addEventListener('input', () => {
-  tiltT = +sTilt.value; document.getElementById('vTilt').textContent = sTilt.value;
-  playing = false; rollQueue = []; updateNotes();
-});
-sRoll.addEventListener('input', () => {
-  const r = +sRoll.value;
-  rollT = rollCur + (((r - rollCur) % 360 + 540) % 360 - 180);
-  document.getElementById('vRoll').textContent = r;
-  playing = false; rollQueue = []; updateNotes();
-});
-document.getElementById('tiltDet').addEventListener('click', e => {
-  if (e.target.dataset.t === undefined) return;
-  tiltT = +e.target.dataset.t; syncFree(); updateNotes();
-});
-document.getElementById('rollDet').addEventListener('click', e => {
-  if (e.target.dataset.r === undefined) return;
-  const r = +e.target.dataset.r;
-  rollT = rollCur + (((r - rollCur) % 360 + 540) % 360 - 180);
+function setFree(tilt, roll) {
+  playing = false; rollQueue = [];
+  tiltT = Math.max(-30, Math.min(90, tilt));
+  rollT = rollCur + (((roll - rollCur) % 360 + 540) % 360 - 180);
   syncFree(); updateNotes();
-});
-const selComp = document.getElementById('selComp'), sComp = document.getElementById('sComp');
-function applyComp() {
-  compRegion = selComp.value;
-  compAmt = compRegion ? +sComp.value / 100 : 0;
-  document.getElementById('vComp').textContent = Math.round(compAmt * 100);
-  rebuildAll(); updateNotes();
 }
-selComp.addEventListener('change', () => { if (selComp.value && +sComp.value < 10) { sComp.value = 65; } applyComp(); });
-sComp.addEventListener('input', applyComp);
+let sdrag = false;
+function stickAt(e) {
+  const b = stick.getBoundingClientRect();
+  const nx = Math.max(-1, Math.min(1, ((e.clientX - b.left) / b.width) * 2 - 1));
+  const ny = Math.max(-1, Math.min(1, 1 - ((e.clientY - b.top) / b.height) * 2));
+  setFree(-30 + (ny + 1) * 60, nx * 180);
+  knobTo(nx, ny);
+}
+function snap(v, list, tol) { for (const t of list) if (Math.abs(v - t) < tol) return t; return v; }
+stick.addEventListener('pointerdown', e => { sdrag = true; stick.setPointerCapture(e.pointerId); stickAt(e); });
+stick.addEventListener('pointermove', e => { if (sdrag) stickAt(e); });
+stick.addEventListener('pointerup', () => {
+  if (!sdrag) return; sdrag = false;
+  let r = ((rollT % 360) + 360) % 360; if (r > 180) r -= 360;
+  setFree(snap(tiltT, [-30, 0, 45, 90], 7), snap(r, [-180, -135, -90, -45, 0, 45, 90, 135, 180], 9));
+});
+stick.addEventListener('pointercancel', () => { sdrag = false; });
+stick.addEventListener('keydown', e => {
+  const K = { ArrowUp: [5, 0], ArrowDown: [-5, 0], ArrowLeft: [0, -5], ArrowRight: [0, 5] }[e.key];
+  if (!K) return;
+  e.preventDefault();
+  let r = ((rollT % 360) + 360) % 360; if (r > 180) r -= 360;
+  setFree(tiltT + K[0], r + K[1]);
+});
+let ldrag = false;
+function leverAt(e) {
+  const b = lever.getBoundingClientRect();
+  const v = Math.max(0, Math.min(1, 1 - (e.clientY - b.top) / b.height));
+  if (v > 0.02 && !compRegion) { selComp.value = 'antrum'; }
+  setComp(selComp.value, v);
+}
+lever.addEventListener('pointerdown', e => { ldrag = true; lever.setPointerCapture(e.pointerId); leverAt(e); });
+lever.addEventListener('pointermove', e => { if (ldrag) leverAt(e); });
+lever.addEventListener('pointerup', () => { ldrag = false; });
+lever.addEventListener('pointercancel', () => { ldrag = false; });
+selComp.addEventListener('change', () => setComp(selComp.value, selComp.value ? Math.max(compAmt, 0.65) : 0));
+function setComp(region, amt) {
+  const r2 = region || '', a2 = r2 ? amt : 0;
+  if (r2 === compRegion && Math.abs(a2 - compAmt) < 0.004) return;
+  compRegion = r2; compAmt = a2;
+  selComp.value = r2;
+  lhandle.style.top = (100 - a2 * 100) + '%';
+  rebuildAll();
+}
 
-/* --- 共通スライダ・トグル --- */
+/* --- 国試形式の問題 --- */
+let qIdx = 0, curQ = null, qLocked = false;
+const qText = document.getElementById('qText'), qChoices = document.getElementById('qChoices'), qExp = document.getElementById('qExp');
+function showQ(i) {
+  qIdx = (i + EXAM.length) % EXAM.length;
+  curQ = EXAM[qIdx];
+  document.getElementById('qNo').textContent = '問 ' + (qIdx + 1) + ' / ' + EXAM.length;
+  if (curQ.type && curQ.type !== curType) setType(curQ.type);
+  if (curQ.set) goPose(curQ.set[0], curQ.set[1]);
+  setComp('', 0); syncFree();
+  renderQ();
+}
+function renderQ() {
+  qLocked = false;
+  qText.textContent = curQ.q;
+  qExp.hidden = true; qExp.textContent = curQ.e;
+  qChoices.innerHTML = '';
+  curQ.c.forEach((t, i) => {
+    const li = document.createElement('li');
+    const b = document.createElement('button'); b.type = 'button';
+    b.innerHTML = '<span class="n">' + (i + 1) + '</span><span>' + t + '</span>';
+    b.addEventListener('click', () => answerQ(i, b));
+    li.appendChild(b); qChoices.appendChild(li);
+  });
+}
+function answerQ(i, btn) {
+  if (qLocked) return;
+  qLocked = true;
+  const btns = [...qChoices.querySelectorAll('button')];
+  btns.forEach((b, j) => {
+    b.disabled = true;
+    if (j === curQ.a) b.classList.add('ok');
+    else if (j === i) b.classList.add('ng');
+  });
+  qExp.hidden = false;
+  if (curQ.set) goPose(curQ.set[0], curQ.set[1]);
+}
+document.getElementById('bQPrev').addEventListener('click', () => showQ(qIdx - 1));
+document.getElementById('bQNext').addEventListener('click', () => showQ(qIdx + 1));
+document.getElementById('bReadQ').addEventListener('click', () => {
+  const keys = POSE_ORDER.slice();
+  const ans = keys[Math.floor(Math.random() * keys.length)];
+  const others = keys.filter(k => k !== ans).sort(() => Math.random() - 0.5).slice(0, 4);
+  const cs = [ans].concat(others).sort(() => Math.random() - 0.5);
+  curQ = { q: '表示されている透視像の体位はどれか。', c: cs.map(k => POSES[k].name), a: cs.indexOf(ans),
+           e: POSES[ans].name + '。' + POSES[ans].lead.replace(/<\/?em>/g, '') };
+  document.getElementById('qNo').textContent = '読影';
+  goPose(POSES[ans].tilt, POSES[ans].roll);
+  setComp('', 0); syncFree();
+  viewMode = 2; syncViewSeg(); layoutFilm();
+  renderQ();
+});
+
+/* --- 共通 --- */
 const sBa = document.getElementById('sBa'), sAir = document.getElementById('sAir'), sSkin = document.getElementById('sSkin');
 sBa.addEventListener('input', () => { targetMl = +sBa.value; document.getElementById('vBa').textContent = sBa.value; });
 sAir.addEventListener('input', () => {
@@ -1771,38 +1950,31 @@ sSkin.addEventListener('input', () => {
 const bind = (id, fn) => document.getElementById(id).addEventListener('change', e => fn(e.target.checked));
 bind('tHi', v => { uHi.value = v ? 1 : 0; });
 bind('tRug', v => { showRug = v; uRug.value = v ? 1 : 0; });
-bind('tLab', v => { showLabels = v; });
-bind('tAx', v => { showAxis = v; });
 bind('tBone', v => { showBone = v; });
 bind('tPyl', v => { pylorusOpen = v; rebuildAll(); });
-bind('tSpin', v => { autoSpin = v; });
 document.getElementById('bDrink').addEventListener('click', () => {
   for (let n = 0; n < NN; n++) wVol[n] = 0;
   for (let i = 0; i < NV; i++) { aWet[i] = 0; aLevel[i] = -1e3; }
   administered = 0; drained = 0;
 });
-document.getElementById('bCoat').addEventListener('click', () => { for (let i = 0; i < NV; i++) aWet[i] = 0; });
 document.getElementById('bView').addEventListener('click', fitCam);
 document.getElementById('bRoll').addEventListener('click', () => { rollQueue = ['R']; rollTimer = 0; });
 document.getElementById('bClear').addEventListener('click', () => { films = []; shotCount = 0; document.getElementById('shotN').textContent = '0'; renderStrip(); });
 document.getElementById('bShot').addEventListener('click', capture);
 const viewSeg = document.getElementById('viewSeg');
-[...viewSeg.children].forEach(b => b.addEventListener('click', () => {
-  viewMode = +b.dataset.v;
-  [...viewSeg.children].forEach(x => x.setAttribute('aria-pressed', +x.dataset.v === viewMode));
-  layoutFilm();
+function syncViewSeg() { [...viewSeg.children].forEach(x => x.setAttribute('aria-pressed', +x.dataset.v === viewMode)); }
+[...viewSeg.children].forEach(b => b.addEventListener('click', () => { viewMode = +b.dataset.v; syncViewSeg(); layoutFilm(); }));
+const viewpt = document.getElementById('viewpt');
+[...viewpt.children].forEach(b => b.addEventListener('click', () => setView(b.dataset.p)));
+const labSeg = document.getElementById('labSeg');
+[...labSeg.children].forEach(b => b.addEventListener('click', () => {
+  labelMode = +b.dataset.l;
+  [...labSeg.children].forEach(x => x.setAttribute('aria-pressed', +x.dataset.l === labelMode));
 }));
 const lb = document.getElementById('lightbox');
 document.getElementById('lbClose').addEventListener('click', () => lb.classList.remove('on'));
 lb.addEventListener('click', e => { if (e.target === lb) lb.classList.remove('on'); });
 addEventListener('keydown', e => { if (e.key === 'Escape') lb.classList.remove('on'); });
-
-const quiz = document.getElementById('quiz');
-QUIZ.forEach((q, i) => {
-  const d = document.createElement('details'); d.className = 'q';
-  d.innerHTML = '<summary><span class="qn">Q' + (i + 1) + '</span><span class="qt">' + q[0] + '</span><span class="qa">+</span></summary><p>' + q[1] + '</p>';
-  quiz.appendChild(d);
-});
 
 /* ================= 初期化とループ ================= */
 function settle() {

@@ -126,20 +126,6 @@ button.opt[aria-pressed="true"]{background:#1D3040; border-color:var(--teal); co
 button.opt[aria-pressed="true"] .ruby{color:var(--teal)}
 button.opt:focus-visible,button.act:focus-visible,summary:focus-visible{outline:2px solid var(--teal); outline-offset:2px}
 
-.slider{margin-top:2px}
-.slider .sl-h{display:flex; justify-content:space-between; align-items:baseline; font-size:12px; color:var(--muted)}
-.slider .sl-v{font-family:var(--mono); font-size:12.5px; color:var(--text); font-variant-numeric:tabular-nums}
-input[type=range]{
-  -webkit-appearance:none; appearance:none; width:100%; height:20px; background:none; cursor:pointer; margin:2px 0 0;
-}
-input[type=range]::-webkit-slider-runnable-track{height:3px; background:var(--line2); border-radius:2px}
-input[type=range]::-moz-range-track{height:3px; background:var(--line2); border-radius:2px}
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none; width:13px; height:13px; margin-top:-5px; border-radius:50%;
-  background:var(--barium); border:2px solid var(--ink);
-}
-input[type=range]::-moz-range-thumb{width:13px;height:13px;border-radius:50%;background:var(--barium);border:2px solid var(--ink)}
-
 .toggles{display:flex; flex-direction:column; gap:1px}
 label.tg{display:flex; align-items:center; gap:8px; font-size:12.5px; color:var(--muted); cursor:pointer; padding:2px 0}
 label.tg:hover{color:var(--text)}
@@ -162,8 +148,6 @@ button.act{
 button.act:hover{background:var(--panel2); color:var(--text); border-color:var(--teal)}
 button.act.wide{grid-column:1/-1; color:var(--barium); border-color:#456A80}
 
-.gauge{display:flex; gap:10px; font-family:var(--mono); font-size:11px; color:var(--dim); margin-top:9px; flex-wrap:wrap}
-.gauge span{color:var(--text); font-variant-numeric:tabular-nums}
 
 /* ---------- readouts ---------- */
 /* ---------- stage toolbar ---------- */
@@ -537,23 +521,6 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
     </div>
 
     <div class="grp">
-      <p class="grp-h">造影剤・発泡剤</p>
-      <div class="slider">
-        <div class="sl-h"><label for="sBa">バリウム</label><span class="sl-v"><span id="vBa">120</span> mL</span></div>
-        <input type="range" id="sBa" min="0" max="250" step="5" value="120">
-      </div>
-      <div class="slider">
-        <div class="sl-h"><label for="sAir">ガス拡張</label><span class="sl-v"><span id="vAir">60</span> %</span></div>
-        <input type="range" id="sAir" min="0" max="100" step="1" value="60">
-      </div>
-      <div class="gauge">
-        <span class="lbl">胃内 <span id="gStom">0</span></span>
-        <span class="lbl">十二指腸 <span id="gDuo">0</span></span>
-        <span class="lbl">容量 <span id="gCap">0</span> mL</span>
-      </div>
-    </div>
-
-    <div class="grp">
       <details class="fold"><summary>表示と操作</summary>
       <p class="grp-h" style="margin-top:10px">ラベル</p>
       <div class="seg wide" id="labSeg">
@@ -565,7 +532,7 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
         <label class="tg"><input type="checkbox" id="tHi" checked>二重造影をハイライト</label>
         <label class="tg"><input type="checkbox" id="tRug" checked>粘膜皺襞</label>
         <label class="tg"><input type="checkbox" id="tBone">骨格を3Dにも表示</label>
-        <label class="tg"><input type="checkbox" id="tOri" checked>腹背の目印（<b style="color:#FFA94D">鼻・臍</b>／<b style="color:#5FB0FF">棘突起</b>）</label>
+        <label class="tg"><input type="checkbox" id="tOri" checked><b style="color:#FFA94D">鼻</b>（腹側の目印）</label>
         <label class="tg"><input type="checkbox" id="tPyl">幽門を開く</label>
       </div>
       <div class="acts" style="margin-top:10px">
@@ -1200,25 +1167,14 @@ function addFig(g, x, y, z) {
   }
 }
 
-/* ---- 腹側・背側マーカー（体の表裏がひと目でわかる部品）---- */
-const matAnt = litMat(0xFFA94D, 0.95, 0.70, 0.55);   // 腹側＝オレンジ（鼻・臍）
-const matPos = litMat(0x5FB0FF, 0.95, 0.70, 0.55);   // 背側＝ブルー（棘突起）
-for (const m of [matAnt, matPos]) { m.side = THREE.FrontSide; m.depthWrite = true; }
+/* ---- 鼻（顔が向いているほうが腹側）---- */
+const matAnt = litMat(0xFFA94D, 0.95, 0.70, 0.55);
+matAnt.side = THREE.FrontSide; matAnt.depthWrite = true;
 const orientGroup = new THREE.Group(); anatGroup.add(orientGroup);
-function addMark(g, mat, x, y, z, rx) {
-  const m = new THREE.Mesh(g, mat); m.position.set(x, y, z);
-  if (rx) m.rotation.x = rx;
-  m.renderOrder = 7; orientGroup.add(m); return m;
-}
 {
-  // 鼻 … 顔が向いている側が腹側
-  addMark(new THREE.ConeGeometry(1.8, 3.6, 14), matAnt, 0, 33.6, 8.2, Math.PI / 2);
-  // 臍 … 腹壁の目印
-  addMark(new THREE.TorusGeometry(1.6, 0.6, 10, 20), matAnt, 0, -6, 9.0);
-  addMark(new THREE.SphereGeometry(0.9, 12, 10), matAnt, 0, -6, 8.6);
-  // 棘突起 … 背側の目印
-  const SPN = [[14, 9.0], [9, 9.25], [4, 9.4], [-1, 9.4], [-6, 9.35], [-11, 9.1], [-16, 8.75]];
-  for (const [y, d] of SPN) addMark(new THREE.ConeGeometry(1.0, 2.4, 10), matPos, 0, y, -(d - 0.1), -Math.PI / 2);
+  const nose = new THREE.Mesh(new THREE.ConeGeometry(1.8, 3.6, 14), matAnt);
+  nose.position.set(0, 33.6, 8.2); nose.rotation.x = Math.PI / 2;
+  nose.renderOrder = 7; orientGroup.add(nose);
 }
 
 /* ---- 透視台と台座（模型）---- */
@@ -1747,16 +1703,6 @@ function updateLabels() {
   }
 }
 
-/* ================= 読み出し ================= */
-function updateReadouts() {
-  let stom = 0, duo = drained;
-  for (let i = 0; i < NN; i++) {
-    if (i < NMAIN && regionList[regionOf[i]][0] === 'duode') duo += wVol[i]; else stom += wVol[i];
-  }
-  document.getElementById('gStom').textContent = Math.round(stom);
-  document.getElementById('gDuo').textContent = Math.round(duo);
-  document.getElementById('gCap').textContent = Math.round(totalCap);
-}
 function updateNotes() {
   document.getElementById('poseLead').innerHTML = POSES[nearestPose(tiltT, rollT)].lead;
   document.getElementById('freePos').textContent = poseName(tiltT, rollT);
@@ -2021,12 +1967,6 @@ document.getElementById('bReadQ').addEventListener('click', () => {
 });
 
 /* --- 共通 --- */
-const sBa = document.getElementById('sBa'), sAir = document.getElementById('sAir');
-sBa.addEventListener('input', () => { targetMl = +sBa.value; document.getElementById('vBa').textContent = sBa.value; });
-sAir.addEventListener('input', () => {
-  airLevel = +sAir.value / 100; document.getElementById('vAir').textContent = sAir.value;
-  rebuildAll(); layoutFilm();
-});
 const bind = (id, fn) => document.getElementById(id).addEventListener('change', e => fn(e.target.checked));
 bind('tHi', v => { uHi.value = v ? 1 : 0; });
 bind('tRug', v => { showRug = v; uRug.value = v ? 1 : 0; });
@@ -2189,7 +2129,7 @@ function loop(now) {
 
   acc += dt;
   if (acc > 0.16) {
-    acc = 0; updateReadouts(); updateFilmLabels();
+    acc = 0; updateFilmLabels();
     tiltRot.setAttribute('transform', 'rotate(' + tiltCur.toFixed(1) + ' 54 44)');
     tiltTxt.textContent = Math.round(tiltCur) + '°';
   }
@@ -2201,7 +2141,7 @@ loadExam();
 matSkin.uniforms.uO.value = skinOpacity;
 rebuildAll(); buildLabels(); settle();
 setPreset('stand'); tiltCur = tiltT; rollCur = rollT;
-updateNotes(); applyRail(); resize(); fitCam(); layoutFilm(); updateReadouts(); renderStrip();
+updateNotes(); applyRail(); resize(); fitCam(); layoutFilm(); renderStrip();
 requestAnimationFrame(loop);
 })();
 </script>

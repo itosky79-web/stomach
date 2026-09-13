@@ -683,11 +683,14 @@ const POSES = {
   semi:{ name:'半立位', ruby:'SEMI-ERECT', basis:[[1,0,0],[0,1,0],[0,0,1]],
     lead:'台を約45°起こした中間の体位。バリウムは<em>胃体下部</em>、ガスは<em>胃底部〜胃体上部</em>へ。',
     body:'立位と背臥位の中間で造影剤の貯留位置を細かく調整できる。立位では描出しにくい胃底部・噴門部の二重造影に用い、斜位と組み合わせることが多い。'},
+  schatzki:{ name:'シャツキー位', ruby:'SCHATZKI', basis:[[1,0,0],[0,1,0],[0,0,1]],
+    lead:'台を約45°起こし左側を挙上した半立位第2斜位。バリウムが<em>食道胃接合部</em>を通過する様子をみる。',
+    body:'下部食道と噴門部を重なりなく描出するための体位。食道裂孔ヘルニアや下部食道輪（シャツキーリング）の評価に用いられ、頭低位や腹圧と組み合わせて逆流を誘発することもある。'},
   trend:{ name:'頭低位', ruby:'TRENDELENBURG', basis:[[0,0,-1],[-0.866,-0.5,0],[-0.5,0.866,0]],
     lead:'頭側が低い。バリウムが<em>胃底部・噴門部</em>へ移動する。',
     body:'食道胃接合部の描出。胃食道逆流・食道裂孔ヘルニアの評価に用いる。'}
 };
-const POSE_ORDER = ['stand','semi','supine','prone','rlat','llat','trend'];
+const POSE_ORDER = ['stand','semi','schatzki','supine','prone','trend','rlat','llat'];
 
 /* ---------- 体位アイコン ---------- */
 const ICONS = {
@@ -696,12 +699,13 @@ const ICONS = {
   prone:'<path d="M13 10.4h21v7.2H13z"/><circle cx="9" cy="14" r="3.2"/><path d="M20 17.6a3.4 3.4 0 0 0 6.4 0" fill="none" stroke-width="1.6"/><path d="M5 21.4h33" stroke-width="1" opacity=".5"/>',
   rlat:'<ellipse cx="21" cy="13.6" rx="7.4" ry="6"/><path d="M28.4 13.6a2.8 2.8 0 0 1 2.6 0" fill="none" stroke-width="1.6"/><text x="21" y="9.6" font-size="6" text-anchor="middle" font-family="monospace">L</text><path d="M6 21.4h30" stroke-width="1" opacity=".5"/>',
   llat:'<ellipse cx="21" cy="13.6" rx="7.4" ry="6"/><path d="M28.4 13.6a2.8 2.8 0 0 1 2.6 0" fill="none" stroke-width="1.6"/><text x="21" y="19.6" font-size="6" text-anchor="middle" font-family="monospace">L</text><path d="M6 21.4h30" stroke-width="1" opacity=".5"/>',
+  schatzki:'<g transform="rotate(-44 22 16)"><path d="M13 12.2h21v7.2H13z"/><circle cx="9" cy="15.8" r="3.2"/><path d="M26 12.2a3.2 3.2 0 0 1 6 0" fill="none" stroke-width="1.5"/></g><path d="M5 23h34" stroke-width="1" opacity=".5"/>',
   semi:'<g transform="rotate(-44 22 16)"><path d="M13 12.2h21v7.2H13z"/><circle cx="9" cy="15.8" r="3.2"/></g><path d="M5 23h34" stroke-width="1" opacity=".5"/>',
   trend:'<g transform="rotate(-16 21 15)"><path d="M13 11.6h21v7.2H13z"/><circle cx="9" cy="15.2" r="3.2"/></g><path d="M5 22.6h33" stroke-width="1" opacity=".5"/>'
 };
 
 /* ---------- 体位＝（透視台の起倒角, 体軸の回転角）---------- */
-const POSE_ANG = { stand:[90,0], semi:[45,0], supine:[0,0], prone:[0,180], rlat:[0,270], llat:[0,90], trend:[-30,0] };
+const POSE_ANG = { stand:[90,0], semi:[45,0], schatzki:[45,315], supine:[0,0], prone:[0,180], rlat:[0,270], llat:[0,90], trend:[-30,0] };
 POSE_ORDER.forEach(k => { POSES[k].tilt = POSE_ANG[k][0]; POSES[k].roll = POSE_ANG[k][1]; });
 
 /* ---------- 標準的な撮影手順 ---------- */
@@ -733,6 +737,9 @@ const SEQ = [
 
 /* ---------- 国試形式の問題（オリジナル）---------- */
 const EXAM = [
+  { q:'下部食道と食道胃接合部を重なりなく描出する半立位第2斜位の名称はどれか。',
+    c:['トレンデレンブルグ位','シャツキー位','ファウラー位','シムス位','砕石位'], a:1, set:[45,315],
+    e:'シャツキー位。食道裂孔ヘルニアや下部食道輪（シャツキーリング）の評価に用いる。' },
   { q:'台を約45°起こし、胃底部・噴門部の二重造影を得やすくする体位はどれか。',
     c:['立位','半立位','背臥位','腹臥位','右側臥位'], a:1, set:[45,0],
     e:'半立位。立位と背臥位の中間で造影剤の貯留位置を調整でき、立位では描出しにくい穹窿部・噴門部に使う。' },
@@ -1215,10 +1222,6 @@ const matBone = litMat(0xD6DEE6, 0.26, 0.07, 0.95), matBoneX = xrayMat(0.075, tr
   }
 }
 
-/* ---- 圧迫筒 ---- */
-const coneMesh = new THREE.Mesh(new THREE.CylinderGeometry(1.9, 2.4, 2.0, 24, 1, true), litMat(0x93AEBE, 0.26, 0.10, 1.15));
-coneMesh.renderOrder = 0; coneMesh.visible = false; bodyGroup.add(coneMesh);
-
 /* ---- 患者の全身（体表といっしょに透ける）---- */
 const figureGroup = new THREE.Group(); anatGroup.add(figureGroup);
 function addFig(g, x, y, z) {
@@ -1465,13 +1468,6 @@ function rebuildAll() {
   rebuild();
   anatGroup.position.set(-anatOff[0], -anatOff[1], -anatOff[2]);
   geom.attributes.aRug.needsUpdate = true;
-  if (compAmt > 0.01 && compMid >= 0) {
-    const c = compMid * 3, sg = frameU[c + 2] >= 0 ? 1 : -1;
-    const ux = frameU[c] * sg, uy = frameU[c + 1] * sg, uz = frameU[c + 2] * sg;
-    const d = radius[compMid] * 0.85 + 1.8;
-    coneMesh.position.set(centers[c] + ux * d, centers[c + 1] + uy * d, centers[c + 2] + uz * d);
-    coneMesh.quaternion.setFromUnitVectors(Yax, new THREE.Vector3(-ux, -uy, -uz));
-  }
 }
 
 /* ================= カメラ ================= */
@@ -1605,7 +1601,6 @@ function setXray(on) {
   roomProps.visible = showRoom; tableProps.visible = showRoom;
   boneGroup.visible = on || showBone;
   boneGroup.traverse(o => { if (o.isMesh) o.material = on ? matBoneX : matBone; });
-  coneMesh.visible = !on && compAmt > 0.01 && viewPreset !== 'tube';
   guides.visible = !on && viewMode !== 2;
 }
 function render() {

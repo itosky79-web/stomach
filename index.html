@@ -282,6 +282,18 @@ select.sel:focus-visible{outline:2px solid var(--teal); outline-offset:2px}
 .knob::after{content:""; position:absolute; inset:9px; border-radius:50%; background:rgba(60,35,8,.55)}
 .stick:focus-visible{outline:2px solid var(--teal); outline-offset:3px}
 .sticklab{margin:7px 0 0; text-align:center; font-family:var(--mono); font-size:9px; letter-spacing:.1em; color:var(--dim)}
+/* 国試に出た体位の目印。スティックの操作を邪魔しないよう当たり判定は持たせない */
+.epin{position:absolute; width:9px; height:9px; margin:-4.5px 0 0 -4.5px; border-radius:50%;
+  border:1.5px solid #8A6A2E; background:rgba(240,178,75,.22); pointer-events:none; transition:.18s}
+.epin.hit{background:var(--amber); border-color:#F6D9A6; box-shadow:0 0 0 4px rgba(240,178,75,.22)}
+.epose{margin-top:10px; padding:9px 11px; background:var(--ink2); border-left:2px solid var(--amber);
+  border-radius:0 2px 2px 0}
+.epose[hidden]{display:none}
+.ep-h{margin:0 0 4px; display:flex; align-items:baseline; gap:8px; flex-wrap:wrap}
+.ep-h b{font-size:12.5px; font-weight:500; color:#EAF6FA}
+.ep-h span{font-family:var(--mono); font-size:9px; letter-spacing:.1em; color:var(--amber)}
+.ep-d{margin:0; font-size:11.5px; line-height:1.75; color:var(--muted)}
+.ep-q{margin:5px 0 0; font-family:var(--mono); font-size:10px; line-height:1.7; color:var(--teal)}
 .leverwrap{flex:none; width:46px}
 .lever{
   position:relative; width:26px; height:150px; margin:0 auto; border-radius:5px;
@@ -526,6 +538,11 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
           <option value="angle">胃角部</option>
           <option value="body">胃体部</option>
         </select>
+        <div class="epose" id="ePose" hidden>
+          <p class="ep-h"><b id="epName"></b><span>国試に出ています</span></p>
+          <p class="ep-d" id="epDesc"></p>
+          <p class="ep-q" id="epQ"></p>
+        </div>
       </div>
 
       <div class="pane" id="pane3" hidden>
@@ -1909,12 +1926,64 @@ const stick = document.getElementById('stick'), knob = document.getElementById('
 const lever = document.getElementById('lever'), lhandle = document.getElementById('lhandle');
 const selComp = document.getElementById('selComp');
 function knobTo(nx, ny) { knob.style.left = (50 + nx * 44) + '%'; knob.style.top = (50 - ny * 44) + '%'; }
+
+/* ---- 国試に出た体位。スティックを合わせると何の問題で出たかを出す ---- */
+const EXAMPOSE = [
+  { t: 90, r:   0, n: '立位正面',
+    d: '充盈像で胃の形・大弯の輪郭をみる。圧迫は隆起や陥凹の形をみる体位。',
+    q: ['第72回 午前 第90問'] },
+  { t: 45, r: 315, n: '半立位第2斜位（シャツキー位）',
+    d: '噴門部・穹窿部が重なりなく開く。基準撮影法Ⅱの⑨。',
+    q: ['第74回 午後 第93問', '第71回 午前 第89問'] },
+  { t:  0, r:   0, n: '背臥位正面',
+    d: '胃角部を中心に前庭部から胃体部の後壁。二重造影の基本。',
+    q: ['第76回 午後 第85問', '第73回 午前 第83問'] },
+  { t:  0, r:  45, n: '背臥位第1斜位',
+    d: '胃体中・下部、胃角部、前庭部、十二指腸球部。',
+    q: ['第75回 午前 第91問'] },
+  { t:  0, r: 180, n: '腹臥位正面',
+    d: '前庭部・胃角部の前壁。背臥位では撮れない面。',
+    q: ['第65回 午後 第81問'] },
+  { t:  0, r: 270, n: '右側臥位',
+    d: '噴門部の観察。幽門側が低くなりバリウムが十二指腸へ流れる。',
+    q: ['第71回 午前 第89問'] },
+  { t:  0, r:  90, n: '左側臥位',
+    d: '胃底部が低くなる。腹部単純では遊離ガスの検出に使う。',
+    q: ['第70回 午後 第88問'] }
+];
+const epins = EXAMPOSE.map(e => {
+  let r = ((e.r % 360) + 360) % 360; if (r > 180) r -= 360;
+  const d = document.createElement('div');
+  d.className = 'epin';
+  d.style.left = (50 + (r / 180) * 44) + '%';
+  d.style.top = (50 - ((e.t + 30) / 60 - 1) * 44) + '%';
+  stick.appendChild(d);
+  return d;
+});
+const ePose = document.getElementById('ePose');
+function syncExamPose() {
+  const r = ((rollT % 360) + 360) % 360;
+  let hit = -1;
+  EXAMPOSE.forEach((e, i) => {
+    const dr = Math.abs(((e.r - r) % 360 + 540) % 360 - 180);
+    const on = Math.abs(e.t - tiltT) < 9 && dr < 9;
+    epins[i].classList.toggle('hit', on);
+    if (on && hit < 0) hit = i;
+  });
+  ePose.hidden = hit < 0;
+  if (hit < 0) return;
+  const e = EXAMPOSE[hit];
+  document.getElementById('epName').textContent = e.n;
+  document.getElementById('epDesc').textContent = e.d;
+  document.getElementById('epQ').textContent = e.q.join('　/　');
+}
 function syncFree() {
   let r = ((rollT % 360) + 360) % 360; if (r > 180) r -= 360;
   knobTo(r / 180, (tiltT + 30) / 60 - 1);
   lhandle.style.top = (100 - compAmt * 100) + '%';
   document.getElementById('freePos').textContent = poseName(tiltT, rollT);
   document.getElementById('freeAng').textContent = Math.round(tiltT) + '° / ' + Math.round(((rollT % 360) + 360) % 360) + '°';
+  syncExamPose();
 }
 function setFree(tilt, roll) {
   playing = false;

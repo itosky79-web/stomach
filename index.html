@@ -315,24 +315,31 @@ pre.fmt{
 .qhead span{font-family:var(--mono); font-size:10px; letter-spacing:.12em; color:var(--dim)}
 .qhead button{padding:4px 9px; font-size:10.5px}
 .qtext{margin:0 0 10px; font-size:13px; line-height:1.7; color:#E9F2F8; text-wrap:balance}
-ol.choices{list-style:none; margin:0 0 10px; padding:0; display:flex; flex-direction:column; gap:4px; counter-reset:ch}
-ol.choices button{
+.choices{list-style:none; margin:0 0 10px; padding:0; display:flex; flex-direction:column; gap:4px; counter-reset:ch}
+.choices button{
   width:100%; text-align:left; display:grid; grid-template-columns:16px 1fr; gap:7px; align-items:baseline;
   padding:6px 9px; background:var(--panel2); border:1px solid var(--line); border-radius:3px;
   color:var(--muted); font-family:var(--gothic); font-size:12px; cursor:pointer; line-height:1.5;
 }
-ol.choices button:hover:not([disabled]){border-color:var(--line2); color:var(--text)}
-ol.choices button[disabled]{cursor:default}
-ol.choices .n{font-family:var(--mono); font-size:10px; color:var(--dim)}
-ol.choices button.ok{background:#12291E; border-color:#2F6B49; color:#9FE3BC}
-ol.choices button.ok .n{color:#4FBF88}
-ol.choices button.ng{background:#2A1416; border-color:#6E3036; color:#E9A0A0}
-ol.choices button.ng .n{color:#D06A6A}
+.choices button:hover:not([disabled]){border-color:var(--line2); color:var(--text)}
+.choices button[disabled]{cursor:default}
+.choices .n{font-family:var(--mono); font-size:10px; color:var(--dim)}
+.choices button.ok{background:#12291E; border-color:#2F6B49; color:#9FE3BC}
+.choices button.ok .n{color:#4FBF88}
+.choices button.ng{background:#2A1416; border-color:#6E3036; color:#E9A0A0}
+.choices button.ng .n{color:#D06A6A}
 .qsrc{margin:-5px 0 10px; font-family:var(--mono); font-size:9.5px; letter-spacing:.05em; color:var(--dim); line-height:1.6}
 .qsrc b{color:var(--teal); font-weight:400; letter-spacing:.12em}
-.qfig{display:block; width:100%; max-width:340px; margin:0 auto 11px; border:1px solid var(--line2); border-radius:3px; background:#05080B}
-.qfig[hidden]{display:none}
-ol.choices button.sel{background:#1B2E3D; border-color:var(--teal); color:#EAF6FA}
+.qfigwrap{display:flex; justify-content:center; margin:0 0 10px}
+.qfigwrap[hidden]{display:none}
+.qfig{display:block; max-width:100%; max-height:min(190px,26vh); width:auto; border:1px solid var(--line2);
+  border-radius:3px; background:#05080B; cursor:zoom-in}
+.qfigzoom{margin:3px 0 0; text-align:center; font-family:var(--mono); font-size:9px; letter-spacing:.1em; color:var(--dim)}
+/* パネルが広いときは図と選択肢を左右に並べる */
+.qbody.wide{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; align-items:start}
+.qbody.wide .qfig{max-height:min(420px,60vh)}
+.qbody.wide .qfigwrap{margin:0}
+.choices button.sel{background:#1B2E3D; border-color:var(--teal); color:#EAF6FA}
 .qexp{margin:0 0 10px; padding:9px 11px; background:var(--ink2); border-left:2px solid var(--teal);
   border-radius:0 2px 2px 0; font-size:12px; color:var(--muted); line-height:1.8}
 .qexp[hidden]{display:none}
@@ -489,9 +496,15 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
           <div class="qhead"><span id="qNo">問 1 / 1</span><button class="act" id="bLoadOpen2" type="button">問題を入れ替える</button></div>
           <p class="qtext" id="qText"></p>
           <p class="qsrc" id="qSrc"></p>
-          <img class="qfig" id="qFig" alt="設問の図" hidden>
-          <ol class="choices" id="qChoices"></ol>
-          <p class="qexp" id="qExp" hidden></p>
+          <div class="qbody" id="qBody">
+            <div class="qfigwrap" id="qFigWrap" hidden>
+              <div><img class="qfig" id="qFig" alt="設問の図"><p class="qfigzoom">CLICK TO ENLARGE</p></div>
+            </div>
+            <div>
+          <ul class="choices" id="qChoices"></ul>
+              <p class="qexp" id="qExp" hidden></p>
+            </div>
+          </div>
           <div class="seqnav" style="grid-template-columns:1fr 1fr">
             <button class="act" id="bQPrev" type="button">前の問題</button>
             <button class="act" id="bQNext" type="button">次の問題</button>
@@ -552,6 +565,7 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
         <label class="tg"><input type="checkbox" id="tHi" checked>二重造影をハイライト</label>
         <label class="tg"><input type="checkbox" id="tRug" checked>粘膜皺襞</label>
         <label class="tg"><input type="checkbox" id="tBone">骨格を3Dにも表示</label>
+        <label class="tg"><input type="checkbox" id="tOri" checked>腹背の目印（<b style="color:#FFA94D">鼻・臍</b>／<b style="color:#5FB0FF">棘突起</b>）</label>
         <label class="tg"><input type="checkbox" id="tPyl">幽門を開く</label>
       </div>
       <div class="acts" style="margin-top:10px">
@@ -1186,6 +1200,27 @@ function addFig(g, x, y, z) {
   }
 }
 
+/* ---- 腹側・背側マーカー（体の表裏がひと目でわかる部品）---- */
+const matAnt = litMat(0xFFA94D, 0.95, 0.70, 0.55);   // 腹側＝オレンジ（鼻・臍）
+const matPos = litMat(0x5FB0FF, 0.95, 0.70, 0.55);   // 背側＝ブルー（棘突起）
+for (const m of [matAnt, matPos]) { m.side = THREE.FrontSide; m.depthWrite = true; }
+const orientGroup = new THREE.Group(); anatGroup.add(orientGroup);
+function addMark(g, mat, x, y, z, rx) {
+  const m = new THREE.Mesh(g, mat); m.position.set(x, y, z);
+  if (rx) m.rotation.x = rx;
+  m.renderOrder = 7; orientGroup.add(m); return m;
+}
+{
+  // 鼻 … 顔が向いている側が腹側
+  addMark(new THREE.ConeGeometry(1.8, 3.6, 14), matAnt, 0, 33.6, 8.2, Math.PI / 2);
+  // 臍 … 腹壁の目印
+  addMark(new THREE.TorusGeometry(1.6, 0.6, 10, 20), matAnt, 0, -6, 9.0);
+  addMark(new THREE.SphereGeometry(0.9, 12, 10), matAnt, 0, -6, 8.6);
+  // 棘突起 … 背側の目印
+  const SPN = [[14, 9.0], [9, 9.25], [4, 9.4], [-1, 9.4], [-6, 9.35], [-11, 9.1], [-16, 8.75]];
+  for (const [y, d] of SPN) addMark(new THREE.ConeGeometry(1.0, 2.4, 10), matPos, 0, y, -(d - 0.1), -Math.PI / 2);
+}
+
 /* ---- 透視台と台座（模型）---- */
 function solidProp(color) {
   return new THREE.ShaderMaterial({
@@ -1238,6 +1273,7 @@ guides.add(arrow);
 /* ================= 状態 ================= */
 let curType = 'hook', curMode = 0, curPose = 'stand';
 let pylorusOpen = false, labelMode = 1, showRug = true, showBone = false;
+let showOri = true;
 let autoSpin = false, viewMode = 1, skinOpacity = 0.30;
 let airLevel = 0.6, targetMl = 120, administered = 0;
 let compRegion = '', compAmt = 0;
@@ -1539,6 +1575,7 @@ function setXray(on) {
   meshSkin.material = on ? matSkinX : matSkin;
   meshSkin.visible = on || skinOpacity > 0.005;
   figureGroup.visible = !on && skinOpacity > 0.005;
+  orientGroup.visible = !on && showOri;
   // 引いているときだけ装置を出す。寄ったときは解剖の邪魔をしない
   const showRoom = !on && viewMode !== 2 && viewPreset !== 'tube' && ctrl.dist >= ctrl.base * 1.9;
   roomProps.visible = showRoom; tableProps.visible = showRoom;
@@ -1861,7 +1898,14 @@ let EXAM = [], qIdx = 0, curQ = null, qLocked = false;
 const qText = document.getElementById('qText'), qChoices = document.getElementById('qChoices');
 const qExp = document.getElementById('qExp'), qSrc = document.getElementById('qSrc');
 const qEmpty = document.getElementById('qEmpty'), qBox = document.getElementById('qBox');
-const qFig = document.getElementById('qFig');
+const qFig = document.getElementById('qFig'), qFigWrap = document.getElementById('qFigWrap');
+const qBody = document.getElementById('qBody');
+qFig.addEventListener('click', () => {
+  if (!qFig.src) return;
+  document.getElementById('lbImg').src = qFig.src;
+  document.getElementById('lbCap').textContent = (curQ && curQ.src) ? curQ.src : '';
+  document.getElementById('lightbox').classList.add('on');
+});
 const qImport = document.getElementById('qImport'), qPaste = document.getElementById('qPaste');
 const TYPEBYNAME = { '鉤状胃': 'hook', '牛角胃': 'horn', '瀑状胃': 'casc', '下垂胃': 'ptos' };
 
@@ -1914,7 +1958,9 @@ function renderQ() {
   qLocked = false; picked = []; qView('quiz');
   qText.textContent = curQ.q;
   qSrc.innerHTML = curQ.src ? '<b>出典</b> ' + curQ.src : '';
-  qFig.hidden = !curQ.img; if (curQ.img) qFig.src = curQ.img;
+  qFigWrap.hidden = !curQ.img;
+  if (curQ.img) qFig.src = curQ.img; else qFig.removeAttribute('src');
+  qBody.classList.toggle('wide', !!curQ.img && rail.clientWidth >= 540);
   qExp.hidden = true; qExp.textContent = curQ.e || '';
   qChoices.innerHTML = '';
   curQ.c.forEach((t, i) => {
@@ -1985,6 +2031,7 @@ const bind = (id, fn) => document.getElementById(id).addEventListener('change', 
 bind('tHi', v => { uHi.value = v ? 1 : 0; });
 bind('tRug', v => { showRug = v; uRug.value = v ? 1 : 0; });
 bind('tBone', v => { showBone = v; });
+bind('tOri', v => { showOri = v; });
 bind('tPyl', v => { pylorusOpen = v; rebuildAll(); });
 document.getElementById('bDrink').addEventListener('click', () => {
   for (let n = 0; n < NN; n++) wVol[n] = 0;

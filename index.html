@@ -612,7 +612,7 @@ details.fold p{margin:7px 0 0; font-size:11.5px; color:var(--dim); line-height:1
         <button type="button" data-l="2">詳細</button>
       </div>
       <div class="toggles" style="margin-top:11px">
-        <label class="tg"><input type="checkbox" id="tBone">骨格を3Dにも表示</label>
+        <label class="tg"><input type="checkbox" id="tBone" checked>骨格を3Dにも表示</label>
         <label class="tg"><input type="checkbox" id="tOri" checked><b style="color:#FFA94D">鼻</b>（腹側の目印）</label>
         <label class="tg"><input type="checkbox" id="tPyl">幽門を開く</label>
       </div>
@@ -1363,7 +1363,7 @@ guides.add(arrow);
 
 /* ================= 状態 ================= */
 let curType = 'hook', curMode = 0, curPose = 'stand';
-let pylorusOpen = false, labelMode = 1, showBone = false;
+let pylorusOpen = false, labelMode = 1, showBone = true;
 let showOri = true;
 let autoSpin = false, viewMode = 1, skinOpacity = 0.30;
 let airLevel = 0.6, targetMl = 120, administered = 0;
